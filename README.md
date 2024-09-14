@@ -24,14 +24,13 @@ And if you're using **Yarn**, it's:
 yarn dev
 ```
 
-
 ## Highlighted Features
 <!-- **200+ Next.js Dashboard Ul Components and Templates** - includes a variety of prebuilt **Ul elements, components, pages, and examples** crafted with a high-quality design.
 Additionally, features seamless **essential integrations and extensive functionalities**.
 
 - A library of over **200** professional dashboard UI components and elements.
 - Five distinctive dashboard variations, catering to diverse use-cases.
-- A comprehensive set of essential dashboard and admin pages.
+- A comprehensive set of essential dashboar1d and admin pages.
 - More than **45** **Next.js** files, ready for use.
 - Styling facilitated by **Tailwind CSS** files.
 - A design that resonates premium quality and high aesthetics.
