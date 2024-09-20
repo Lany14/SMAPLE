@@ -5,9 +5,12 @@ import Header from "@/components/FrontEnd/Site/Header";
 import Lines from "@/components/FrontEnd/Site/Lines";
 import ScrollToTop from "@/components/FrontEnd/Site/ScrollToTop";
 import { ThemeProvider } from "next-themes";
-import { Nunito } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "../globals.css";
-const nunito = Nunito({ subsets: ["latin"] });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 
 import ToasterContext from "../context/ToastContext";
 
@@ -18,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`dark:bg-black ${nunito.className}`}>
+      <body className={`dark:bg-black ${poppins.className}`}>
         <ThemeProvider
           enableSystem={false}
           attribute="class"

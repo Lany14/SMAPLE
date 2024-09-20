@@ -13,7 +13,7 @@ const ChartFive: React.FC = () => {
   const options: ApexOptions = {
     colors: ["#5750F1"],
     chart: {
-      fontFamily: "Nunito, sans-serif",
+      fontFamily: "Poppins, sans-serif",
       type: "bar",
       height: 200,
       toolbar: {
@@ -48,7 +48,7 @@ const ChartFive: React.FC = () => {
       show: true,
       position: "top",
       horizontalAlign: "left",
-      fontFamily: "Nunito",
+      fontFamily: "Poppins",
 
       markers: {
         radius: 99,

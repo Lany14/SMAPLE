@@ -2,23 +2,17 @@ import { Metadata } from "next";
 import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 import CalendarBox from "@/components/BackOffice/CalenderBox";
-
-export const metadata: Metadata = {
-  title: "Next.js Calender Page | NextAdmin - Next.js Dashboard Kit",
-  description:
-    "This is Next.js Calender page for NextAdmin  Tailwind CSS Admin Dashboard Kit",
-  // other metadata
-};
+import AdminLayout from "@/components/BackOffice/Layouts/AdminLayout";
 
 const CalendarPage = () => {
   return (
-    <DefaultLayout>
+    <AdminLayout>
       <div className="mx-auto max-w-7xl">
         <Breadcrumb pageName="Calendar" />
 
         <CalendarBox />
       </div>
-    </DefaultLayout>
+    </AdminLayout>
   );
 };
 

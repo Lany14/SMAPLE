@@ -1,7 +1,7 @@
 "use client";
-import "jsvectormap/dist/maps/world";
+
 import "flatpickr/dist/flatpickr.min.css";
-import "@/css/nunito.css";
+import "@/css/poppins.css";
 import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/BackOffice/common/Loader";

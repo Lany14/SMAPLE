@@ -18,7 +18,7 @@ const ChartTwo: React.FC = () => {
   const options: ApexOptions = {
     colors: ["#5750F1", "#0ABEF9"],
     chart: {
-      fontFamily: "Nunito, sans-serif",
+      fontFamily: "Poppins, sans-serif",
       type: "bar",
       height: 335,
       stacked: true,
@@ -76,7 +76,7 @@ const ChartTwo: React.FC = () => {
     legend: {
       position: "top",
       horizontalAlign: "left",
-      fontFamily: "Nunito",
+      fontFamily: "Poppins",
       fontWeight: 500,
       fontSize: "14px",
 

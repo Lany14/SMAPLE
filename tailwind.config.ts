@@ -1,18 +1,25 @@
+/** @type {import('tailwindcss').Config} */
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
+const { nextui } = require("@nextui-org/react");
 
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+
+    // Or if using `src` directory:
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   darkMode: "class",
   theme: {
     fontFamily: {
-      nunito: ["Nunito", "sans-serif"],
+      poppins: ["Poppins", "sans-serif"],
     },
     screens: {
+      // screens config for (back-office)
       "2xsm": "375px",
       xsm: "425px",
       "3xl": "2000px",
@@ -20,15 +27,33 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // global colors
+
+        // color config for (site)
         current: "currentColor",
         transparent: "transparent",
-        white: "#FFFFFF",
-        primary: "#5750F1",
-        stroke: "#E6EBF1",
+        stroke: "#E2E8F0",
         strokedark: "#2E3A47",
-        blacksection: "#1C2136",
+        hoverdark: "#252A42",
+        titlebg: "#ADFFF8",
+        titlebg2: "#FFEAC2",
         titlebgdark: "#46495A",
+        btndark: "#292E45",
+        white: "#FFFFFF",
+        black: "#181C31",
         blackho: "#2C3149",
+        blacksection: "#1C2136",
+        primary: "#69b000",
+        primaryho: "#4F8506",
+        meta: "#20C5A8",
+        waterloo: "#757693",
+        manatee: "#999AA1",
+        alabaster: "#FBFBFB",
+        zumthor: "#EDF5FF",
+        socialicon: "#D1D8E0",
+
+        // color config for (back-office)
+        "stroke-dark": "#27303E",
         dark: {
           DEFAULT: "#111928",
           2: "#1F2A37",
@@ -102,25 +127,11 @@ const config: Config = {
             4: "#FFFBEB",
           },
         },
-        primaryho: "#4F8506",
-        meta: "#20C5A8",
-        waterloo: "#757693",
-        manatee: "#999AA1",
-        alabaster: "#FBFBFB",
-        zumthor: "#EDF5FF",
-        socialicon: "#D1D8E0",
+
+        // color config for (user-portal)
       },
       fontSize: {
-        "heading-1": ["60px", "72px"],
-        "heading-2": ["48px", "58px"],
-        "heading-3": ["40px", "48px"],
-        "heading-4": ["35px", "45px"],
-        "heading-5": ["28px", "40px"],
-        "heading-6": ["24px", "30px"],
-        "body-2xlg": ["22px", "28px"],
-        "body-sm": ["14px", "22px"],
-        "body-xs": ["12px", "20px"],
-
+        // fontSize config for (site)
         metatitle: ["12px", "20px"],
         sectiontitle: ["14px", "22px"],
         regular: ["16px", "26px"],
@@ -134,92 +145,97 @@ const config: Config = {
         sectiontitle2: ["40px", "52px"],
         sectiontitle4: ["34px", "48px"],
 
-        "title-xxl": ["44px", "55px"],
-        "title-xxl2": ["42px", "58px"],
-        "title-xl": ["36px", "45px"],
-        "title-xl2": ["33px", "45px"],
-        "title-lg": ["28px", "35px"],
-        "title-md": ["24px", "30px"],
-        "title-md2": ["26px", "30px"],
-        "title-sm": ["20px", "26px"],
-        "title-sm2": ["22px", "28px"],
-        "title-xsm": ["18px", "24px"],
+        // fontSize config for (back-office)
+        "heading-1": ["60px", "72px"],
+        "heading-2": ["48px", "58px"],
+        "heading-3": ["40px", "48px"],
+        "heading-4": ["35px", "45px"],
+        "heading-5": ["28px", "40px"],
+        "heading-6": ["24px", "30px"],
+        "body-2xlg": ["22px", "28px"],
+        "body-sm": ["14px", "22px"],
+        "body-xs": ["12px", "20px"],
+
+        // fontSize config for (user-portal)
       },
       spacing: {
+        // spacing config for (site)
         4.5: "1.125rem",
         5.5: "1.375rem",
         6.5: "1.625rem",
         7.5: "1.875rem",
         8.5: "2.125rem",
-        9.5: "2.375rem",
         10.5: "2.625rem",
-        11: "2.75rem",
         11.5: "2.875rem",
         12.5: "3.125rem",
         13: "3.25rem",
         13.5: "3.375rem",
-        14: "3.5rem",
         14.5: "3.625rem",
         15: "3.75rem",
         15.5: "3.875rem",
         16: "4rem",
-        16.5: "4.125rem",
         17: "4.25rem",
         17.5: "4.375rem",
         18: "4.5rem",
         18.5: "4.625rem",
         19: "4.75rem",
-        19.5: "4.875rem",
         21: "5.25rem",
         21.5: "5.375rem",
         22: "5.5rem",
         22.5: "5.625rem",
-        24.5: "6.125rem",
         25: "6.25rem",
-        25.5: "6.375rem",
-        26: "6.5rem",
         27: "6.75rem",
         27.5: "6.875rem",
-        28.5: "7.125rem",
         29: "7.25rem",
         29.5: "7.375rem",
         30: "7.5rem",
-        31: "7.75rem",
         32.5: "8.125rem",
+        35: "8.75rem",
+        37.5: "9.375rem",
+        40: "10rem",
+        42.5: "10.625rem",
+        45: "11.25rem",
+        46: "11.5rem",
+        47.5: "11.875rem",
+        50: "12.5rem",
+        55: "13.75rem",
+        60: "15rem",
+        65: "16.25rem",
+        67: "16.75rem",
+        67.5: "16.875rem",
+        90: "22.5rem",
+
+        // spacing config for (back-office)
+        9.5: "2.375rem",
+        11: "2.75rem",
+        14: "3.5rem",
+        16.5: "4.125rem",
+        19.5: "4.875rem",
+        24.5: "6.125rem",
+        25.5: "6.375rem",
+        26: "6.5rem",
+        28.5: "7.125rem",
+        31: "7.75rem",
         33: "8.25rem",
         34: "8.5rem",
         34.5: "8.625rem",
-        35: "8.75rem",
         36.5: "9.125rem",
-        37.5: "9.375rem",
         39: "9.75rem",
         39.5: "9.875rem",
-        40: "10rem",
-        42.5: "10.625rem",
         44: "11rem",
-        45: "11.25rem",
-        46: "11.5rem",
         46.5: "11.625rem",
-        47.5: "11.875rem",
         49: "12.25rem",
-        50: "12.5rem",
         52: "13rem",
         52.5: "13.125rem",
         54: "13.5rem",
         54.5: "13.625rem",
-        55: "13.75rem",
         55.5: "13.875rem",
         59: "14.75rem",
-        60: "15rem",
         62.5: "15.625rem",
-        65: "16.25rem",
-        67: "16.75rem",
-        67.5: "16.875rem",
         70: "17.5rem",
         72.5: "18.125rem",
         73: "18.25rem",
         75: "18.75rem",
-        90: "22.5rem",
         94: "23.5rem",
         95: "23.75rem",
         100: "25rem",
@@ -234,8 +250,19 @@ const config: Config = {
         203: "50.75rem",
         230: "57.5rem",
         242.5: "60.625rem",
+
+        // spacing config for (user-portal)
       },
       maxWidth: {
+        // maxWidth config for (site)
+        "c-1390": "86.875rem",
+        "c-1315": "82.188rem",
+        "c-1280": "80rem",
+        "c-1235": "77.188rem",
+        "c-1154": "72.125rem",
+        "c-1016": "63.5rem",
+
+        // maxWidth config for (back-office)
         2.5: "0.625rem",
         3: "0.75rem",
         4: "1rem",
@@ -275,21 +302,34 @@ const config: Config = {
         270: "67.5rem",
         280: "70rem",
         292.5: "73.125rem",
+
+        // maxWidth config for (user-portal)
       },
       maxHeight: {
+        // maxHeight config for (site)
+        // maxHeight config for (back-office)
         35: "8.75rem",
         70: "17.5rem",
         90: "22.5rem",
         550: "34.375rem",
         300: "18.75rem",
+
+        // maxHeight config for (user-portal)
       },
       minWidth: {
+        // minWidth config for (site)
+        // minWidth config for (back-office)
         22.5: "5.625rem",
         42.5: "10.625rem",
         47.5: "11.875rem",
         75: "18.75rem",
+
+        // minWidth config for (user-portal)
       },
       zIndex: {
+        // zIndex config for (site)
+        // zIndex config for (back-office)
+        // zIndex config for (user-portal)
         999999: "999999",
         99999: "99999",
         9999: "9999",
@@ -299,25 +339,65 @@ const config: Config = {
         1: "1",
       },
       opacity: {
+        // opacity config for (site)
+        // opacity config for (back-office)
+        // opacity config for (user-portal)
         65: ".65",
       },
       aspectRatio: {
+        // aspectRatio config for (site)
+        // aspectRatio config for (back-office)
         "4/3": "4 / 3",
         "21/9": "21 / 9",
+
+        // aspectRatio config for (user-portal)
       },
       backgroundImage: {
+        // backgroundImage config for (site)
+        // backgroundImage config for (back-office)
+        // backgroundImage config for (user-portal)
         video: "url('../images/video/video.png')",
       },
       content: {
+        // content config for (site)
+        // content config for (back-office)
+        // content config for (user-portal)
         "icon-copy": 'url("../images/icon/icon-copy-alt.svg")',
       },
-      transitionProperty: { width: "width", stroke: "stroke" },
+      transitionProperty: {
+        // transitionProperty config for (site)
+        // transitionProperty config for (back-office)
+        // transitionProperty config for (user-portal)
+        width: "width",
+        stroke: "stroke",
+      },
       borderWidth: {
+        // borderWidth config for (site)
+
+        // borderWidth config for (back-office)
         6: "6px",
         10: "10px",
         12: "12px",
+
+        // borderWidth config for (user-portal)
       },
       boxShadow: {
+        // boxShadow config for (site)
+        "solid-l": "0px 10px 120px 0px rgba(45, 74, 170, 0.1)",
+        "solid-2": "0px 2px 10px rgba(122, 135, 167, 0.05)",
+        "solid-3": "0px 6px 90px rgba(8, 14, 40, 0.04)",
+        "solid-4": "0px 6px 90px rgba(8, 14, 40, 0.1)",
+        "solid-5": "0px 8px 24px rgba(45, 74, 170, 0.08)",
+        "solid-6": "0px 8px 24px rgba(10, 16, 35, 0.08)",
+        "solid-7": "0px 30px 50px rgba(45, 74, 170, 0.1)",
+        "solid-8": "0px 12px 120px rgba(45, 74, 170, 0.06)",
+        "solid-9": "0px 12px 30px rgba(45, 74, 170, 0.06)",
+        "solid-10": "0px 8px 30px rgba(45, 74, 170, 0.06)",
+        "solid-11": "0px 6px 20px rgba(45, 74, 170, 0.05)",
+        "solid-12": "0px 2px 10px rgba(0, 0, 0, 0.05)",
+        "solid-13": "0px 2px 19px rgba(0, 0, 0, 0.05)",
+
+        // boxShadow config for (back-office)
         default: "0px 4px 7px 0px rgba(0, 0, 0, 0.14)",
         error: "0px 12px 34px 0px rgba(13, 10, 44, 0.05)",
         card: "0px 1px 2px 0px rgba(0, 0, 0, 0.12)",
@@ -343,29 +423,29 @@ const config: Config = {
         6: "0px 12px 34px 0px rgba(13, 10, 44, 0.08), 0px 34px 26px 0px rgba(13, 10, 44, 0.05)",
         7: "0px 18px 25px 0px rgba(113, 116, 152, 0.05)",
 
-        "solid-l": "0px 10px 120px 0px rgba(45, 74, 170, 0.1)",
-        "solid-2": "0px 2px 10px rgba(122, 135, 167, 0.05)",
-        "solid-3": "0px 6px 90px rgba(8, 14, 40, 0.04)",
-        "solid-4": "0px 6px 90px rgba(8, 14, 40, 0.1)",
-        "solid-5": "0px 8px 24px rgba(45, 74, 170, 0.08)",
-        "solid-6": "0px 8px 24px rgba(10, 16, 35, 0.08)",
-        "solid-7": "0px 30px 50px rgba(45, 74, 170, 0.1)",
-        "solid-8": "0px 12px 120px rgba(45, 74, 170, 0.06)",
-        "solid-9": "0px 12px 30px rgba(45, 74, 170, 0.06)",
-        "solid-10": "0px 8px 30px rgba(45, 74, 170, 0.06)",
-        "solid-11": "0px 6px 20px rgba(45, 74, 170, 0.05)",
-        "solid-12": "0px 2px 10px rgba(0, 0, 0, 0.05)",
-        "solid-13": "0px 2px 19px rgba(0, 0, 0, 0.05)",
+        // boxShadow config for (user-portal)
       },
       dropShadow: {
+        // dropShadow config for (site)
+
+        // dropShadow config for (back-office)
         card: "0px 8px 13px rgba(0, 0, 0, 0.07)",
         1: "0px 1px 0px #E2E8F0",
         2: "0px 1px 4px rgba(0, 0, 0, 0.12)",
         3: "0px 0px 4px rgba(0, 0, 0, 0.15)",
         4: "0px 0px 2px rgba(0, 0, 0, 0.2)",
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
+
+        // dropShadow config for (user-portal)
       },
       keyframes: {
+        // keyframes config for (site)
+        line: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(100%)" },
+        },
+
+        // keyframes config for (back-office)
         linspin: {
           "100%": { transform: "rotate(360deg)" },
         },
@@ -401,16 +481,21 @@ const config: Config = {
           "0%, 100%": { transform: "translate3d(0, 0, 0)" },
           "50%": { transform: "translate3d(0, -100%, 0)" },
         },
-        line: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(100%)" },
-        },
+
         "line-revert": {
           "0%, 100%": { transform: "translateY(100%)" },
           "50%": { transform: "translateY(0)" },
         },
+
+        // keyframes config for (user-portal)
       },
       animation: {
+        // animation config for (site)
+        lineSite1: "line 3s linear infinite",
+        lineSite2: "line 6s linear infinite",
+        lineSite3: "line 9s linear infinite",
+
+        // animation config for (back-office)
         linspin: "linspin 1568.2353ms linear infinite",
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
         "left-spin":
@@ -427,9 +512,11 @@ const config: Config = {
         line1: "line 10s infinite linear",
         line2: "line-revert 8s infinite linear",
         line3: "line 7s infinite linear",
+
+        // animation config for (user-portal)
       },
     },
   },
-  plugins: [],
+  plugins: [nextui()],
 };
 export default config;

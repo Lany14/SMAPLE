@@ -1,5 +1,5 @@
-import ForgotPasswordForm from "@/components/Site/Forms/ForgotPasswordForm";
-import SignUpForm from "@/components/Site/Forms/SignUpForm";
+import ForgotPasswordForm from "@/components/FrontEnd/Site/Forms/ForgotPasswordForm";
+import SignUpForm from "@/components/FrontEnd/Site/Forms/SignUpForm";
 
 export default function Register() {
   return (

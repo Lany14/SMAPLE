@@ -89,7 +89,7 @@ export default function SigninWithPassword() {
       <div className="mb-6 flex items-center justify-between gap-2 py-2">
         <label
           htmlFor="remember"
-          className="font-nunito flex cursor-pointer select-none items-center text-base font-medium text-dark dark:text-white"
+          className="font-poppins flex cursor-pointer select-none items-center text-base font-medium text-dark dark:text-white"
         >
           <input
             type="checkbox"
@@ -122,7 +122,7 @@ export default function SigninWithPassword() {
 
         <Link
           href="/auth/forgot-password"
-          className="font-nunito select-none text-base font-medium text-dark underline duration-300 hover:text-primary dark:text-white dark:hover:text-primary"
+          className="font-poppins select-none text-base font-medium text-dark underline duration-300 hover:text-primary dark:text-white dark:hover:text-primary"
         >
           Forgot Password?
         </Link>

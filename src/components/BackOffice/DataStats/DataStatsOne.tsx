@@ -24,8 +24,8 @@ const dataStatsList = [
       </svg>
     ),
     color: "#3FD97F",
-    title: "Total Views",
-    value: "3.456K",
+    title: "Patients",
+    value: "0",
     growthRate: 0.43,
   },
   {

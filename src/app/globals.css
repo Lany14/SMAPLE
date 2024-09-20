@@ -4,10 +4,6 @@
 
 /* third-party libraries CSS */
 
-body {
-  min-height: 100vh;
-}
-
 .testimonial-01 .swiper-pagination-bullet {
   @apply h-2.5 w-2.5 bg-stroke opacity-100;
 }
@@ -25,16 +21,16 @@ body {
 
 @layer base {
   body {
-    @apply font-nunito text-regular text-waterloo dark:text-manatee relative z-1 font-normal;
+    @apply font-poppins relative z-1 text-regular font-normal text-waterloo dark:text-manatee;
   }
 }
 
 @layer components {
   .dropdown {
-    @apply shadow-solid-13 dark:border-strokedark xl:dark:before:border-strokedark -left-7.5 mt-2 hidden min-w-max flex-col gap-4 rounded-md border border-stroke bg-white px-8 py-5 duration-300 ease-in dark:bg-black xl:invisible
-    xl:absolute xl:mt-0 xl:flex xl:w-[250px] xl:translate-y-10
-    xl:opacity-0 xl:before:absolute xl:before:-top-1.5 xl:before:left-10 xl:before:h-3 xl:before:w-3 xl:before:rotate-45 xl:before:border-l xl:before:border-t xl:before:border-stroke xl:before:bg-white xl:group-hover:visible 
-    xl:group-hover:translate-y-6.5 xl:group-hover:opacity-100 xl:dark:before:bg-black;
+    @apply -left-7.5 mt-2 hidden min-w-max flex-col gap-4 rounded-md border border-stroke bg-white px-8 py-5 shadow-solid-13 duration-300 ease-in dark:border-strokedark dark:bg-black xl:invisible xl:absolute
+    xl:mt-0 xl:flex xl:w-[250px] xl:translate-y-10 xl:opacity-0
+    xl:before:absolute xl:before:-top-1.5 xl:before:left-10 xl:before:h-3 xl:before:w-3 xl:before:rotate-45 xl:before:border-l xl:before:border-t xl:before:border-stroke xl:before:bg-white xl:group-hover:visible xl:group-hover:translate-y-6.5 
+    xl:group-hover:opacity-100 xl:dark:before:border-strokedark xl:dark:before:bg-black;
   }
 }
 
@@ -62,15 +58,15 @@ body {
 }
 
 .blog-details-docs {
-  @apply shadow-solid-3 dark:border-strokedark dark:bg-blacksection rounded-lg border border-white p-7.5  transition-all xl:p-12.5;
+  @apply rounded-lg border border-white p-7.5 shadow-solid-3 transition-all dark:border-strokedark  dark:bg-blacksection xl:p-12.5;
 }
 
 .blog-details p {
-  @apply text-titlebgdark dark:text-waterloo mb-8 text-base leading-relaxed;
+  @apply mb-8 text-base leading-relaxed text-titlebgdark dark:text-waterloo;
 }
 
 .blog-details p strong {
-  @apply dark:text-waterloo text-primary;
+  @apply text-primary dark:text-waterloo;
 }
 .blog-details h3 strong,
 .blog-details h3 {
@@ -97,16 +93,16 @@ body {
 
 .blog-details ul,
 .blog-details ol {
-  @apply text-titlebgdark mb-10 list-inside list-disc;
+  @apply mb-10 list-inside list-disc text-titlebgdark;
 }
 
 .blog-details li,
 .blog-details li {
-  @apply text-titlebgdark dark:text-waterloo mb-2 text-base;
+  @apply mb-2 text-base text-titlebgdark dark:text-waterloo;
 }
 
 .blog-details blockquote {
-  @apply bg-manatee dark:bg-titlebgdark relative z-10 mb-10 overflow-hidden rounded-sm p-8 text-center text-base font-medium italic text-black md:py-9 lg:px-10;
+  @apply relative z-10 mb-10 overflow-hidden rounded-sm bg-manatee p-8 text-center text-base font-medium italic text-black dark:bg-titlebgdark md:py-9 lg:px-10;
 }
 
 .blog-details blockquote::after {
@@ -120,12 +116,12 @@ body {
 }
 
 pre {
-  @apply bg-strokedark relative mb-2 rounded-lg px-4 py-2;
+  @apply relative mb-2 rounded-lg bg-strokedark px-4 py-2;
 }
 .prism-copy-button {
   @apply absolute right-2 top-2 h-[26px] rounded bg-white px-4 text-primary;
 }
 
 .active-tab {
-  @apply dark:bg-blackho bg-stroke text-black dark:text-white;
+  @apply bg-stroke text-black dark:bg-blackho dark:text-white;
 }
