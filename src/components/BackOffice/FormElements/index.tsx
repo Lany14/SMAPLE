@@ -1,18 +1,18 @@
 "use client";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import CheckboxFive from "@/components/FormElements/Checkboxes/CheckboxFive";
-import CheckboxFour from "@/components/FormElements/Checkboxes/CheckboxFour";
-import CheckboxOne from "@/components/FormElements/Checkboxes/CheckboxOne";
-import CheckboxThree from "@/components/FormElements/Checkboxes/CheckboxThree";
-import CheckboxTwo from "@/components/FormElements/Checkboxes/CheckboxTwo";
-import SwitcherFour from "@/components/FormElements/Switchers/SwitcherFour";
-import SwitcherOne from "@/components/FormElements/Switchers/SwitcherOne";
-import SwitcherThree from "@/components/FormElements/Switchers/SwitcherThree";
-import SwitcherTwo from "@/components/FormElements/Switchers/SwitcherTwo";
-import DatePickerTwo from "@/components/FormElements/DatePicker/DatePickerTwo";
-import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
-import MultiSelect from "@/components/FormElements/MultiSelect";
-import SelectGroupTwo from "@/components/FormElements/SelectGroup/SelectGroupTwo";
+import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
+import CheckboxFive from "@/components/BackOffice/FormElements/Checkboxes/CheckboxFive";
+import CheckboxFour from "@/components/BackOffice/FormElements/Checkboxes/CheckboxFour";
+import CheckboxOne from "@/components/BackOffice/FormElements/Checkboxes/CheckboxOne";
+import CheckboxThree from "@/components/BackOffice/FormElements/Checkboxes/CheckboxThree";
+import CheckboxTwo from "@/components/BackOffice/FormElements/Checkboxes/CheckboxTwo";
+import SwitcherFour from "@/components/BackOffice/FormElements/Switchers/SwitcherFour";
+import SwitcherOne from "@/components/BackOffice/FormElements/Switchers/SwitcherOne";
+import SwitcherThree from "@/components/BackOffice/FormElements/Switchers/SwitcherThree";
+import SwitcherTwo from "@/components/BackOffice/FormElements/Switchers/SwitcherTwo";
+import DatePickerTwo from "@/components/BackOffice/FormElements/DatePicker/DatePickerTwo";
+import DatePickerOne from "@/components/BackOffice/FormElements/DatePicker/DatePickerOne";
+import MultiSelect from "@/components/BackOffice/FormElements/MultiSelect";
+import SelectGroupTwo from "@/components/BackOffice/FormElements/SelectGroup/SelectGroupTwo";
 
 const FormElements = () => {
   return (

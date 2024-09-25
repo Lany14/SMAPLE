@@ -4,6 +4,10 @@ import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 import AdminLayout from "@/components/BackOffice/Layouts/AdminLayout";
 import ProfileBox from "@/components/BackOffice/ProfileBox";
 
+export const metadata: Metadata = {
+  title: "AbyVet | Admin",
+};
+
 const Profile = () => {
   return (
     <AdminLayout>

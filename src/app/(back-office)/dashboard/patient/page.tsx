@@ -3,6 +3,11 @@ import React from "react";
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 import PatientTable from "@/components/BackOffice/Tables/PatientTable";
 import { NextUIProvider } from "@nextui-org/react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AbyVet | Admin",
+};
 
 export default function PatientPage() {
   return (

@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 export default function page() {
   return (
     <>
-      <AdminLayout>
-        <AdminDashboard />
-      </AdminLayout>
+      <VetLayout>
+        <VetDashboard />
+      </VetLayout>
     </>
   );
 }

@@ -3,6 +3,11 @@ import AdminLayout from "@/components/BackOffice/Layouts/AdminLayout";
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 import { NextUIProvider } from "@nextui-org/react";
 import StaffTable from "@/components/BackOffice/Tables/StaffTable";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AbyVet | Admin",
+};
 
 export default function StaffPage() {
   return (
