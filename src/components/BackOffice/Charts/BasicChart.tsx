@@ -1,8 +1,8 @@
 "use client";
 
-import ChartThree from "@/components/Charts/ChartThree";
+import ChartThree from "@/components/BackOffice/Charts/ChartThree";
 import React from "react";
-import ChartFive from "@/components/Charts/ChartFive";
+import ChartFive from "@/components/BackOffice/Charts/ChartFive";
 
 const BasicChart: React.FC = () => {
   return (
