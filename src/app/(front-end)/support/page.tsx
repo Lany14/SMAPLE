@@ -1,5 +1,5 @@
 import React from "react";
-import Contact from "@/components/Contact";
+import Contact from "@/components/FrontEnd/Site/Contact";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
