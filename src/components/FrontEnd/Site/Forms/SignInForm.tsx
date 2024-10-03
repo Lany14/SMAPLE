@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -6,8 +7,15 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { FaGoogle } from "react-icons/fa";
-import { FaGithub } from "react-icons/fa";
+import { EyeFilledIcon } from "../../../../../public/images/icon/EyeFilledIcon";
+import { EyeSlashFilledIcon } from "../../../../../public/images/icon/EyeSlashFilledIcon";
+import { Input } from "@nextui-org/react";
+
 export default function LoginForm() {
+  const [data, setData] = useState({
+    remember: false,
+  });
+
   const router = useRouter();
   const {
     register,
@@ -43,6 +51,10 @@ export default function LoginForm() {
     }
   }
 
+  const [passwordIsVisible, passwordSetIsVisible] = React.useState(false);
+  const passwordToggleVisibility = () =>
+    passwordSetIsVisible(!passwordIsVisible);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 " action="#">
       <div>
@@ -62,7 +74,7 @@ export default function LoginForm() {
           required=""
         />
         {errors.email && (
-          <small className="text-red-600 text-sm ">
+          <small className="text-sm text-red-600 ">
             This field is required
           </small>
         )}
@@ -74,28 +86,78 @@ export default function LoginForm() {
         >
           Password
         </label>
-        <input
-          {...register("password", { required: true })}
-          type="password"
-          name="password"
-          id="password"
-          placeholder="••••••••"
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-          required=""
-        />
+        <div className="relative">
+          <span
+            className="absolute right-4.5 top-1/2 -translate-y-1/2 focus:outline-none"
+            type="button"
+            onClick={passwordToggleVisibility}
+            aria-label="toggle password visibility"
+          >
+            {passwordIsVisible ? (
+              <EyeSlashFilledIcon className="pointer-events-none text-2xl text-default-400" />
+            ) : (
+              <EyeFilledIcon className="pointer-events-none text-2xl text-default-400" />
+            )}
+          </span>
+          <input
+            {...register("password", { required: true })}
+            type={passwordIsVisible ? "text" : "password"}
+            name="password"
+            id="password"
+            placeholder="••••••••"
+            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+            required=""
+          />
+        </div>
+
         {errors.password && (
-          <small className="text-red-600 text-sm ">
+          <small className="text-sm text-red-600 ">
             This field is required
           </small>
         )}
       </div>
-      <div className="flex items-center gap-4">
+
+      <div className="flex justify-between pb-3">
+        <label
+          htmlFor="remember"
+          className="font-mediumx flex cursor-pointer select-none items-center  text-sm text-dark dark:text-white"
+        >
+          <input
+            type="checkbox"
+            name="remember"
+            id="remember"
+            className="peer sr-only"
+          />
+          <span
+            className={`mr-2.5 inline-flex h-5.5 w-5.5 items-center justify-center rounded-md border border-stroke bg-white text-white text-opacity-0 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-opacity-100 dark:border-stroke-dark dark:bg-white/5 ${
+              data.remember ? "bg-primary" : ""
+            }`}
+          >
+            <svg
+              width="10"
+              height="7"
+              viewBox="0 0 10 7"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M9.70692 0.292787C9.89439 0.480314 9.99971 0.734622 9.99971 0.999786C9.99971 1.26495 9.89439 1.51926 9.70692 1.70679L4.70692 6.70679C4.51939 6.89426 4.26508 6.99957 3.99992 6.99957C3.73475 6.99957 3.48045 6.89426 3.29292 6.70679L0.292919 3.70679C0.110761 3.51818 0.00996641 3.26558 0.0122448 3.00339C0.0145233 2.74119 0.119692 2.49038 0.3051 2.30497C0.490508 2.11956 0.741321 2.01439 1.00352 2.01211C1.26571 2.00983 1.51832 2.11063 1.70692 2.29279L3.99992 4.58579L8.29292 0.292787C8.48045 0.105316 8.73475 0 8.99992 0C9.26508 0 9.51939 0.105316 9.70692 0.292787Z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          Remember me
+        </label>
         <Link
           href="/forgot-password"
-          className="shrink-0 font-medium text-gray-500 hover:underline dark:text-blue-500"
+          className="flex shrink-0 cursor-pointer select-none items-center font-poppins text-sm font-medium text-primary hover:underline dark:text-primary dark:hover:text-primaryho"
         >
-          Forgot Password
+          Forgot Password?
         </Link>
+      </div>
+      <div className="flex items-center gap-4">
         {loading ? (
           <button
             disabled
@@ -126,7 +188,7 @@ export default function LoginForm() {
             type="submit"
             className="w-full rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primaryho focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            Login
+            Sign In
           </button>
         )}
       </div>
@@ -141,7 +203,7 @@ export default function LoginForm() {
           className="mb-4 me-2 flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-slate-950 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-100"
           onClick={() => signIn("google")}
         >
-          <FaGoogle className="text-red-600 mr-2 h-4 w-4" />
+          <FaGoogle className="mr-2 h-4 w-4 text-red-600" />
           Sign in with Google
         </button>
       </div>
@@ -150,7 +212,7 @@ export default function LoginForm() {
         Already have an account?{" "}
         <Link
           href="/signup"
-          className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+          className="font-medium text-primary  hover:underline dark:text-primary"
         >
           Sign Up
         </Link>

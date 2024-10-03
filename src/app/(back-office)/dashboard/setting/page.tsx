@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 const Settings = () => {
   return (
     <AdminLayout>
-      <Breadcrumb pageName="Setting" />
       <div className="mx-auto w-full max-w-[1080px]">
         <Breadcrumb pageName="Settings" />
 

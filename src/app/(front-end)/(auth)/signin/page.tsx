@@ -1,4 +1,4 @@
-import SignInForm from "@/components/FrontEnd/Site/Forms/SingInForm";
+import SignInForm from "@/components/FrontEnd/Site/Forms/SignInForm";
 import React from "react";
 
 export default function Login() {

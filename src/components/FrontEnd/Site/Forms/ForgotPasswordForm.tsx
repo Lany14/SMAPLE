@@ -62,7 +62,7 @@ export default function ForgotPasswordForm() {
           required=""
         />
         {errors.email && (
-          <small className="text-red-600 text-sm ">
+          <small className="text-sm text-red-600 ">
             This field is required
           </small>
         )}
@@ -95,7 +95,7 @@ export default function ForgotPasswordForm() {
       ) : (
         <button
           type="submit"
-          className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="w-full rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primaryho focus:outline-none focus:ring-4"
         >
           Send Password Reset Email
         </button>
@@ -105,7 +105,7 @@ export default function ForgotPasswordForm() {
           Do remember your Password?{" "}
           <Link
             href="/signin"
-            className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+            className="font-medium text-primary hover:underline dark:text-primaryho"
           >
             Sign In
           </Link>
