@@ -62,6 +62,9 @@ export default function RegisterForm({
     resolver: zodResolver(FormSchema),
   });
   async function onSubmit(data: SignUpInputProps) {
+    const name = `${data.firstName} ${data.lastName}`;
+    data.name = name;
+
     console.log(data);
     setLoading(true);
 
@@ -105,6 +108,7 @@ export default function RegisterForm({
           </label>
           <input
             {...register("firstName", { required: true })}
+            autoComplete="family-name"
             type="text"
             name="firstName"
             id="firstName"
@@ -126,6 +130,7 @@ export default function RegisterForm({
           </label>
           <input
             {...register("lastName", { required: true })}
+            autoComplete="family-name"
             type="text"
             name="lastName"
             id="lastName"
@@ -149,6 +154,7 @@ export default function RegisterForm({
         </label>
         <input
           {...register("email", { required: true })}
+          autoComplete="email"
           type="email"
           name="email"
           id="email"
@@ -181,6 +187,7 @@ export default function RegisterForm({
           </span>
           <input
             {...register("password", { required: true })}
+            autoComplete="new-password"
             onChange={(e) => setPass(e.target.value)}
             type={passwordIsVisible ? "text" : "password"}
             name="password"
@@ -204,6 +211,7 @@ export default function RegisterForm({
         <div className="relative">
           <input
             {...register("confirmPassword")}
+            autoComplete="current-password"
             type="password"
             placeholder="••••••••"
             className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"

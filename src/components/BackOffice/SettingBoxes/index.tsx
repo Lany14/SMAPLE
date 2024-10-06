@@ -19,7 +19,7 @@ const SettingBoxes = () => {
                   <div className="w-full sm:w-1/2">
                     <label
                       className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
-                      htmlFor="fullName"
+                      htmlFor="firstName"
                     >
                       First Name
                     </label>
@@ -38,7 +38,7 @@ const SettingBoxes = () => {
                   <div className="w-full sm:w-1/2">
                     <label
                       className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
-                      htmlFor="fullName"
+                      htmlFor="lastName"
                     >
                       Last Name
                     </label>

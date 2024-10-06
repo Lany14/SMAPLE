@@ -11,7 +11,7 @@ import { Resend } from "resend";
 
 export default async function signup(formData: SignUpInputProps) {
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const { firstName, lastName, email, password, role } = formData;
+  const { firstName, lastName, name, email, password, role } = formData;
   try {
     const existingUser = await prismaClient.user.findUnique({
       where: {
@@ -37,6 +37,7 @@ export default async function signup(formData: SignUpInputProps) {
     const userToken = generateToken();
     const newUser = await prismaClient.user.create({
       data: {
+        name,
         firstName,
         lastName,
         email,
@@ -57,7 +58,6 @@ export default async function signup(formData: SignUpInputProps) {
       subject: "Verify Your Email Address",
       react: EmailVerification({
         firstName,
-        lastName,
         token,
         linkText,
         message,

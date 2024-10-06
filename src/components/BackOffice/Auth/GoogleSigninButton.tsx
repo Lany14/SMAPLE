@@ -47,17 +47,3 @@ export default function GoogleSigninButton({ text }: { text: string }) {
     </button>
   );
 }
-
-{
-  /* <div >
-<button
-onClick={handleClick}
-  type="button"
-  className="mb-4 me-2 flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-slate-950 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-100"
-  onClick={() => signIn("google")}
->
-  <FaGoogle className="mr-2 h-4 w-4 text-red-600" />
-  Sign in with Google
-</button>
-</div> */
-}

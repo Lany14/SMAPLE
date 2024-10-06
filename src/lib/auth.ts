@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "jb@gmail.com" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -106,6 +106,7 @@ export const authOptions: NextAuthOptions = {
       }
       return {
         id: dbUser.id,
+        name: dbUser.name,
         firstName: dbUser.firstName,
         lastName: dbUser.lastName,
         email: dbUser.email,
@@ -116,6 +117,7 @@ export const authOptions: NextAuthOptions = {
     session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id;
+        session.user.name = token.name;
         session.user.firstName = token.firstName;
         session.user.lastName = token.lastName;
         session.user.email = token.email;
