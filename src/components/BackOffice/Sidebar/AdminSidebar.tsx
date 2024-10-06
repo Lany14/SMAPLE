@@ -245,8 +245,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5 xl:py-10">
           <Link href="/">
             <Image
-              width={200}
-              height={50}
+              width={106}
+              height={21}
               src={"/images/logo/logo-light.svg"}
               alt="Logo"
               priority
@@ -254,8 +254,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               style={{ width: "auto", height: "auto" }}
             />
             <Image
-              width={200}
-              height={50}
+              width={106}
+              height={21}
               src={"/images/logo/logo-dark.svg"}
               alt="Logo"
               priority

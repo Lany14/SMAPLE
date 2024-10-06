@@ -8,6 +8,9 @@ import ThemeToggler from "@/components/FrontEnd/Site/Header/ThemeToggler";
 import menuData from "@/components/FrontEnd/Site/Header/menuData";
 
 const Header = () => {
+  // const pathname = usePathname();
+  // if (pathname === "/signin") return null;
+
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [dropdownToggler, setDropdownToggler] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
@@ -35,21 +38,21 @@ const Header = () => {
           : ""
       }`}
     >
-      <div className="max-w-c-1390 relative mx-auto items-center justify-between px-4 md:px-8 xl:flex 2xl:px-0">
+      <div className="relative mx-auto max-w-c-1390 items-center justify-between px-4 md:px-8 xl:flex 2xl:px-0">
         <div className="flex w-full items-center justify-between xl:w-1/4">
           <a href="/">
             <Image
               src="/images/logo/logo-dark.svg"
               alt="logo"
-              width={119.03}
-              height={30}
+              width={106}
+              height={21}
               className="hidden w-full dark:block"
             />
             <Image
               src="/images/logo/logo-light.svg"
               alt="logo"
-              width={119.03}
-              height={30}
+              width={106}
+              height={21}
               className="w-full dark:hidden"
             />
           </a>
@@ -99,7 +102,7 @@ const Header = () => {
         <div
           className={`invisible h-0 w-full items-center justify-between xl:visible xl:flex xl:h-auto xl:w-full ${
             navigationOpen &&
-            "navbar shadow-solid-5 dark:bg-blacksection !visible mt-4 h-auto max-h-[400px] rounded-md bg-white p-7.5 xl:h-auto xl:p-0 xl:shadow-none xl:dark:bg-transparent"
+            "navbar !visible mt-4 h-auto max-h-[400px] rounded-md bg-white p-7.5 shadow-solid-5 dark:bg-blacksection xl:h-auto xl:p-0 xl:shadow-none xl:dark:bg-transparent"
           }`}
         >
           <nav>
@@ -115,7 +118,7 @@ const Header = () => {
                         {menuItem.title}
                         <span>
                           <svg
-                            className="fill-waterloo h-3 w-3 cursor-pointer group-hover:fill-primary"
+                            className="h-3 w-3 cursor-pointer fill-waterloo group-hover:fill-primary"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
                           >
@@ -156,14 +159,14 @@ const Header = () => {
 
             <Link
               href="/signup"
-              className="text-regular text-waterloo font-medium hover:text-primary"
+              className="text-regular font-medium text-waterloo hover:text-primary"
             >
               Sign Up
             </Link>
 
             <Link
               href="/signin"
-              className="text-regular hover:bg-primaryho flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-white duration-300 ease-in-out"
+              className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
             >
               Sign In 🐾
             </Link>

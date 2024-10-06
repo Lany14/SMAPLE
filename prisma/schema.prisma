@@ -60,12 +60,12 @@ model User {
   image         String?
   role          UserRole  @default(PET_OWNER)
 
-  isVerfied Boolean   @default(false)
-  token     Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Account   Account[]
-  Session   Session[]
+  isVerified    Boolean   @default(false)
+  token         Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  Account       Account[]
+  Session       Session[]
 }
 
 // model Category {

@@ -1,10 +1,16 @@
 "use server";
 
+import EmailTemplate, {
+  EmailVerification,
+} from "@/components/Emails/EmailVerification";
 import { prismaClient } from "@/lib/db";
-import { SignupInputProps } from "@/types/credInputs";
+import { SignUpInputProps } from "@/types/credInputs";
 import bcrypt from "bcrypt";
+import { exportTraceState } from "next/dist/trace";
+import { Resend } from "resend";
 
-export default async function signup(formData: SignupInputProps) {
+export default async function signup(formData: SignUpInputProps) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const { firstName, lastName, email, password, role } = formData;
   try {
     const existingUser = await prismaClient.user.findUnique({
@@ -37,9 +43,29 @@ export default async function signup(formData: SignupInputProps) {
         password: hashedPassword,
         role,
         token: userToken,
-        terms: true, // or any appropriate value for the 'terms' property
       },
     });
+    //Send an Email with the Token on the link as a search param
+    const token = newUser.token;
+    const userId = newUser.id;
+    const linkText = "Verify your Account ";
+    const message =
+      "Thank you for registering with Abys Agrivet Vet Clinic Portal. To complete your registration and verify your email address, please enter the following 6-digit verification code on our website :";
+    const sendMail = await resend.emails.send({
+      from: "Abys Agrivet Vet Clinic Portal <info@abysagrivet.com>",
+      to: email,
+      subject: "Verify Your Email Address",
+      react: EmailVerification({
+        firstName,
+        lastName,
+        token,
+        linkText,
+        message,
+      }),
+    });
+    console.log(token);
+    console.log(sendMail);
+    console.log(newUser);
     return {
       data: newUser,
       error: null,
@@ -50,5 +76,38 @@ export default async function signup(formData: SignupInputProps) {
     return {
       error: "Something went wrong",
     };
+  }
+}
+
+export async function getUserById(id: string) {
+  if (id) {
+    try {
+      const user = await prismaClient.user.findUnique({
+        where: {
+          id,
+        },
+      });
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+export async function updateUserById(id: string) {
+  if (id) {
+    try {
+      const updatedUser = await prismaClient.user.update({
+        where: {
+          id,
+        },
+        data: {
+          isVerified: true,
+        },
+      });
+      return updatedUser;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

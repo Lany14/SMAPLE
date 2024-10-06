@@ -6,14 +6,9 @@ import Lines from "@/components/FrontEnd/Site/Lines";
 import ScrollToTop from "@/components/FrontEnd/Site/ScrollToTop";
 import { ThemeProvider } from "next-themes";
 import "../globals.css";
+import Providers from "@/app/context/Providers";
 
-import ToasterContext from "../context/ToastContext";
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
@@ -24,8 +19,7 @@ export default function RootLayout({
         >
           <Lines />
           <Header />
-          <ToasterContext />
-          {children}
+          <Providers>{children}</Providers>
           <Footer />
           <ScrollToTop />
         </ThemeProvider>

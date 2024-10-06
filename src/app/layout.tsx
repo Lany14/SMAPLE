@@ -1,3 +1,4 @@
+import Providers from "@/app/context/Providers";
 import { Poppins } from "next/font/google";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -6,12 +7,13 @@ const poppins = Poppins({
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <body className={`dark:bg-black ${poppins.className}`}>{children}</body>
+      <body className={`dark:bg-black ${poppins.className}`}></body>
+      {children}
     </html>
   );
 }

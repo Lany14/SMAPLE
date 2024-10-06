@@ -35,12 +35,10 @@ const menuGroups = [
     name: "ACCOUNT",
     menuItems: [
       {
-        
         label: "Profile",
         route: "/dashboard/profile",
       },
       {
-        
         label: "Settings",
         route: "/dashboard/setting",
       },
@@ -56,18 +54,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
-        className={`z-9999 w-72.5 border-stroke dark:border-stroke-dark dark:bg-gray-dark absolute left-0 top-0 flex h-screen flex-col overflow-y-hidden border-r bg-white lg:static lg:translate-x-0 ${
+        className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden border-r border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark lg:static lg:translate-x-0 ${
           sidebarOpen
             ? "translate-x-0 duration-300 ease-linear"
             : "-translate-x-full"
         }`}
       >
         {/* <!-- SIDEBAR HEADER --> */}
-        <div className="py-5.5 lg:py-6.5 flex items-center justify-between gap-2 px-6 xl:py-10">
+        <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5 xl:py-10">
           <Link href="/">
             <Image
-              width={176}
-              height={32}
+              width={106}
+              height={21}
               src={"/images/logo/logo-light.svg"}
               alt="Logo"
               priority
@@ -75,8 +73,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               style={{ width: "auto", height: "auto" }}
             />
             <Image
-              width={176}
-              height={32}
+              width={106}
+              height={21}
               src={"/images/logo/logo-dark.svg"}
               alt="Logo"
               priority
@@ -111,7 +109,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <nav className="mt-1 px-4 lg:px-6">
             {menuGroups.map((group, groupIndex) => (
               <div key={groupIndex}>
-                <h3 className="text-dark-4 dark:text-dark-6 mb-5 text-sm font-medium">
+                <h3 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
                   {group.name}
                 </h3>
 

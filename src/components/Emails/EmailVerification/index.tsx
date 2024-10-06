@@ -11,8 +11,9 @@ import {
   Section,
   Text,
 } from "@react-email/components";
-interface EmailTemplateProps {
-  name?: string;
+interface EmailVerificationProps {
+  firstName: string;
+  lastName: string;
   token: number;
   linkText: string;
   message: string;
@@ -20,31 +21,34 @@ interface EmailTemplateProps {
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const EmailTemplate = ({
-  name = "",
+export const EmailVerification = ({
+  firstName,
+  lastName,
   token,
   linkText,
   message,
-}: EmailTemplateProps) => (
+}: EmailVerificationProps) => (
   <Html>
     <Head />
     <Preview>{linkText}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img
-          src={`${baseUrl}/static/logo.png`}
-          width="32"
-          height="32"
-          alt="Claridy"
-        />
+        <Img src={`${baseUrl}/static/logo.png`} width="32" height="32" />
 
         <Text style={title}>
-          <strong>@{name}</strong>, thank you for Joining Us
+          <strong>
+            @{firstName} {lastName}
+          </strong>
+          , thank you for Joining Us
         </Text>
 
         <Section style={section}>
           <Text style={text}>
-            Hey <strong>{name}</strong>!
+            Hey{" "}
+            <strong>
+              {firstName} {lastName}
+            </strong>
+            !
           </Text>
           <Text style={text}>{message}</Text>
 
@@ -66,7 +70,7 @@ export const EmailTemplate = ({
   </Html>
 );
 
-export default EmailTemplate;
+export default EmailVerification;
 
 const main = {
   backgroundColor: "#ffffff",

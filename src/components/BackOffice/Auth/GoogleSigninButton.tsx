@@ -1,11 +1,16 @@
+import { signIn } from "next-auth/react";
 import React from "react";
 
 export default function GoogleSigninButton({ text }: { text: string }) {
+  const handleClick = () => {
+    signIn("google");
+  };
   return (
     <button
-      className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray-2 p-[15px] font-medium hover:bg-opacity-50 dark:border-dark-3 dark:bg-dark-2 dark:hover:bg-opacity-50"
+      onClick={handleClick}
+      className="mb-4 me-2 flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-slate-950 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-100"
     >
-      <span>
+      <span className="mr-2">
         <svg
           width="20"
           height="20"
@@ -41,4 +46,18 @@ export default function GoogleSigninButton({ text }: { text: string }) {
       {text} with Google
     </button>
   );
+}
+
+{
+  /* <div >
+<button
+onClick={handleClick}
+  type="button"
+  className="mb-4 me-2 flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-slate-950 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-100"
+  onClick={() => signIn("google")}
+>
+  <FaGoogle className="mr-2 h-4 w-4 text-red-600" />
+  Sign in with Google
+</button>
+</div> */
 }

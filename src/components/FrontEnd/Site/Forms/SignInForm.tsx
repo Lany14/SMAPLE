@@ -9,24 +9,27 @@ import Link from "next/link";
 import { FaGoogle } from "react-icons/fa";
 import { EyeFilledIcon } from "../../../../../public/images/icon/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../../../../public/images/icon/EyeSlashFilledIcon";
-import { Input } from "@nextui-org/react";
+import { SignInInputProps } from "@/types/credInputs";
+import { Alert } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
+import GoogleSigninButton from "@/components/BackOffice/Auth/GoogleSigninButton";
 
 export default function LoginForm() {
+  const [loading, setLoading] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
   const [data, setData] = useState({
     remember: false,
   });
-
   const router = useRouter();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
-  const [loading, setLoading] = useState(false);
+  } = useForm<SignInInputProps>();
 
-  async function onSubmit(data) {
-    console.log(data);
+  async function onSubmit(data: SignInInputProps) {
+    // console.log(data);
     try {
       setLoading(true);
       console.log("Attempting to sign in with credentials:", data);
@@ -38,11 +41,14 @@ export default function LoginForm() {
       if (loginData?.error) {
         setLoading(false);
         toast.error("Sign-in error: Check your credentials");
+        setShowNotification(true);
       } else {
         // Sign-in was successful
-        toast.success("Login Successful");
+        setShowNotification(false);
         reset();
-        router.push("/");
+        setLoading(false);
+        toast.success("Login Successful");
+        router.push("/dashboard");
       }
     } catch (error) {
       setLoading(false);
@@ -56,7 +62,13 @@ export default function LoginForm() {
     passwordSetIsVisible(!passwordIsVisible);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 " action="#">
+    <form className="space-y-2 " onSubmit={handleSubmit(onSubmit)}>
+      {showNotification && (
+        <Alert color="failure" icon={HiInformationCircle}>
+          <span className="font-medium">Sign-in error!</span> Please Check your
+          credentials
+        </Alert>
+      )}
       <div>
         <label
           htmlFor="email"
@@ -66,12 +78,11 @@ export default function LoginForm() {
         </label>
         <input
           {...register("email", { required: true })}
-          type="email"
+          type="text"
           name="email"
           id="email"
           className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-          placeholder="name@company.com"
-          required=""
+          placeholder="juandelacruz@email.com"
         />
         {errors.email && (
           <small className="text-sm text-red-600 ">
@@ -89,7 +100,6 @@ export default function LoginForm() {
         <div className="relative">
           <span
             className="absolute right-4.5 top-1/2 -translate-y-1/2 focus:outline-none"
-            type="button"
             onClick={passwordToggleVisibility}
             aria-label="toggle password visibility"
           >
@@ -106,19 +116,15 @@ export default function LoginForm() {
             id="password"
             placeholder="••••••••"
             className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-            required=""
           />
         </div>
-
         {errors.password && (
           <small className="text-sm text-red-600 ">
             This field is required
           </small>
         )}
       </div>
-
-      <div className="flex justify-between pb-3">
-        <label
+      {/* <label
           htmlFor="remember"
           className="font-mediumx flex cursor-pointer select-none items-center  text-sm text-dark dark:text-white"
         >
@@ -149,14 +155,13 @@ export default function LoginForm() {
             </svg>
           </span>
           Remember me
-        </label>
-        <Link
-          href="/forgot-password"
-          className="flex shrink-0 cursor-pointer select-none items-center font-poppins text-sm font-medium text-primary hover:underline dark:text-primary dark:hover:text-primaryho"
-        >
-          Forgot Password?
-        </Link>
-      </div>
+        </label> */}
+      <Link
+        href="/forgot-password"
+        className="flex shrink-0 cursor-pointer select-none items-center font-poppins text-sm font-medium text-primary hover:underline dark:text-primary dark:hover:text-primaryho"
+      >
+        Forgot Password?
+      </Link>
       <div className="flex items-center gap-4">
         {loading ? (
           <button
@@ -197,17 +202,7 @@ export default function LoginForm() {
         <span className="mx-2">or</span>
         <div className="h-[1px] w-full bg-slate-500"></div>
       </div>
-      <div className="">
-        <button
-          type="button"
-          className="mb-4 me-2 flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-slate-950 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-100"
-          onClick={() => signIn("google")}
-        >
-          <FaGoogle className="mr-2 h-4 w-4 text-red-600" />
-          Sign in with Google
-        </button>
-      </div>
-
+      <GoogleSigninButton text="Sign in" />
       <p className="text-sm font-light text-gray-500 dark:text-gray-400">
         Already have an account?{" "}
         <Link

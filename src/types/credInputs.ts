@@ -1,6 +1,6 @@
 import { UserRole } from "@prisma/client";
 
-export type SignupInputProps = {
+export type SignUpInputProps = {
   firstName: string;
   lastName: string;
   email: string;
@@ -11,6 +11,5 @@ export type SignupInputProps = {
 
 export type SignInInputProps = {
   email: string;
-  userName: string;
   password: string;
 };
