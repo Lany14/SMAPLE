@@ -3,6 +3,10 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import DefaultSelectOption from "@/components/BackOffice/SelectOption/DefaultSelectOption";
 
+interface ChartOnePropTypes {
+  label: string;
+}
+
 const ChartOne: React.FC = () => {
   const series = [
     {
@@ -132,7 +136,7 @@ const ChartOne: React.FC = () => {
       <div className="mb-3.5 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h4 className="text-body-2xlg font-bold text-dark dark:text-white">
-            Payments Overview
+            Clininc Revenue
           </h4>
         </div>
         <div className="flex items-center gap-2.5">
@@ -153,7 +157,7 @@ const ChartOne: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 text-center xsm:flex-row xsm:gap-0">
+      {/* <div className="flex flex-col gap-2 text-center xsm:flex-row xsm:gap-0">
         <div className="border-stroke dark:border-dark-3 xsm:w-1/2 xsm:border-r">
           <p className="font-medium">Received Amount</p>
           <h4 className="mt-1 text-xl font-bold text-dark dark:text-white">
@@ -166,7 +170,7 @@ const ChartOne: React.FC = () => {
             $32,400.00
           </h4>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

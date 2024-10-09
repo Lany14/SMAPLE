@@ -1,7 +1,7 @@
 import React from "react";
-import AdminLayout from "@/components/BackOffice/Layouts/AdminLayout";
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 import { Metadata } from "next";
+import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 
 export const metadata: Metadata = {
   title: "AbyVet | Admin",
@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 export default function PaymentPage() {
   return (
     <>
-      <AdminLayout>
+      <DefaultLayout>
         <Breadcrumb pageName="Payment Records" />
         <div>PaymentPage</div>
-      </AdminLayout>
+      </DefaultLayout>
     </>
   );
 }

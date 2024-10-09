@@ -1,9 +1,12 @@
 import { Metadata } from "next";
-import VetDashboard from "@/components/BackOffice/Dashboard/VetDashboard";
+import VetDashboard from "@/components/BackOffice/Dashboard/VetDoctorDashboard";
 import AdminDashboard from "@/components/BackOffice/Dashboard/AdminDashboard";
-import AdminLayout from "@/components/BackOffice/Layouts/AdminLayout";
-import VetLayout from "@/components/BackOffice/Layouts/VetLayout";
 import React from "react";
+import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
+import VetDoctorDashboard from "@/components/BackOffice/Dashboard/VetDoctorDashboard";
+import VetNurseDashboard from "@/components/BackOffice/Dashboard/VetNurseDashboard";
+import UserDashboard from "@/components/BackOffice/Dashboard/UserDashboard";
+import ReceptionistDashboard from "@/components/BackOffice/Dashboard/ReceptionistDashboard";
 
 export const metadata: Metadata = {
   title: "AbyVet | Admin",
@@ -12,9 +15,13 @@ export const metadata: Metadata = {
 export default function page() {
   return (
     <>
-      <VetLayout>
-        <VetDashboard />
-      </VetLayout>
+      <DefaultLayout>
+        <AdminDashboard />
+        <VetDoctorDashboard />
+        <VetNurseDashboard />
+        <ReceptionistDashboard />
+        <UserDashboard />
+      </DefaultLayout>
     </>
   );
 }

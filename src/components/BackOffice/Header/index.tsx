@@ -56,22 +56,22 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          <Link className="block flex-shrink-0 lg:hidden" href="/">
+          {/* <Link className="block flex-shrink-0 lg:hidden" href="/">
             <Image
               width={32}
               height={32}
-              src={"/images/logo/logo-icon.svg"}
+              src={"/images/logo/logo-light.svg"}
               alt="Logo"
             />
-          </Link>
+          </Link> */}
         </div>
 
         <div className="hidden xl:block">
           <div>
             <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              Dashboard
+              Good Morning Jhayson!
             </h1>
-            <p className="font-medium">Next.js Admin Dashboard Solution</p>
+            <p className="font-medium">Admin Dashboard</p>
           </div>
         </div>
 
@@ -91,7 +91,7 @@ const Header = (props: {
           </ul>
 
           {/* <!-- User Area --> */}
-          <DropdownUser />
+          {/* <DropdownUser /> */}
           {/* <!-- User Area --> */}
         </div>
       </div>

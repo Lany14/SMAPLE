@@ -2,15 +2,19 @@ import { AuthOptions, NextAuthOptions } from "next-auth";
 // import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prismaClient } from "@/lib/db";
-
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 import type { Adapter } from "next-auth/adapters";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
+import NextAuth from "next-auth";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
 // more providers at https://next-auth.js.org/providers
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prismaClient) as Adapter,
+  adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
@@ -18,14 +22,10 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/signin",
   },
+
   providers: [
-    EmailProvider({
-      server: process.env.GMAIL_EMAIL_SERVER || "", // any SMTP server will work
-      from: process.env.EMAIL_FROM || "",
-      //   maxAge: 24 * 60 * 60, // How long email links are valid for (default 24h)
-    }),
     GoogleProvider({
-      //Checking if the role exista and if not add USER Bydefault
+      // Checking if the role exista and if not add USER Bydefault
       // profile(profile) {
       //   return { role: profile.role ?? "USER", ... }
       // },
@@ -95,7 +95,19 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   callbacks: {
+    // async signIn({ account, profile }) {
+    //   const isAllowedToSignIn = true
+    //   if (isAllowedToSignIn) {
+    //     return true
+    //   } else {
+    //     // Return false to display a default error message
+    //     return false
+    //     // Or you can return a URL to redirect to:
+    //     // return '/unauthorized'
+    //   }
+    // },
     async jwt({ token, user }) {
       const dbUser = await prismaClient.user.findFirst({
         where: { email: token?.email ?? "" },

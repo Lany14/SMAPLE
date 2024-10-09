@@ -8,12 +8,12 @@ import TableOne from "../Tables/TableOne";
 import DataStatsOne from "@/components/BackOffice/DataStats/DataStatsOne";
 import ChartOne from "@/components/BackOffice/Charts/ChartOne";
 
-const VetDashboard: React.FC = () => {
+const UserDashboard: React.FC = () => {
   return (
     <>
       <DataStatsOne />
 
-      <div className="2xl:gap-7.5 mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9">
+      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
         <ChartOne />
         <ChartTwo />
         <ChartThree />
@@ -26,4 +26,4 @@ const VetDashboard: React.FC = () => {
   );
 };
 
-export default VetDashboard;
+export default UserDashboard;

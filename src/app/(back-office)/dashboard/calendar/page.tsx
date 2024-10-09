@@ -2,22 +2,20 @@ import { Metadata } from "next";
 import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 import CalendarBox from "@/components/BackOffice/CalenderBox";
-import AdminLayout from "@/components/BackOffice/Layouts/AdminLayout";
 
 export const metadata: Metadata = {
   title: "AbyVet | Admin",
 };
 
-
 const CalendarPage = () => {
   return (
-    <AdminLayout>
+    <DefaultLayout>
       <div className="mx-auto max-w-7xl">
         <Breadcrumb pageName="Calendar" />
 
         <CalendarBox />
       </div>
-    </AdminLayout>
+    </DefaultLayout>
   );
 };
 
