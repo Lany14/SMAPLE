@@ -16,7 +16,7 @@ export default function PatientPage() {
         <Breadcrumb pageName="Patients" />
         <NextUIProvider>
           <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
-            <PatientTable />
+            {/* <PatientTable /> */}
           </div>
         </NextUIProvider>
       </DefaultLayout>

@@ -16,7 +16,7 @@ export default function StaffPage() {
         <Breadcrumb pageName="Staff" />
         <NextUIProvider>
           <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
-            <StaffTable />
+            {/* <StaffTable /> */}
           </div>
         </NextUIProvider>
       </DefaultLayout>
