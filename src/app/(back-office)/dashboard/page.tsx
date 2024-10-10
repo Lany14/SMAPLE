@@ -17,10 +17,10 @@ export default function page() {
     <>
       <DefaultLayout>
         <AdminDashboard />
-        <VetDoctorDashboard />
+        {/* <VetDoctorDashboard />
         <VetNurseDashboard />
         <ReceptionistDashboard />
-        <UserDashboard />
+        <UserDashboard /> */}
       </DefaultLayout>
     </>
   );

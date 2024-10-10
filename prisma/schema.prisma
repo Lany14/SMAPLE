@@ -144,7 +144,7 @@ model User {
 
 // }
 
-// // Profile for Pet Owner Role
+// // // Profile for Pet Owner Role
 // model PetOwnerProfile {
 //   id             String    @id @default(auto()) @map("_id") @db.ObjectId
 //   userId         String    @unique @db.ObjectId
@@ -159,13 +159,19 @@ model User {
 //   pets           Pet[]      @relation("OwnerPets")
 // }
 
-// // -------------------- PET MODEL --------------------
+// // // -------------------- PET MODEL --------------------
 // model Pet {
 //   id              String        @id @default(auto()) @map("_id") @db.ObjectId
-//   name            String
+//   petName         String
+//   petSex          String
+//   species         String
 //   breed           String
 //   age             Int
-//   owner           User          @relation("OwnerPets", fields: [ownerId], references: [id])
+//   weight          Int
+//   color           String
+//   specialMarkings String
+  
+//   owner           PetOwnerProfile @relation(fields: [ownerId], references: [id])
 //   ownerId         String        @db.ObjectId
 //   medicalRecords  MedicalRecord[]
 //   appointments    Appointment[]
@@ -310,7 +316,7 @@ model User {
 //   id          String       @id @default(auto()) @map("_id") @db.ObjectId
 //   pet         Pet          @relation(fields: [petId], references: [id])
 //   petId       String       @db.ObjectId
-//   owner       User         @relation(fields: [ownerId], references: [id])
+//   owner       PetOwnerProfile @relation(fields: [ownerId], references: [id])
 //   ownerId     String       @db.ObjectId
 //   veterinarian User        @relation(fields: [veterinarianId], references: [id])
 //   veterinarianId String    @db.ObjectId

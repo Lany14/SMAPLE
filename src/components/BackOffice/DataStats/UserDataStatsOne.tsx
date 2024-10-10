@@ -1,5 +1,13 @@
 import React from "react";
-import { dataStats } from "@/types/dataStats";
+
+export type dataStats = {
+  icon?: string;
+  color?: string;
+  title?: string;
+  value?: string;
+  growthRate?: number;
+  percent?: number;
+};
 
 const dataStatsList = [
   {

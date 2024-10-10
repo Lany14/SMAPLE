@@ -19,7 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <Lines />
           <Header />
-          <Providers>{children}</Providers>
+          {children}
           <Footer />
           <ScrollToTop />
         </ThemeProvider>

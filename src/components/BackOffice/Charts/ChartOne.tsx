@@ -7,7 +7,7 @@ interface ChartOnePropTypes {
   label: string;
 }
 
-const ChartOne: React.FC = () => {
+const ClinicRevenueChart: React.FC = () => {
   const series = [
     {
       name: "Received Amount",
@@ -175,4 +175,4 @@ const ChartOne: React.FC = () => {
   );
 };
 
-export default ChartOne;
+export default ClinicRevenueChart;

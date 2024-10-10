@@ -1,8 +1,6 @@
 "use client";
-
 import Providers from "@/app/context/Providers";
 import { Poppins } from "next/font/google";
-import AuthProvider from "./context/AuthProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
