@@ -52,7 +52,6 @@ model User {
   firstName     String
   lastName      String
   phoneNumber   String?
-  username      String?   @unique
   email         String    @unique
   password      String
   emailVerified DateTime?

@@ -6,12 +6,13 @@ import Lines from "@/components/FrontEnd/Site/Lines";
 import ScrollToTop from "@/components/FrontEnd/Site/ScrollToTop";
 import { ThemeProvider } from "next-themes";
 import "../globals.css";
-import Providers from "@/app/context/Providers";
+import Providers from "@/components/Providers";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        {/* <Providers> */}
         <ThemeProvider
           enableSystem={false}
           attribute="class"
@@ -23,6 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Footer />
           <ScrollToTop />
         </ThemeProvider>
+        {/* </Providers> */}
       </body>
     </html>
   );

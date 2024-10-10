@@ -1,5 +1,4 @@
-"use client";
-import Providers from "@/app/context/Providers";
+import Providers from "@/components/Providers";
 import { Poppins } from "next/font/google";
 
 const poppins = Poppins({
@@ -14,9 +13,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`dark:bg-black ${poppins.className}`}></body>
-
-      {children}
+      <body className={`dark:bg-black ${poppins.className}`}>
+        {/* <Providers>{children}</Providers> */}
+        {children}
+      </body>
     </html>
   );
 }
