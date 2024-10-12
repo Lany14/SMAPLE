@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -36,6 +36,8 @@ interface SidebarProps {
   setSidebarOpen: (arg: boolean) => void;
 }
 
+type ModalId = "addPetPatient" | "addClinicStaff" | null;
+
 const menuGroups = [
   {
     name: "DASHBOARD",
@@ -47,17 +49,17 @@ const menuGroups = [
       },
       {
         icon: <PawPrint />,
-        label: "Patients",
+        label: "Pet Patients",
         route: "/dashboard/patient",
       },
       {
         icon: <Users />,
-        label: "User",
+        label: "Pet Parents",
         route: "/dashboard/user",
       },
       {
         icon: <Hospital />,
-        label: "Staff",
+        label: "Clinic Staff",
         route: "/dashboard/staff",
       },
       {
@@ -94,7 +96,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  // State to manage which modal is open
+  const [visibleModal, setVisibleModal] = useState<ModalId>(null);
+
+  // Function to open a specific modal
+  const openModal = (modalId: ModalId) => {
+    setVisibleModal(modalId);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setVisibleModal(null);
+  };
 
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
@@ -171,28 +184,39 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </div>
             ))}
             <div className="pb-2">
-              <Button
-                className="w-full  bg-blue-600 text-white hover:bg-blue-dark"
-                onPress={onOpen}
-                startContent={<Plus />}
+              {/* Buttons to open different modals */}
+              <div className="pb-2">
+                <Button
+                  className="w-full bg-blue-600 text-white hover:bg-blue-dark"
+                  onPress={() => openModal("addPetPatient")}
+                  startContent={<Plus />}
+                >
+                  Add Pet Patient
+                </Button>
+              </div>
+              <div className="pb-2">
+                <Button
+                  className="w-full bg-primary  text-white hover:bg-primaryho"
+                  onPress={() => openModal("addClinicStaff")}
+                  startContent={<UserRoundPlus />}
+                >
+                  Add Clinic Staff
+                </Button>
+              </div>
+              <Modal
+                size="xl"
+                isOpen={visibleModal === "addPetPatient"}
+                onClose={closeModal}
               >
-                Add Pet
-              </Button>
-              <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <AddPetForm />
               </Modal>
-            </div>
-            <div className="pb-2">
-              <Button
-                className="w-full bg-primary text-white hover:bg-primaryho"
-                onPress={onOpen}
-                startContent={<UserRoundPlus />}
+              <Modal
+                size="xl"
+                isOpen={visibleModal === "addClinicStaff"}
+                onClose={closeModal}
               >
-                Add Clinic Staff
-              </Button>
-              {/* <Modal size="xl" isOpen={isOpen} onOpenChange={onOpenChange}>
                 <AddClinicStaff />
-              </Modal> */}
+              </Modal>
             </div>
           </nav>
           {/* <!-- Sidebar Menu --> */}
