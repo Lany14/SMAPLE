@@ -190,9 +190,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               >
                 Add Clinic Staff
               </Button>
-              <Modal size="xl" isOpen={isOpen} onOpenChange={onOpenChange}>
+              {/* <Modal size="xl" isOpen={isOpen} onOpenChange={onOpenChange}>
                 <AddClinicStaff />
-              </Modal>
+              </Modal> */}
             </div>
           </nav>
           {/* <!-- Sidebar Menu --> */}

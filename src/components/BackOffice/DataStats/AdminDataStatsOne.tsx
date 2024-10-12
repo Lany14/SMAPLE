@@ -93,7 +93,7 @@ const dataStatsList = [
     // ),
     color: "#FF9C55",
     title: "Total Profit",
-    value: "$42.2K",
+    value: "",
     growthRate: 4.35,
   },
 ];

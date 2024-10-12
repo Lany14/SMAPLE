@@ -69,7 +69,7 @@ const Header = (props: {
         <div className="hidden xl:block">
           <div>
             <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              Good Morning Jhayson!
+              Good Morning!
             </h1>
             <p className="font-medium">Admin Dashboard</p>
           </div>
