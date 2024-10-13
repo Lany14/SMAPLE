@@ -1,5 +1,6 @@
 import Providers from "@/components/Providers";
 import { Poppins } from "next/font/google";
+import AuthProvider from "./context/AuthProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -13,10 +14,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`dark:bg-black ${poppins.className}`}>
-        {/* <Providers>{children}</Providers> */}
-        {children}
-      </body>
+      <AuthProvider session={null}>
+        <body className={`dark:bg-black ${poppins.className}`}>
+          {/* <Providers>{children}</Providers> */}
+          {children}
+        </body>
+      </AuthProvider>
     </html>
   );
 }

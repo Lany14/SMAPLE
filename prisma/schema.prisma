@@ -27,6 +27,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId]) // Optimized for queries involving users
 }
 
 model Session {
@@ -35,6 +36,8 @@ model Session {
   userId       String   @db.ObjectId
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId]) // Optimized for user-related session queries
 }
 
 // -------------------- USER MODEL --------------------
@@ -104,6 +107,7 @@ model User {
 //   age                         Int
 //   address                     String
 //   licenseNumber               String    @unique
+
 //   specialization              String
 //   yearsOfExperience           Int
 //   consultationHistory         Int       @default(0)
@@ -160,15 +164,14 @@ model User {
 
 // // // -------------------- PET MODEL --------------------
 // model Pet {
-//   id              String        @id @default(auto()) @map("_id") @db.ObjectId
-//   petName         String
-//   petSex          String
-//   species         String
-//   breed           String
-//   age             Int
-//   weight          Int
-//   color           String
-//   specialMarkings String
+//   id                   String        @id @default(auto()) @map("_id") @db.ObjectId
+//   petName              String
+//   petSex               String
+//   species              String
+//   breed                String
+//   age                  Int
+//   weight               Int
+//   colorSpecialMarkings String?
   
 //   owner           PetOwnerProfile @relation(fields: [ownerId], references: [id])
 //   ownerId         String        @db.ObjectId

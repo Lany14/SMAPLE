@@ -5,6 +5,7 @@ import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 import SearchForm from "@/components/BackOffice/Header/SearchForm";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -36,6 +37,9 @@ const Header = (props: {
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, []);
+
+  const { data: session } = useSession();
+  // console.log(session);
 
   return (
     <header className="sticky top-0 z-999 flex w-full border-b border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark">
@@ -97,9 +101,9 @@ const Header = (props: {
         <div className="hidden xl:block">
           <div>
             <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              {greeting}!
+              {greeting} {session?.user?.firstName}!
             </h1>
-            <p className="font-medium">Admin Dashboard</p>
+            <p className="font-medium">{session?.user?.role} Dashboard</p>
           </div>
         </div>
 

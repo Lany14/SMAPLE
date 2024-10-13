@@ -13,7 +13,7 @@ export default function PatientPage() {
   return (
     <>
       <DefaultLayout>
-        <Breadcrumb pageName="Patients" />
+        <Breadcrumb pageName="Pet Patients" />
         <NextUIProvider>
           <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
             <PatientTable />

@@ -121,7 +121,7 @@ export default function App() {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny text-default-400 capitalize">
+            <p className="text-bold text-tiny capitalize text-default-400">
               {user.team}
             </p>
           </div>
@@ -255,19 +255,19 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
+            {/* <Button color="primary" endContent={<PlusIcon />}>
               Add New
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-default-400 text-small">
-            Total {users.length} users
+          <span className="text-small text-default-400">
+            Total {users.length} Clinic Staff
           </span>
-          <label className="text-default-400 text-small flex items-center">
+          <label className="flex items-center text-small text-default-400">
             Rows per page:
             <select
-              className="text-default-400 text-small bg-transparent outline-none"
+              className="bg-transparent text-small text-default-400 outline-none"
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
@@ -291,7 +291,7 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="flex items-center justify-between px-2 py-2">
-        <span className="text-small text-default-400 w-[30%]">
+        <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "All items selected"
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
@@ -355,7 +355,7 @@ export default function App() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
+      <TableBody emptyContent={"No clinic staffs found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

@@ -7,6 +7,7 @@ import Image from "next/image";
 import SidebarItem from "../Sidebar/SidebarItem";
 import ClickOutside from "@/components/BackOffice/ClickOutside";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { useRouter } from "next/navigation";
 import {
   Modal,
   ModalContent,
@@ -18,18 +19,26 @@ import {
 } from "@nextui-org/react";
 import AddPetForm from "../AddPetForm";
 import {
+  AlarmClock,
+  Briefcase,
+  BriefcaseMedical,
   Calendar,
   HandCoins,
   Hospital,
   House,
+  Inbox,
+  LogOut,
   PawPrint,
   Plus,
   Settings,
+  SquareActivity,
   UserRoundPen,
   UserRoundPlus,
   Users,
 } from "lucide-react";
 import AddClinicStaff from "../AddClinicStaff";
+import { signIn, signOut, useSession } from "next-auth/react";
+// Removed import for Router
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -38,76 +47,221 @@ interface SidebarProps {
 
 type ModalId = "addPetPatient" | "addClinicStaff" | null;
 
-const menuGroups = [
-  {
-    name: "DASHBOARD",
-    menuItems: [
-      {
-        icon: <House />,
-        label: "Overview",
-        route: "/dashboard",
-      },
-      {
-        icon: <PawPrint />,
-        label: "Pet Patients",
-        route: "/dashboard/patient",
-      },
-      {
-        icon: <Users />,
-        label: "Pet Parents",
-        route: "/dashboard/user",
-      },
-      {
-        icon: <Hospital />,
-        label: "Clinic Staff",
-        route: "/dashboard/staff",
-      },
-      {
-        icon: <Calendar />,
-        label: "Calendar",
-        route: "/dashboard/calendar",
-      },
-      {
-        icon: <HandCoins />,
-        label: "Payments",
-        route: "/dashboard/payment",
-      },
-    ],
-  },
-  {
-    name: "ACCOUNT",
-    menuItems: [
-      {
-        icon: <UserRoundPen />,
-        label: "Profile",
-        route: "/dashboard/profile",
-      },
-      {
-        icon: <Settings />,
-        label: "Settings",
-        route: "/dashboard/setting",
-      },
-    ],
-  },
-];
+interface MenuItem {
+  icon: React.ReactNode;
+  label: string;
+  route: string;
+}
+
+interface MenuGroup {
+  name: string;
+  menuItems: MenuItem[];
+}
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
-
+  const { data: session, status } = useSession(); // Moved inside component
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
-
-  // State to manage which modal is open
   const [visibleModal, setVisibleModal] = useState<ModalId>(null);
 
-  // Function to open a specific modal
   const openModal = (modalId: ModalId) => {
     setVisibleModal(modalId);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setVisibleModal(null);
   };
+
+  // Role-based menu logic
+  const getMenuGroups = (): MenuGroup[] => {
+    const baseMenu: MenuGroup[] = [
+      {
+        name: "ACCOUNT",
+        menuItems: [
+          {
+            icon: <UserRoundPen />,
+            label: "Profile",
+            route: "/dashboard/profile",
+          },
+        ],
+      },
+    ];
+
+    if (session?.user?.role === "ADMIN") {
+      return [
+        {
+          name: "DASHBOARD",
+          menuItems: [
+            { icon: <House />, label: "Overview", route: "/dashboard" },
+            {
+              icon: <PawPrint />,
+              label: "Pet Patients",
+              route: "/dashboard/patient",
+            },
+            { icon: <Users />, label: "Pet Parents", route: "/dashboard/user" },
+            {
+              icon: <Hospital />,
+              label: "Clinic Staff",
+              route: "/dashboard/staff",
+            },
+            { icon: <Inbox />, label: "Inbox", route: "/dashboard/inbox" },
+            {
+              icon: <BriefcaseMedical />,
+              label: "Vet Doctors",
+              route: "/dashboard/doctor",
+            },
+            {
+              icon: <HandCoins />,
+              label: "Payment Log",
+              route: "/dashboard/payment",
+            },
+          ],
+        },
+        ...baseMenu,
+      ];
+    } else if (session?.user?.role === "VET_DOCTOR") {
+      return [
+        {
+          name: "DASHBOARD",
+          menuItems: [
+            { icon: <House />, label: "Overview", route: "/dashboard" },
+            {
+              icon: <PawPrint />,
+              label: "Pet Patients",
+              route: "/dashboard/patient",
+            },
+            {
+              icon: <AlarmClock />,
+              label: "My Appointments",
+              route: "/dashboard/appointment",
+            },
+            { icon: <Inbox />, label: "Inbox", route: "/dashboard/inbox" },
+            {
+              icon: <Calendar />,
+              label: "Calendar",
+              route: "/dashboard/calendar",
+            },
+          ],
+        },
+        ...baseMenu,
+      ];
+    } else if (session?.user?.role === "VET_NURSE") {
+      return [
+        {
+          name: "DASHBOARD",
+          menuItems: [
+            {
+              icon: <House />,
+              label: "Overview",
+              route: "/dashboard",
+            },
+            {
+              icon: <PawPrint />,
+              label: "Pet Patients",
+              route: "/dashboard/patient",
+            },
+            {
+              icon: <AlarmClock />,
+              label: "My Appointments",
+              route: "/dashboard/appointment",
+            },
+            {
+              icon: <Inbox />,
+              label: "Inbox",
+              route: "/dashboard/inbox",
+            },
+            {
+              icon: <Calendar />,
+              label: "Calendar",
+              route: "/dashboard/calendar",
+            },
+          ],
+        },
+        ...baseMenu,
+      ];
+    } else if (session?.user?.role === "VET_RECEPTIONIST") {
+      return [
+        {
+          name: "DASHBOARD",
+          menuItems: [
+            {
+              icon: <House />,
+              label: "Overview",
+              route: "/dashboard",
+            },
+            {
+              icon: <PawPrint />,
+              label: "Pet Patients",
+              route: "/dashboard/patient",
+            },
+            {
+              icon: <Users />,
+              label: "Pet Parents",
+              route: "/dashboard/user",
+            },
+            {
+              icon: <BriefcaseMedical />,
+              label: "Vet Doctors",
+              route: "/dashboard/doctor",
+            },
+            {
+              icon: <AlarmClock />,
+              label: "Scheduled Appointments",
+              route: "/dashboard/appointment",
+            },
+            {
+              icon: <Inbox />,
+              label: "Inbox",
+              route: "/dashboard/inbox",
+            },
+            {
+              icon: <Calendar />,
+              label: "Calendar",
+              route: "/dashboard/calendar",
+            },
+            {
+              icon: <HandCoins />,
+              label: "Payment Log",
+              route: "/dashboard/payment",
+            },
+          ],
+        },
+        ...baseMenu,
+      ];
+    } else if (session?.user?.role === "PET_OWNER") {
+      return [
+        {
+          name: "DASHBOARD",
+          menuItems: [
+            {
+              icon: <House />,
+              label: "Overview",
+              route: "/dashboard",
+            },
+            {
+              icon: <PawPrint />,
+              label: "My Pets",
+              route: "/dashboard/my-pet",
+            },
+            {
+              icon: <AlarmClock />,
+              label: "My Appointments",
+              route: "/dashboard/appointment",
+            },
+            {
+              icon: <BriefcaseMedical />,
+              label: "Vet Doctors",
+              route: "/dashboard/doctor",
+            },
+          ],
+        },
+        ...baseMenu,
+      ];
+    }
+    return baseMenu;
+  };
+
+  const menuGroups = getMenuGroups();
 
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
@@ -183,6 +337,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </ul>
               </div>
             ))}
+
             <div className="pb-2">
               {/* Buttons to open different modals */}
               <div className="pb-2">
@@ -194,30 +349,43 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Add Pet Patient
                 </Button>
               </div>
-              <div className="pb-2">
-                <Button
-                  className="w-full bg-primary  text-white hover:bg-primaryho"
-                  onPress={() => openModal("addClinicStaff")}
-                  startContent={<UserRoundPlus />}
-                >
-                  Add Clinic Staff
-                </Button>
-              </div>
               <Modal
-                size="xl"
+                size="2xl"
                 isOpen={visibleModal === "addPetPatient"}
                 onClose={closeModal}
               >
                 <AddPetForm />
               </Modal>
-              <Modal
-                size="xl"
-                isOpen={visibleModal === "addClinicStaff"}
-                onClose={closeModal}
-              >
-                <AddClinicStaff />
-              </Modal>
             </div>
+
+            {session?.user?.role === "ADMIN" && (
+              <div>
+                <div className="pb-2">
+                  <Button
+                    className="w-full bg-primary text-white hover:bg-primaryho"
+                    onPress={() => openModal("addClinicStaff")}
+                    startContent={<UserRoundPlus />}
+                  >
+                    Add Clinic Staff
+                  </Button>
+                </div>
+                <Modal
+                  size="xl"
+                  isOpen={visibleModal === "addClinicStaff"}
+                  onClose={closeModal}
+                >
+                  <AddClinicStaff />
+                </Modal>
+              </div>
+            )}
+
+            <Button
+              className="w-full "
+              onClick={() => signOut()}
+              startContent={<LogOut />}
+            >
+              Sign Out
+            </Button>
           </nav>
           {/* <!-- Sidebar Menu --> */}
         </div>

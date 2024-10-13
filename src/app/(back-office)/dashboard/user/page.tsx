@@ -12,7 +12,7 @@ export default function UserPage() {
   return (
     <>
       <DefaultLayout>
-        <Breadcrumb pageName="Pet Owners" />
+        <Breadcrumb pageName="Pet Parents" />
         <NextUIProvider>
           <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
             <UserTable />

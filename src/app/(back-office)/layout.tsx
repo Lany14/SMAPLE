@@ -5,7 +5,8 @@ import "@/css/poppins.css";
 import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/BackOffice/common/Loader";
-import { Metadata } from "next";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function RootLayout({
   children,
@@ -14,19 +15,33 @@ export default function RootLayout({
 }>) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const { status } = useSession();
+  const router = useRouter();
 
-  // const pathname = usePathname();
+  // Set loading state on mount to simulate loading
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+    // Redirect based on session status
+    if (status === "unauthenticated") {
+      router.push("/signin");
+    }
+    // else if (status === "authenticated") {
+    //   router.push("/dashboard");
+    // }
+  }, [status, router]); // Include router and status in dependencies
+
+  // If loading, show the loader component
+  if (loading || status === "loading") {
+    return <Loader />;
+  }
 
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          {loading ? <Loader /> : children}
-        </div>
+        <div className="dark:bg-boxdark-2 dark:text-bodydark">{children}</div>
       </body>
     </html>
   );

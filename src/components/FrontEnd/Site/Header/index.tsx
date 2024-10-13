@@ -1,11 +1,13 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ThemeToggler from "@/components/FrontEnd/Site/Header/ThemeToggler";
 import menuData from "@/components/FrontEnd/Site/Header/menuData";
+import { useSession } from "next-auth/react";
+import { LayoutDashboard } from "lucide-react";
 
 const Header = () => {
   // const pathname = usePathname();
@@ -29,6 +31,8 @@ const Header = () => {
   useEffect(() => {
     window.addEventListener("scroll", handleStickyMenu);
   });
+
+  const { status } = useSession();
 
   return (
     <header
@@ -156,20 +160,30 @@ const Header = () => {
 
           <div className="mt-7 flex items-center gap-6 xl:mt-0">
             <ThemeToggler />
+            {status === "authenticated" ? (
+              <Link
+                href="/dashboard"
+                className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
+              >
+                <LayoutDashboard size={16} className="mr-2" /> Dashboard
+              </Link>
+            ) : (
+              <div className="mt-7 flex items-center gap-6 xl:mt-0">
+                <Link
+                  href="/signup"
+                  className="text-regular font-medium text-waterloo hover:text-primary"
+                >
+                  Sign Up
+                </Link>
 
-            <Link
-              href="/signup"
-              className="text-regular font-medium text-waterloo hover:text-primary"
-            >
-              Sign Up
-            </Link>
-
-            <Link
-              href="/signin"
-              className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
-            >
-              Sign In 🐾
-            </Link>
+                <Link
+                  href="/signin"
+                  className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
+                >
+                  Sign In 🐾
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

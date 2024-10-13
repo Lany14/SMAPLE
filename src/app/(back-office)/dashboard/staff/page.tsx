@@ -13,7 +13,7 @@ export default function StaffPage() {
   return (
     <>
       <DefaultLayout>
-        <Breadcrumb pageName="Staff" />
+        <Breadcrumb pageName="Clinic Staff" />
         <NextUIProvider>
           <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
             <StaffTable />
