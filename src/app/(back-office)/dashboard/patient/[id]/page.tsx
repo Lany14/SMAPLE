@@ -3,12 +3,11 @@ import { OwnerDetails } from "@/components/BackOffice/Cards/OwnerDetails";
 import { PatientInfoCard } from "@/components/BackOffice/Cards/PatientInfoCard";
 import { PetDocumentTable } from "@/components/BackOffice/Cards/PetDocumentTable";
 import { WeightChart } from "@/components/BackOffice/Cards/WeightChart";
-import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 import React from "react";
 
 export default function PatientInfo() {
   return (
-    <DefaultLayout>
+    <>
       <Breadcrumb pageName="Pet Details" />
       <div className="mt-4 grid grid-flow-row gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:grid-cols-3 2xl:gap-7.5">
         <div className="">
@@ -26,6 +25,6 @@ export default function PatientInfo() {
           <PetDocumentTable />
         </div>
       </div>
-    </DefaultLayout>
+    </>
   );
 }

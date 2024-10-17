@@ -7,14 +7,10 @@ import VetNurseDashboard from "@/components/BackOffice/Dashboard/VetNurseDashboa
 import UserDashboard from "@/components/BackOffice/Dashboard/UserDashboard";
 import ReceptionistDashboard from "@/components/BackOffice/Dashboard/ReceptionistDashboard";
 import ECommerce from "@/components/BackOffice/Dashboard/E-commerce";
-import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
-
-// export const metadata: Metadata = {
-//   title: "AbyVet | Admin",
-// };
+import Loader from "@/components/BackOffice/common/Loader";
 
 const Page: React.FC = () => {
   const { data: session, status } = useSession();
@@ -24,12 +20,6 @@ const Page: React.FC = () => {
   if (status === "loading") {
     return <div>Loading...</div>;
   }
-
-  // Handle unauthenticated users (optional)
-  // if (status === "unauthenticated") {
-  //   router.push("/login"); // Redirect to login or any other page if needed
-  //   return null;
-  // }
 
   const role = session?.user?.role;
 
@@ -46,11 +36,10 @@ const Page: React.FC = () => {
       case "PET_OWNER":
         return <UserDashboard />;
       default:
-        return <ECommerce />;
+        return <Loader />;
     }
   };
-
-  return <DefaultLayout>{renderDashboard()}</DefaultLayout>;
+  return renderDashboard();
 };
 
 export default Page;

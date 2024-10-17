@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import Loader from "@/components/BackOffice/common/Loader";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 
 export default function RootLayout({
   children,
@@ -23,15 +24,12 @@ export default function RootLayout({
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    // Redirect based on session status
-    if (status === "unauthenticated") {
-      router.push("/signin");
-    }
-    // else if (status === "authenticated") {
-    //   router.push("/dashboard");
-    // }
-  }, [status, router]); // Include router and status in dependencies
+  // useEffect(() => {
+  //   // Redirect based on session status
+  //   if (status === "unauthenticated") {
+  //     router.push("/signin");
+  //   }
+  // }, [status, router]); // Include router and status in dependencies
 
   // If loading, show the loader component
   if (loading || status === "loading") {
@@ -41,7 +39,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">{children}</div>
+        <div className="dark:bg-boxdark-2 dark:text-bodydark">
+          <DefaultLayout>{children}</DefaultLayout>
+        </div>
       </body>
     </html>
   );

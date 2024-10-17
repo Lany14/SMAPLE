@@ -1,11 +1,10 @@
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 import { Metadata } from "next";
-import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 import ButtonDefault from "@/components/BackOffice/Buttons/ButtonDefault";
 
 const Buttons = () => {
   return (
-    <DefaultLayout>
+    <>
       <Breadcrumb pageName="Buttons" />
 
       {/* <!-- Normal Button Items --> */}
@@ -377,7 +376,7 @@ const Buttons = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </>
   );
 };
 

@@ -1,14 +1,13 @@
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 
 import { Metadata } from "next";
-import DefaultLayout from "@/components/BackOffice/Layouts/DefaultLayout";
 import SelectGroupOne from "@/components/BackOffice/FormElements/SelectGroup/SelectGroupOne";
 import Link from "next/link";
 import InputGroup from "@/components/BackOffice/FormElements/InputGroup";
 
 const FormLayout = () => {
   return (
-    <DefaultLayout>
+    <>
       <Breadcrumb pageName="Form Layout" />
 
       <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
@@ -188,7 +187,7 @@ const FormLayout = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </>
   );
 };
 

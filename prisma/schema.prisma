@@ -27,7 +27,6 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@index([userId]) // Optimized for queries involving users
 }
 
 model Session {
@@ -36,8 +35,6 @@ model Session {
   userId       String   @db.ObjectId
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId]) // Optimized for user-related session queries
 }
 
 // -------------------- USER MODEL --------------------
@@ -55,6 +52,7 @@ model User {
   firstName     String
   lastName      String
   phoneNumber   String?
+  username      String?   @unique
   email         String    @unique
   password      String
   emailVerified DateTime?
@@ -62,263 +60,225 @@ model User {
   role          UserRole  @default(PET_OWNER)
 
   isVerified    Boolean   @default(false)
-  token         Int
+  token         Int?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   Account       Account[]
   Session       Session[]
   
   // // Role-based profile information
-  // adminProfile               AdminProfile?           @relation(fields: [adminProfileId], references: [id])
-  // adminProfileId             String?                 @db.ObjectId
-  
-  // veterinarianProfile        VeterinarianProfile?    @relation(fields: [veterinarianProfileId], references: [id])
-  // veterinarianProfileId      String?                 @db.ObjectId
-  
-  // vetNurseProfile            VetNurseProfile?        @relation(fields: [vetNurseProfileId], references: [id])
-  // vetNurseProfileId          String?                 @db.ObjectId
+  // adminProfile        AdminProfile?         @relation(fields: [adminProfileId], references: [id])
+  // adminProfileId      String?               @db.ObjectId
 
-  // vetReceptionistProfile     VetReceptionistProfile? @relation(fields: [vetReceptionistProfileId], references: [id])
-  // vetReceptionistProfileId   String?                 @db.ObjectId
+  // veterinarianProfile VeterinarianProfile?  @relation(fields: [veterinarianProfileId], references: [id])
+  // veterinarianProfileId String?             @db.ObjectId
 
-  // petOwnerProfile            PetOwnerProfile?        @relation(fields: [petOwnerProfileId], references: [id])
-  // petOwnerProfileId          String?                 @db.ObjectId
+  // vetNurseProfile     VetNurseProfile?      @relation(fields: [vetNurseProfileId], references: [id])
+  // vetNurseProfileId   String?               @db.ObjectId
 
-  
+  // vetReceptionistProfile VetReceptionistProfile? @relation(fields: [vetReceptionistProfileId], references: [id])
+  // vetReceptionistProfileId String?           @db.ObjectId
+
+  // petOwnerProfile     PetOwnerProfile?      @relation(fields: [petOwnerProfileId], references: [id])
+  // petOwnerProfileId   String?               @db.ObjectId
+
+  pets          Pet[]      @relation("OwnerPets")
 }
 
 // // -------------------- PROFILE MODELS FOR ROLES --------------------
 // // Profile for Admin Role
 // model AdminProfile {
-//   id                          String    @id @default(auto()) @map("_id") @db.ObjectId
-//   userId                      String    @unique @db.ObjectId
-//   adminSince                  DateTime  @default(now())
-//   reportsGenerated            Int       @default(0)
-//   user                        User      @relation(fields: [userId], references: [id])
-
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
+//   id             String    @id @default(auto()) @map("_id") @db.ObjectId
+//   userId         String    @unique @db.ObjectId
+//   adminSince     DateTime  @default(now())
+//   reportsGenerated Int      @default(0)
+//   user           User      @relation(fields: [userId], references: [id])
 // }
 
 // // Profile for Veterinarian Role
 // model VeterinarianProfile {
-//   id                          String    @id @default(auto()) @map("_id") @db.ObjectId
-//   userId                      String    @unique @db.ObjectId
-//   age                         Int
-//   address                     String
-//   licenseNumber               String    @unique
-
-//   specialization              String
-//   yearsOfExperience           Int
-//   consultationHistory         Int       @default(0)
-//   user           User                   @relation(fields: [userId], references: [id])
-
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
+//   id             String    @id @default(auto()) @map("_id") @db.ObjectId
+//   userId         String    @unique @db.ObjectId
+//   licenseNumber  String    @unique
+//   specialization String?
+//   yearsOfExperience Int
+//   consultationHistory Int @default(0)
+//   user           User      @relation(fields: [userId], references: [id])
 // }
 
 // // Profile for Vet Nurse Role
 // model VetNurseProfile {
-//   id                          String    @id @default(auto()) @map("_id") @db.ObjectId
-//   userId                      String    @unique @db.ObjectId
-//   age                         Int
-//   address                     String
-//   licenseNumber               String    @unique
-//   experienceLevel             String    // e.g., Junior, Senior
-//   assistCount                 Int       @default(0)
-//   user                        User      @relation(fields: [userId], references: [id])
-
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
+//   id             String    @id @default(auto()) @map("_id") @db.ObjectId
+//   userId         String    @unique @db.ObjectId
+//   licenseNumber  String    @unique
+//   experienceLevel String   // e.g., Junior, Senior
+//   assistCount    Int       @default(0)
+//   user           User      @relation(fields: [userId], references: [id])
 // }
 
 // // Profile for Vet Receptionist Role
 // model VetReceptionistProfile {
-//   id                          String    @id @default(auto()) @map("_id") @db.ObjectId
-//   userId                      String    @unique @db.ObjectId
-//   age                         Int
-//   address                     String
-//   yearsOfExperience           Int
-//   appointmentsHandled         Int       @default(0)
-//   user           User                   @relation(fields: [userId], references: [id])
-
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
-
+//   id             String    @id @default(auto()) @map("_id") @db.ObjectId
+//   userId         String    @unique @db.ObjectId
+//   yearsOfExperience Int
+//   appointmentsHandled Int @default(0)
+//   user           User      @relation(fields: [userId], references: [id])
 // }
 
-// // // Profile for Pet Owner Role
+// // Profile for Pet Owner Role
 // model PetOwnerProfile {
 //   id             String    @id @default(auto()) @map("_id") @db.ObjectId
 //   userId         String    @unique @db.ObjectId
-//   age            Int
-//   address        String
+//   address        String?
 //   totalPets      Int       @default(0)
 //   user           User      @relation(fields: [userId], references: [id])
-
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
-
-//   pets           Pet[]      @relation("OwnerPets")
 // }
 
-// // // -------------------- PET MODEL --------------------
-// model Pet {
-//   id                   String        @id @default(auto()) @map("_id") @db.ObjectId
-//   petName              String
-//   petSex               String
-//   species              String
-//   breed                String
-//   age                  Int
-//   weight               Int
-//   colorSpecialMarkings String?
+// -------------------- PET MODEL --------------------
+model Pet {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  breed       String
+  age         Int
+  owner       User          @relation("OwnerPets", fields: [ownerId], references: [id])
+  ownerId     String        @db.ObjectId
   
-//   owner           PetOwnerProfile @relation(fields: [ownerId], references: [id])
-//   ownerId         String        @db.ObjectId
-//   medicalRecords  MedicalRecord[]
-//   appointments    Appointment[]
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
-// }
+  // Medical History
+  medicalHistories MedicalHistory[]
 
-// // -------------------- MEDICAL RECORD MODEL --------------------
-// model MedicalRecord {
-//   id              String            @id @default(auto()) @map("_id") @db.ObjectId
-//   petId           String            @db.ObjectId
-//   pet             Pet               @relation(fields: [petId], references: [id])
+  // Medicines
+  medicines       Medicine[]
 
-//   // Medical History
-//   medicalHistories MedicalHistory[]
+  // Antiparasitic Treatments
+  antiparasitics  Antiparasitic[]
 
-//   // Medicines
-//   medicines       Medicine[]
+  // Prescriptions
+  prescriptions   Prescription[]
 
-//   // Antiparasitic Treatments
-//   antiparasitics  Antiparasitic[]
+  // Lab Results
+  labResults      LabResult[]
 
-//   // Prescriptions
-//   prescriptions   Prescription[]
+  // Vaccinations
+  vaccinations    Vaccination[]
 
-//   // Lab Results
-//   labResults      LabResult[]
+  // appointments Appointment[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
 
-//   // Vaccinations
-//   vaccinations    Vaccination[]
-// }
-
-// // -------------------- MEDICAL HISTORY --------------------
-// model MedicalHistory {
-//   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-//   type        MedicalHistoryType
-//   date        DateTime
-//   note        String?
-//   file        String?     // File Attachment (URL or Path)
-//   medicalRecordId String  @db.ObjectId
-//   medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+// -------------------- MEDICAL HISTORY --------------------
+model MedicalHistory {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId           String            @db.ObjectId
+  pet             Pet               @relation(fields: [petId], references: [id])
+  type        MedicalHistoryType
+  date        DateTime
+  note        String?
+  file        String?     // File Attachment (URL or Path)
   
-//   createdAt       DateTime           @default(now())
-//   updatedAt       DateTime           @updatedAt
-// }
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
 
-// enum MedicalHistoryType {
-//   SURGERY
-//   ALLERGIES
-//   ONLINE_CONSULTATION
-//   CLINIC_VISIT
-//   VACCINE_BOOKLET
-//   PROCEDURE
-//   OTHER
-// }
+enum MedicalHistoryType {
+  SURGERY
+  ALLERGIES
+  ONLINE_CONSULTATION
+  CLINIC_VISIT
+  VACCINE_BOOKLET
+  PROCEDURE
+  OTHER
+}
 
-// // -------------------- MEDICINE --------------------
-// model Medicine {
-//   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-//   name        String
-//   startDate   DateTime
-//   endDate     DateTime?
-//   interval    String     // e.g., twice daily, every 4 hours
-//   dosage      String
-//   note        String?
-//   medicalRecordId String  @db.ObjectId
-//   medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+// -------------------- MEDICINE --------------------
+model Medicine {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId           String            @db.ObjectId
+  pet             Pet               @relation(fields: [petId], references: [id])
+  name        String
+  startDate   DateTime
+  endDate     DateTime?
+  interval    String     // e.g., twice daily, every 4 hours
+  dosage      String
+  note        String?
   
-//   createdAt       DateTime           @default(now())
-//   updatedAt       DateTime           @updatedAt
-// }
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
 
-// // -------------------- ANTIPARASITIC --------------------
-// model Antiparasitic {
-//   id              String     @id @default(auto()) @map("_id") @db.ObjectId
-//   name            String
-//   dateAdministered DateTime
-//   petWeight       Float
-//   nextTreatmentDate DateTime?
-//   veterinarian    String     // Veterinarian Name
-//   vetLicenseNumber String    // Veterinarian License Number
-//   note            String?
-//   medicalRecordId String     @db.ObjectId
-//   medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+// -------------------- ANTIPARASITIC --------------------
+model Antiparasitic {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId           String            @db.ObjectId
+  pet             Pet               @relation(fields: [petId], references: [id])
+  name            String
+  dateAdministered DateTime
+  petWeight       Float
+  nextTreatmentDate DateTime?
+  veterinarian    String     // Veterinarian Name
+  vetLicenseNumber String    // Veterinarian License Number
+  note            String?
   
-//   createdAt       DateTime           @default(now())
-//   updatedAt       DateTime           @updatedAt
-// }
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
 
-// // -------------------- PRESCRIPTION --------------------
-// model Prescription {
-//   id              String     @id @default(auto()) @map("_id") @db.ObjectId
-//   name            String
-//   veterinarian    String     // Veterinarian Name
-//   vetLicenseNumber String    // Veterinarian License Number
-//   note            String?
-//   file            String?    // File Attachment (URL or Path)
-//   medicalRecordId String     @db.ObjectId
-//   medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+// -------------------- PRESCRIPTION --------------------
+model Prescription {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId           String            @db.ObjectId
+  pet             Pet               @relation(fields: [petId], references: [id])
+  name            String
+  veterinarian    String     // Veterinarian Name
+  vetLicenseNumber String    // Veterinarian License Number
+  note            String?
+  file            String?    // File Attachment (URL or Path)
   
-//   createdAt       DateTime           @default(now())
-//   updatedAt       DateTime           @updatedAt
-// }
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
 
-// // -------------------- LAB RESULT --------------------
-// model LabResult {
-//   id              String     @id @default(auto()) @map("_id") @db.ObjectId
-//   name            String     // Name of Lab Result
-//   datePerformed   DateTime
-//   note            String?
-//   file            String?    // File Attachment (URL or Path)
-//   medicalRecordId String     @db.ObjectId
-//   medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+// -------------------- LAB RESULT --------------------
+model LabResult {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId           String            @db.ObjectId
+  pet             Pet               @relation(fields: [petId], references: [id])
+  name            String     // Name of Lab Result
+  datePerformed   DateTime
+  note            String?
+  file            String?    // File Attachment (URL or Path)
   
-//   createdAt       DateTime           @default(now())
-//   updatedAt       DateTime           @updatedAt
-// }
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
 
-// // -------------------- VACCINATION --------------------
-// model Vaccination {
-//   id              String     @id @default(auto()) @map("_id") @db.ObjectId
-//   dateAdministered DateTime
-//   petWeight       Float
-//   name            String     // Vaccination Name
-//   against         String     // Vaccination Against (e.g., Rabies)
-//   nextVaccinationDate DateTime?
-//   veterinarian    String     // Veterinarian Name
-//   vetLicenseNumber String    // Veterinarian License Number
-//   manufacturer    String?
-//   lotNumber       String?
-//   note            String?
-//   file            String?    // File Attachment (URL or Path)
-//   medicalRecordId String     @db.ObjectId
-//   medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+// -------------------- VACCINATION --------------------
+model Vaccination {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId           String            @db.ObjectId
+  pet             Pet               @relation(fields: [petId], references: [id])
+  dateAdministered DateTime
+  petWeight       Float
+  name            String     // Vaccination Name
+  against         String     // Vaccination Against (e.g., Rabies)
+  nextVaccinationDate DateTime?
+  veterinarian    String     // Veterinarian Name
+  vetLicenseNumber String    // Veterinarian License Number
+  manufacturer    String?
+  lotNumber       String?
+  note            String?
+  file            String?    // File Attachment (URL or Path)
   
-//   createdAt       DateTime           @default(now())
-//   updatedAt       DateTime           @updatedAt
-// }
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
 
 // // -------------------- APPOINTMENT MODEL --------------------
 // model Appointment {
 //   id          String       @id @default(auto()) @map("_id") @db.ObjectId
 //   pet         Pet          @relation(fields: [petId], references: [id])
 //   petId       String       @db.ObjectId
-//   owner       PetOwnerProfile @relation(fields: [ownerId], references: [id])
+//   owner       User         @relation(fields: [ownerId], references: [id])
 //   ownerId     String       @db.ObjectId
 //   veterinarian User        @relation(fields: [veterinarianId], references: [id])
 //   veterinarianId String    @db.ObjectId

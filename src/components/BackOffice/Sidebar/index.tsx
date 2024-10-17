@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import AddClinicStaff from "../AddClinicStaff";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Loader from "../common/Loader";
 // Removed import for Router
 
 interface SidebarProps {
@@ -114,6 +115,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               icon: <HandCoins />,
               label: "Payment Log",
               route: "/dashboard/payment",
+            },
+            {
+              icon: <SquareActivity />,
+              label: "System Activity",
+              route: "/dashboard/system-activity",
             },
           ],
         },
@@ -241,7 +247,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             {
               icon: <PawPrint />,
               label: "My Pets",
-              route: "/dashboard/my-pet",
+              route: "/dashboard/patient",
             },
             {
               icon: <AlarmClock />,
@@ -298,6 +304,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="block lg:hidden"
+            title="Toggle Sidebar"
           >
             <svg
               className="fill-current"
@@ -349,10 +356,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Add Pet Patient
                 </Button>
               </div>
+              {/* <div className="pb-2">
+                <Button
+                  className="w-full bg-blue-600 text-white hover:bg-blue-dark"
+                  onPress={() => openModal("addPetPatient")}
+                  startContent={<Plus />}
+                >
+                  Add Pet Patient
+                </Button>
+              </div> */}
               <Modal
                 size="2xl"
                 isOpen={visibleModal === "addPetPatient"}
                 onClose={closeModal}
+                scrollBehavior="inside"
+                backdrop="blur"
               >
                 <AddPetForm />
               </Modal>
@@ -366,13 +384,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     onPress={() => openModal("addClinicStaff")}
                     startContent={<UserRoundPlus />}
                   >
-                    Add Clinic Staff
+                    Add Staff or User
                   </Button>
                 </div>
                 <Modal
                   size="xl"
                   isOpen={visibleModal === "addClinicStaff"}
                   onClose={closeModal}
+                  // className="ModalOverlay"
+                  scrollBehavior="inside"
+                  backdrop="blur"
                 >
                   <AddClinicStaff />
                 </Modal>
