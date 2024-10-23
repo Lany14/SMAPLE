@@ -57,7 +57,7 @@ export default async function signup(formData: SignUpInputProps) {
       subject: "Verify Your Email Address",
       react: EmailVerification({
         firstName,
-        token,
+        token: token ?? 0,
         linkText,
         message,
       }),

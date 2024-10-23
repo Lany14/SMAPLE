@@ -39,6 +39,8 @@ import {
 import AddClinicStaff from "../AddClinicStaff";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Loader from "../common/Loader";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import AddPetForm2 from "../AddPetForm2";
 // Removed import for Router
 
 interface SidebarProps {
@@ -99,7 +101,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               label: "Pet Patients",
               route: "/dashboard/patient",
             },
-            { icon: <Users />, label: "Pet Parents", route: "/dashboard/user" },
+            { icon: <Users />, label: "Fur Parents", route: "/dashboard/user" },
             {
               icon: <Hospital />,
               label: "Clinic Staff",
@@ -110,6 +112,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               icon: <BriefcaseMedical />,
               label: "Vet Doctors",
               route: "/dashboard/doctor",
+            },
+            {
+              icon: <Calendar />,
+              label: "Calendar",
+              route: "/dashboard/calendar",
             },
             {
               icon: <HandCoins />,
@@ -202,7 +209,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             },
             {
               icon: <Users />,
-              label: "Pet Parents",
+              label: "Fur Parents",
               route: "/dashboard/user",
             },
             {
@@ -258,6 +265,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               icon: <BriefcaseMedical />,
               label: "Vet Doctors",
               route: "/dashboard/doctor",
+            },
+            {
+              icon: <Calendar />,
+              label: "Calendar",
+              route: "/dashboard/calendar",
             },
           ],
         },
@@ -347,6 +359,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
             <div className="pb-2">
               {/* Buttons to open different modals */}
+
               <div className="pb-2">
                 <Button
                   className="w-full bg-blue-600 text-white hover:bg-blue-dark"
@@ -356,15 +369,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Add Pet Patient
                 </Button>
               </div>
-              {/* <div className="pb-2">
-                <Button
-                  className="w-full bg-blue-600 text-white hover:bg-blue-dark"
-                  onPress={() => openModal("addPetPatient")}
-                  startContent={<Plus />}
-                >
-                  Add Pet Patient
-                </Button>
-              </div> */}
               <Modal
                 size="2xl"
                 isOpen={visibleModal === "addPetPatient"}

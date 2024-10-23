@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { Avatar, AvatarIcon } from "@nextui-org/react";
 
 const ProfileBox = () => {
   const { data: session, status } = useSession();
@@ -58,19 +59,20 @@ const ProfileBox = () => {
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
           <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-[176px] sm:p-3">
             <div className="relative drop-shadow-2">
-              <Image
-                src={
-                  session?.user?.image ||
-                  "/public/images/icon/dummy-profile.svg"
-                }
-                width={160}
-                height={160}
-                className="overflow-hidden rounded-full"
-                alt="profile"
-              />
+              {session?.user?.image ? (
+                <Image
+                  src={session.user.image}
+                  className=" overflow-hidden rounded-full"
+                  width={160}
+                  height={160}
+                  alt="profile"
+                />
+              ) : (
+                <AvatarIcon />
+              )}
             </div>
 
-            <label
+            {/* <label
               htmlFor="profilePhoto"
               className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
             >
@@ -97,7 +99,7 @@ const ProfileBox = () => {
                 className="sr-only"
                 accept="image/png, image/jpg, image/jpeg"
               />
-            </label>
+            </label> */}
           </div>
           <div className="mt-4">
             <h3 className="mb-1 text-heading-6 font-bold text-dark dark:text-white">

@@ -3,55 +3,55 @@ import Image from "next/image";
 import { PetDocumentTable } from "./PetDocumentTable";
 import { Divider } from "@nextui-org/react";
 import { VaccineChip } from "./VaccineChip";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const PatientInfoCard = () => {
   return (
-    <div className="overflow-hidden rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark  dark:shadow-card">
-      <div className="space-y-5">
-        <div className="flex items-center gap-4">
-          <Image
-            src="/images/user/user-03.png"
-            width={80}
-            height={80}
-            className="overflow-hidden rounded-full"
-            alt="pet photo"
-          />
-          <div className="space-y-1">
-            <p className="text-heading-5 font-bold ">Name </p>
-            <div className="text- flex h-5 items-center space-x-4 font-normal">
-              <p>Gender</p>
-              <Divider orientation="vertical" />
-              <p>Age</p>
-            </div>
-            <h2 className="h-5 font-normal">ID 1234-4567</h2>
+    <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
+      <CardContent className="p-6">
+        <div className="flex items-center space-x-4">
+          <Avatar className="h-24 w-24">
+            <AvatarImage
+              alt="Daisy"
+              src="/placeholder.svg?height=96&width=96"
+            />
+            <AvatarFallback>D</AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="text-2xl font-bold">Daisy</h2>
+            <p className="text-sm text-gray-500">Female | 3 Years</p>
+            <p className="text-sm text-gray-500">ID: 014 4384 3478023</p>
           </div>
         </div>
-
-        <div className="space-y-1 text-body-sm font-semibold">
-          <p>
-            Date of Birth: <p className="text-sm font-normal"></p>
-          </p>
-          <p>
-            Address: <p className="text-sm font-normal"></p>
-          </p>
-          <p>
-            Breed: <p className="text-sm font-normal"></p>
-          </p>
-          <p className="flex gap-2">
-            Vaccinated: <VaccineChip />
-          </p>
-          <p className="break-normal">Color & Markings: </p>
-          <p className="text-sm font-normal">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto omnis
-            nostrum sed soluta, atque harum saepe blanditiis, ut, at earum
-            accusamus temporibus consequuntur est alias aperiam inventore animi
-            repudiandae quasi.
-          </p>
-          <div className="flex gap-2"></div>
-
-          <p>Last Check Up:</p>
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          <div>
+            <p className="font-semibold">Member:</p>
+            <p>Yes</p>
+          </div>
+          <div>
+            <p className="font-semibold">Date of Birth:</p>
+            <p>02.09.2019</p>
+          </div>
+          <div>
+            <p className="font-semibold">Address:</p>
+            <p>934 Hilltop Rd, Falkenberg</p>
+            <p>Louisiana, 68848</p>
+          </div>
+          <div>
+            <p className="font-semibold">Breed:</p>
+            <p>Border Collie</p>
+          </div>
+          <div>
+            <p className="font-semibold">Vaccinated:</p>
+            <p>Yes</p>
+          </div>
+          <div>
+            <p className="font-semibold">Last Check Up:</p>
+            <p>18.02.2022</p>
+          </div>
         </div>
-      </div>
+      </CardContent>
     </div>
   );
 };

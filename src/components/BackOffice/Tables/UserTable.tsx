@@ -271,7 +271,7 @@ export default function App() {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-small text-default-400">
-            Total {users.length} Pet Parents
+            Total {users.length} Fur Parents
           </span>
           <label className="flex items-center text-small text-default-400">
             Rows per page:
@@ -364,7 +364,7 @@ export default function App() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No pet parents found"} items={sortedItems}>
+      <TableBody emptyContent={"No Fur Parents found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

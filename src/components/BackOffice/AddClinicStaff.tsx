@@ -11,6 +11,8 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
 
 export const SexProp = [
   { key: "Male", label: "Male" },
@@ -30,6 +32,7 @@ const AddClinicStaff: React.FC = () => {
     firstName: "",
     lastName: "",
     sex: "",
+    phoneNumber: "",
     birthDate: "",
     age: "",
     email: "",
@@ -38,10 +41,9 @@ const AddClinicStaff: React.FC = () => {
     specialization: "",
   });
 
-  const [errors, setErrors] = useState<any>({});
+  const router = useRouter();
 
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [isValid, setIsValid] = useState(true);
+  const [errors, setErrors] = useState<any>({});
 
   const calculateAge = (birthdate: string): number => {
     const today = new Date();
@@ -59,9 +61,12 @@ const AddClinicStaff: React.FC = () => {
     return age;
   };
 
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isValid, setIsValid] = useState(true);
+
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value.replace(/\D/g, ""); // Remove non-digit characters
-    if (input.length <= 10) {
+    const input = e.target.value.replace(/[^0-9]/g, ""); // Remove non-digit characters
+    if (input.length <= 10 && (input.length === 0 || input[0] === "9")) {
       setPhoneNumber(input);
       setIsValid(input.length === 10);
     }
@@ -113,11 +118,35 @@ const AddClinicStaff: React.FC = () => {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted:", formData);
-      // proceed with form submission (e.g., API call)
+      const fullPhoneNumber = `+63${phoneNumber}`;
+      const userData = {
+        ...formData,
+        phoneNumber: fullPhoneNumber,
+      };
+
+      try {
+        const response = await fetch("/api/admin/create-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
+        });
+
+        if (response.ok) {
+          toast.success("User account created successfully");
+          router.push("/admin/staff"); // Redirect to staff list page
+        } else {
+          const error = await response.json();
+          toast.error(error.message || "Failed to create user account");
+        }
+      } catch (error) {
+        console.error("Error creating user account:", error);
+        toast.error("An unexpected error occurred");
+      }
     } else {
       console.log("Validation failed");
     }
@@ -242,9 +271,10 @@ const AddClinicStaff: React.FC = () => {
                   <div>
                     <Input
                       label="Phone Number"
-                      placeholder="Enter 10 digit number"
-                      value={phoneNumber ? `+63 ${phoneNumber}` : ""}
+                      placeholder="ex. 9XXXXXXXXX"
+                      value={phoneNumber}
                       onChange={handlePhoneChange}
+                      startContent={<span className="text-small">+63</span>}
                       endContent={
                         <div className="pointer-events-none flex items-center">
                           <span

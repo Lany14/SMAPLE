@@ -6,7 +6,6 @@ import VetDoctorDashboard from "@/components/BackOffice/Dashboard/VetDoctorDashb
 import VetNurseDashboard from "@/components/BackOffice/Dashboard/VetNurseDashboard";
 import UserDashboard from "@/components/BackOffice/Dashboard/UserDashboard";
 import ReceptionistDashboard from "@/components/BackOffice/Dashboard/ReceptionistDashboard";
-import ECommerce from "@/components/BackOffice/Dashboard/E-commerce";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -18,7 +17,7 @@ const Page: React.FC = () => {
 
   // Handle loading state
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   const role = session?.user?.role;
@@ -35,8 +34,6 @@ const Page: React.FC = () => {
         return <ReceptionistDashboard />;
       case "PET_OWNER":
         return <UserDashboard />;
-      default:
-        return <Loader />;
     }
   };
   return renderDashboard();

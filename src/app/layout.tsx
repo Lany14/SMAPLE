@@ -1,4 +1,3 @@
-import Providers from "@/components/Providers";
 import { Poppins } from "next/font/google";
 import AuthProvider from "./context/AuthProvider";
 

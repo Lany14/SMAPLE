@@ -19,6 +19,17 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      // profile(profile) {
+      //   return {
+      //     id: profile.sub,
+      //     name: profile.name,
+      //     email: profile.email,
+      //     image: profile.picture,
+      //     // You can add custom fields here if needed
+      //     firstName: profile.given_name,
+      //     lastName: profile.family_name,
+      //   }
+      // },
     }),
 
     // Credentials provider for manual email/password sign-in
@@ -74,6 +85,12 @@ export const authOptions: NextAuthOptions = {
     async signIn({ account, profile }) {
       // Google sign-in logic
       if (account?.provider === "google" && profile) {
+        const generateToken = () => {
+          const min = 100000; // Minimum 6-figure number
+          const max = 999999; // Maximum 6-figure number
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+        const userToken = generateToken();
         const existingUser = await prismaClient.user.findUnique({
           where: { email: profile.email },
         });
@@ -81,12 +98,14 @@ export const authOptions: NextAuthOptions = {
         if (!existingUser) {
           await prismaClient.user.create({
             data: {
-              name: profile.name, // Use Google's `name`
-              email: profile.email, // Use Google's `email`
-              image: profile.image, // Use Google's profile picture
-              // firstName: profile.given_name, // Use Google's `given_name` for firstName
-              // lastName: profile.family_name, // Use Google's `familyName` for lastName
-              token: Number(account.id_token) ?? 0, // Ensure token is a number
+              name: profile.name ?? "",
+              firstName: profile.name?.split(" ")[0] ?? "",
+              lastName: profile.name?.split(" ").slice(1).join(" ") ?? "",
+              email: profile.email ?? "",
+              image: profile.image ?? null,
+              isVerified: true,
+              password: null, // Add this line
+              token: userToken, // Ensure token is a number
             },
           });
         }
