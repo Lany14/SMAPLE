@@ -46,13 +46,12 @@ export default async function signup(formData: SignUpInputProps) {
     });
     //Send an Email with the Token on the link as a search param
     const token = newUser.token;
-    const userId = newUser.id;
     // const name = newUser.firstName.split(" ")[0];
     const linkText = "Verify your Account ";
     const message =
       "Thank you for registering with Abys Agrivet Vet Clinic Portal. To complete your registration and verify your email address, please enter the following 6-digit verification code on our website :";
     const sendMail = await resend.emails.send({
-      from: "Verify <noreply@abysagrivet.com>",
+      from: "jhaysonquirao@gmail.com",
       to: email,
       subject: "Verify Your Email Address",
       react: EmailVerification({

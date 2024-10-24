@@ -47,48 +47,47 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  firstName     String
-  lastName      String
-  sex           String?
-  phoneNumber   String?
-  birthDate     DateTime?
-  age           Int?
-  username      String?   @unique
-  email         String    @unique
-  password      String?
-  emailVerified DateTime?
-  image         String?
-  role          UserRole  @default(PET_OWNER)
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  firstName       String
+  lastName        String
+  sex             String?
+  phoneNumber     String?
+  birthDate       DateTime?
+  age             Int?
+  email           String    @unique 
+  password        String?
+  emailVerified   DateTime?
+  image           String?
+  role            UserRole  @default(PET_OWNER)
 
 
-  isVerified    Boolean   @default(false)
-  token         Int?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  Account       Account[]
-  Session       Session[]
+  isVerified Boolean   @default(false)
+  token      Int?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Account    Account[]
+  Session    Session[]
   
-  userProfile        UserProfile?        
-  userProfileId      String?               @db.ObjectId
+  doctorNurseProfile        DoctorNurseProfile?        
 
   pets          Pet[]      @relation("OwnerPets")
 }
 
-// -------------------- USER PROFILE MODELS --------------------
-model UserProfile {
+// -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
+model DoctorNurseProfile {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String    @unique @db.ObjectId
-  licenseNumber  String?  @unique
+  licenseNumber  String?   @unique
   specialization String?
   user           User      @relation(fields: [userId], references: [id])
+  userId        String    @unique @db.ObjectId
 }
 
 
 // -------------------- PET MODEL --------------------
 model Pet {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  petId       String        @unique @db.ObjectId
   name        String
   breed       String
   age         Int
@@ -114,45 +113,36 @@ model Pet {
   vaccinations    Vaccination[]
 
   // appointments Appointment[]
+
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
 
 // -------------------- MEDICAL HISTORY --------------------
 model MedicalHistory {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
   petId           String            @db.ObjectId
   pet             Pet               @relation(fields: [petId], references: [id])
-  type        MedicalHistoryType
-  date        DateTime
-  note        String?
-  file        String?     // File Attachment (URL or Path)
+  type            String
+  date            DateTime
+  note            String?
+  file            String?     // File Attachment (URL or Path)
   
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 }
 
-enum MedicalHistoryType {
-  SURGERY
-  ALLERGIES
-  ONLINE_CONSULTATION
-  CLINIC_VISIT
-  VACCINE_BOOKLET
-  PROCEDURE
-  OTHER
-}
-
 // -------------------- MEDICINE --------------------
 model Medicine {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
   petId           String            @db.ObjectId
   pet             Pet               @relation(fields: [petId], references: [id])
-  name        String
-  startDate   DateTime
-  endDate     DateTime?
-  interval    String     // e.g., twice daily, every 4 hours
+  name            String
+  startDate       DateTime
+  endDate         DateTime?
+  interval        String     // e.g., twice daily, every 4 hours
   dosage      String
-  note        String?
+  note            String?
   
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
@@ -160,34 +150,34 @@ model Medicine {
 
 // -------------------- ANTIPARASITIC --------------------
 model Antiparasitic {
-  id              String     @id @default(auto()) @map("_id") @db.ObjectId
-  petId           String            @db.ObjectId
-  pet             Pet               @relation(fields: [petId], references: [id])
-  name            String
-  dateAdministered DateTime
-  petWeight       Float
+  id                String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId             String            @db.ObjectId
+  pet               Pet               @relation(fields: [petId], references: [id])
+  name              String
+  dateAdministered  DateTime
+  petWeight         Float
   nextTreatmentDate DateTime?
-  veterinarian    String     // Veterinarian Name
-  vetLicenseNumber String    // Veterinarian License Number
-  note            String?
+  veterinarian      String     // Veterinarian Name
+  vetLicenseNumber  String    // Veterinarian License Number
+  note              String?
   
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
 // -------------------- PRESCRIPTION --------------------
 model Prescription {
-  id              String     @id @default(auto()) @map("_id") @db.ObjectId
-  petId           String            @db.ObjectId
-  pet             Pet               @relation(fields: [petId], references: [id])
-  name            String
-  veterinarian    String     // Veterinarian Name
-  vetLicenseNumber String    // Veterinarian License Number
-  note            String?
-  file            String?    // File Attachment (URL or Path)
+  id                String     @id @default(auto()) @map("_id") @db.ObjectId
+  petId             String            @db.ObjectId
+  pet               Pet               @relation(fields: [petId], references: [id])
+  name              String
+  veterinarian      String     // Veterinarian Name
+  vetLicenseNumber  String    // Veterinarian License Number
+  note              String?
+  file              String?    // File Attachment (URL or Path)
   
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
 // -------------------- LAB RESULT --------------------

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Button,
   Divider,
@@ -11,7 +13,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
 export const SexProp = [
@@ -111,7 +113,12 @@ const AddClinicStaff: React.FC = () => {
     if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
       tempErrors.email = "Valid email is required";
     if (!formData.role) tempErrors.role = "Role is required";
-    if (formData.role !== "PET_OWNER" && !formData.licenseNumber)
+    if (
+      formData.role !== "PET_OWNER" &&
+      formData.role !== "VET_RECEPTIONIST" &&
+      formData.role !== "ADMIN" &&
+      !formData.licenseNumber
+    )
       tempErrors.licenseNumber = "License number is required for this role";
 
     setErrors(tempErrors);
@@ -126,7 +133,7 @@ const AddClinicStaff: React.FC = () => {
         ...formData,
         phoneNumber: fullPhoneNumber,
       };
-
+  
       try {
         const response = await fetch("/api/admin/create-user", {
           method: "POST",
@@ -135,17 +142,18 @@ const AddClinicStaff: React.FC = () => {
           },
           body: JSON.stringify(userData),
         });
-
+  
         if (response.ok) {
           toast.success("User account created successfully");
-          router.push("/admin/staff"); // Redirect to staff list page
+          router.push("/dashboard/staff"); // Redirect to staff list page
         } else {
-          const error = await response.json();
-          toast.error(error.message || "Failed to create user account");
+          // Log the full response for debugging
+          console.error("Error response:", await response.text());
+          toast.error("Failed to create user account. Check console for details.");
         }
       } catch (error) {
         console.error("Error creating user account:", error);
-        toast.error("An unexpected error occurred");
+        toast.error("An unexpected error occurred. Check console for details.");
       }
     } else {
       console.log("Validation failed");
@@ -323,37 +331,39 @@ const AddClinicStaff: React.FC = () => {
                   </div>
                 </div>
 
-                {formData.role !== "PET_OWNER" && (
-                  <>
-                    <Divider className="col-span-2" />
-                    <Input
-                      isRequired
-                      className="col-span-2"
-                      type="text"
-                      label="Vet License Number"
-                      id="licenseNumber"
-                      name="licenseNumber"
-                      value={formData.licenseNumber}
-                      onChange={handleInputChange}
-                      isInvalid={!!errors.licenseNumber}
-                    />
-                    {errors.licenseNumber && (
-                      <span className="text-xs text-red-500">
-                        {errors.licenseNumber}
-                      </span>
-                    )}
+                {formData.role !== "PET_OWNER" &&
+                  formData.role !== "VET_RECEPTIONIST" &&
+                  formData.role !== "ADMIN" && (
+                    <>
+                      <Divider className="col-span-2" />
+                      <Input
+                        isRequired
+                        className="col-span-2"
+                        type="text"
+                        label="Vet License Number"
+                        id="licenseNumber"
+                        name="licenseNumber"
+                        value={formData.licenseNumber}
+                        onChange={handleInputChange}
+                        isInvalid={!!errors.licenseNumber}
+                      />
+                      {errors.licenseNumber && (
+                        <span className="text-xs text-red-500">
+                          {errors.licenseNumber}
+                        </span>
+                      )}
 
-                    <Textarea
-                      className="col-span-2"
-                      type="text"
-                      label="Specialization"
-                      id="specialization"
-                      name="specialization"
-                      value={formData.specialization}
-                      onChange={handleInputChange}
-                    />
-                  </>
-                )}
+                      <Textarea
+                        className="col-span-2"
+                        type="text"
+                        label="Specialization"
+                        id="specialization"
+                        name="specialization"
+                        value={formData.specialization}
+                        onChange={handleInputChange}
+                      />
+                    </>
+                  )}
               </div>
             </div>
           </ModalBody>

@@ -1,11 +1,9 @@
 "use client";
 import React, { useEffect } from "react";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaGoogle } from "react-icons/fa";
 import { EyeFilledIcon } from "../../../../../public/images/icon/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../../../../public/images/icon/EyeSlashFilledIcon";
 import ShowPassStrength from "./ShowPassStrength";
