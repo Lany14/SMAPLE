@@ -49,12 +49,6 @@ enum UserRole {
 model User {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   name            String
-  firstName       String
-  lastName        String
-  sex             String?
-  phoneNumber     String?
-  birthDate       DateTime?
-  age             Int?
   email           String    @unique 
   password        String?
   emailVerified   DateTime?
@@ -69,20 +63,61 @@ model User {
   Account    Account[]
   Session    Session[]
   
-  doctorNurseProfile        DoctorNurseProfile?        
+  doctorNurseProfile        DoctorNurseProfile?  
+  receptionistProfile       ReceptionistProfile?
+  petOwnerProfile           PetOwnerProfile?
+}
 
-  pets          Pet[]      @relation("OwnerPets")
+model ReceptionistProfile {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String
+  lastName        String
+  sex             String
+  phoneNumber     String
+  birthDate       DateTime
+  age             Int
+  
+  user            User      @relation(fields: [userId], references: [id])
+  userId          String    @unique @db.ObjectId
+
+
 }
 
 // -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
 model DoctorNurseProfile {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  licenseNumber  String?   @unique
-  specialization String?
-  user           User      @relation(fields: [userId], references: [id])
-  userId        String    @unique @db.ObjectId
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String
+  lastName        String
+  sex             String
+  phoneNumber     String
+  birthDate       DateTime
+  age             Int
+  licenseNumber   String?   @unique
+  specialization  String?
+  user            User      @relation(fields: [userId], references: [id])
+  userId          String    @unique @db.ObjectId
+
+  veterinarianAppointments Appointment[] @relation("VeterinarianAppointments")
 }
 
+// -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
+model PetOwnerProfile {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String
+  lastName        String
+  sex             String?
+  phoneNumber     String?
+  birthDate       DateTime?
+  age             Int?
+
+  user            User            @relation(fields: [userId], references: [id])
+  userId          String          @unique @db.ObjectId
+
+  pets            Pet[]           @relation("OwnerPets")
+  appointments    Appointment[]   @relation("OwnerAppointments")
+
+
+}
 
 // -------------------- PET MODEL --------------------
 model Pet {
@@ -91,9 +126,12 @@ model Pet {
   name        String
   breed       String
   age         Int
-  owner       User          @relation("OwnerPets", fields: [ownerId], references: [id])
-  ownerId     String        @db.ObjectId
+
+  owner       PetOwnerProfile         @relation("OwnerPets", fields: [ownerId], references: [id])
+  ownerId     String                  @db.ObjectId
   
+  appointments    Appointment[]
+
   // Medical History
   medicalHistories MedicalHistory[]
 
@@ -215,34 +253,31 @@ model Vaccination {
   updatedAt       DateTime           @updatedAt
 }
 
-// // -------------------- APPOINTMENT MODEL --------------------
-// model Appointment {
-//   id          String       @id @default(auto()) @map("_id") @db.ObjectId
-//   pet         Pet          @relation(fields: [petId], references: [id])
-//   petId       String       @db.ObjectId
-//   owner       User         @relation(fields: [ownerId], references: [id])
-//   ownerId     String       @db.ObjectId
-//   veterinarian User        @relation(fields: [veterinarianId], references: [id])
-//   veterinarianId String    @db.ObjectId
-//   receptionist User        @relation(fields: [receptionistId], references: [id])
-//   receptionistId String?   @db.ObjectId
-//   timeSlot    DateTime
-//   status      AppointmentStatus
-//   createdAt   DateTime      @default(now())
-//   updatedAt   DateTime      @updatedAt
-// }
+// -------------------- APPOINTMENT MODEL --------------------
+model Appointment {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  pet         Pet             @relation(fields: [petId], references: [id])
+  petId       String          @db.ObjectId
+  owner       PetOwnerProfile @relation("OwnerAppointments", fields: [ownerId], references: [id])
+  ownerId     String          @db.ObjectId
+  veterinarian DoctorNurseProfile @relation("VeterinarianAppointments", fields: [veterinarianId], references: [id])
+  veterinarianId String        @db.ObjectId
 
-// enum AppointmentStatus {
-//   SCHEDULED
-//   RESCHEDULED
-//   COMPLETED
-//   CANCELED
-// }
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
 
-// // -------------------- INVOICE & PAYMENT MODEL --------------------
+enum AppointmentStatus {
+  SCHEDULED
+  RESCHEDULED
+  COMPLETED
+  CANCELED
+}
+
+// -------------------- INVOICE & PAYMENT MODEL --------------------
 // model Invoice {
 //   id             String     @id @default(auto()) @map("_id") @db.ObjectId
-//   owner          User       @relation(fields: [ownerId], references: [id])
+//   owner          PetOwnerProfile       @relation(fields: [ownerId], references: [id])
 //   ownerId        String     @db.ObjectId
 //   services       String[]
 //   totalAmount    Float

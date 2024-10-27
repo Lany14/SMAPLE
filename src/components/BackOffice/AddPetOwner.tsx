@@ -22,7 +22,6 @@ import { toast } from "react-hot-toast";
 import { Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { ModalContext } from "./Layouts/DefaultLayout";
-import { useSession } from "next-auth/react";
 
 export const SexProp = [
   { key: "Male", label: "Male" },
@@ -38,8 +37,6 @@ export const RoleProp = [
 ];
 
 const AddClinicStaff: React.FC = () => {
-  const { data: session } = useSession();
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -139,12 +136,6 @@ const AddClinicStaff: React.FC = () => {
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
-
-  useEffect(() => {
-    if (session?.user?.role === "VET_RECEPTIONIST") {
-      handleSelectChange("role", "PET_OWNER");
-    }
-  }, [session?.user?.role]);
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -343,47 +334,21 @@ const AddClinicStaff: React.FC = () => {
                   />
                 </div>
                 <div>
-                  {session?.user?.role === "ADMIN" && (
-                    <Select
-                      isRequired
-                      label="User Role"
-                      placeholder="Choose User Role"
-                      value={formData.role}
-                      onChange={(e) =>
-                        handleSelectChange("role", e.target.value)
-                      }
-                      className="col-span-2"
-                      isInvalid={!!errors.role}
-                    >
-                      {RoleProp.map((role) => (
-                        <SelectItem value={role.key} key={role.key}>
-                          {role.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                  )}
-
-                  {session?.user?.role === "VET_RECEPTIONIST" && (
-                    <Select
-                      isDisabled
-                      label="User Role"
-                      placeholder="Choose Clinic Role"
-                      defaultSelectedKeys={["PET_OWNER"]}
-                      value={formData.role}
-                      onChange={(e) =>
-                        handleSelectChange("role", e.target.value)
-                      }
-                      className="col-span-2"
-                      isInvalid={!!errors.role}
-                    >
-                      {RoleProp.map((role) => (
-                        <SelectItem value={role.key} key={role.key}>
-                          {role.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                  )}
-
+                  <Select
+                    isRequired
+                    label="User Role"
+                    placeholder="Choose Clinic Role"
+                    value={formData.role}
+                    onChange={(e) => handleSelectChange("role", e.target.value)}
+                    className="col-span-2"
+                    isInvalid={!!errors.role}
+                  >
+                    {RoleProp.map((role) => (
+                      <SelectItem value={role.key} key={role.key}>
+                        {role.label}
+                      </SelectItem>
+                    ))}
+                  </Select>
                   {errors.role && (
                     <span className="text-xs text-red-500">{errors.role}</span>
                   )}

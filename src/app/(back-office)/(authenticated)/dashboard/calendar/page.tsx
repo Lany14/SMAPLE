@@ -8,13 +8,13 @@ export const metadata: Metadata = {
 
 const CalendarPage = () => {
   return (
-    <>
+    <div>
       <div className="mx-auto max-w-7xl">
         <Breadcrumb pageName="Calendar" />
 
         <CalendarBox />
       </div>
-    </>
+    </div>
   );
 };
 

@@ -68,8 +68,6 @@ export const authOptions: NextAuthOptions = {
 
           return {
             id: existingUser.id,
-            firstName: existingUser.firstName,
-            lastName: existingUser.lastName,
             email: existingUser.email,
             role: existingUser.role,
             picture: existingUser.image,
@@ -99,8 +97,6 @@ export const authOptions: NextAuthOptions = {
           await prismaClient.user.create({
             data: {
               name: profile.name ?? "",
-              firstName: profile.name?.split(" ")[0] ?? "",
-              lastName: profile.name?.split(" ").slice(1).join(" ") ?? "",
               email: profile.email ?? "",
               image: profile.image ?? null,
               isVerified: true,
@@ -123,8 +119,6 @@ export const authOptions: NextAuthOptions = {
       return {
         id: dbUser.id,
         name: dbUser.name,
-        firstName: dbUser.firstName,
-        lastName: dbUser.lastName,
         email: dbUser.email,
         role: dbUser.role,
         picture: dbUser.image,

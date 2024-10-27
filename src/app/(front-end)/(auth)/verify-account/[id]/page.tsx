@@ -11,7 +11,7 @@ export default async function VerifyAccount({
 }) {
   //Get a User
   const user = await getUserById(id);
-  const userToken = user?.token;
+  const userToken = user?.token ?? undefined;
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">

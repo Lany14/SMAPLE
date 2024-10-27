@@ -40,13 +40,7 @@ export async function POST(request: Request) {
     const user = await prisma.user.create({
       data: {
         name: `${firstName} ${lastName}`,
-        firstName,
-        lastName,
-        sex,
-        birthDate: new Date(birthDate),
-        age: parseInt(age),
         email,
-        phoneNumber,
         role,
         password: hashedPassword,
         token: userToken,
@@ -56,8 +50,31 @@ export async function POST(request: Request) {
     if (role === "VET_DOCTOR" || role === "VET_NURSE") {
       await prisma.doctorNurseProfile.create({
         data: {
+          firstName,
+          lastName,
+          sex,
+          birthDate: new Date(birthDate),
+          age: parseInt(age),
+          phoneNumber,
           licenseNumber,
           specialization,
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+    }
+    if (role === "VET_RECEPTIONIST") {
+      await prisma.receptionistProfile.create({
+        data: {
+          firstName,
+          lastName,
+          sex,
+          birthDate: new Date(birthDate),
+          age: parseInt(age),
+          phoneNumber,
           user: {
             connect: {
               id: user.id,
@@ -69,7 +86,7 @@ export async function POST(request: Request) {
 
     // Send welcome email with credentials
     await resend.emails.send({
-      from: "jhaysonquirao@gmail.com",
+      from: "Abys Agrivet <onboarding@resend.dev>",
       to: email,
       subject: "Welcome to Abys Agrivet",
       react: AccountCreatedEmail({ firstName, email, password }),

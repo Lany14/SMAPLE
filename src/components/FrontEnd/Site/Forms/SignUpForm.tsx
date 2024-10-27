@@ -14,6 +14,7 @@ import createUser from "../../../../../actions/user";
 import { UserRole } from "@prisma/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import GoogleSigninButton from "@/components/BackOffice/Auth/GoogleSigninButton";
+import { useRouter } from "next/navigation";
 
 type Strength = 0 | 1 | 2 | 3;
 
@@ -23,7 +24,7 @@ const FormSchema = z
       .string()
       .min(2, "First name must be at least 2 characters")
       .max(45, "First name must be less than 45 characters")
-      .regex(new RegExp("^[a-zA-Z ]+$"), "No special character allowed!"),
+      .regex(new RegExp("^[a-zA-Z- ]+$"), "No special character allowed!"),
     lastName: z
       .string()
       .min(2, "Last name must be at least 2 characters")
@@ -49,6 +50,7 @@ export default function RegisterForm({
 }: {
   role?: UserRole;
 }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -75,6 +77,7 @@ export default function RegisterForm({
         setLoading(false);
         toast.success("User Created Successfully");
         console.log(user.data);
+        router.push("/verify-account");
       } else {
         console.log(user.error);
       }

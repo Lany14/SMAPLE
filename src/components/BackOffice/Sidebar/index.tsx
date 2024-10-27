@@ -1,23 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarItem from "../Sidebar/SidebarItem";
 import ClickOutside from "@/components/BackOffice/ClickOutside";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useRouter } from "next/navigation";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-} from "@nextui-org/react";
-import AddPetForm from "../AddPetForm";
+
+import { Button } from "@nextui-org/react";
+
 import {
   AlarmClock,
   Briefcase,
@@ -30,22 +22,17 @@ import {
   LogOut,
   PawPrint,
   Plus,
-  Settings,
   SquareActivity,
   UserRoundPen,
   UserRoundPlus,
   Users,
 } from "lucide-react";
-import AddClinicStaff from "../AddClinicStaff";
-import { signIn, signOut, useSession } from "next-auth/react";
-import Loader from "../common/Loader";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import AddPetForm2 from "../AddPetForm2";
-// Removed import for Router
+import { signOut, useSession } from "next-auth/react";
 
 interface SidebarProps {
   sidebarOpen: boolean;
-  setSidebarOpen: (arg: boolean) => void;
+  setSidebarOpen: (open: boolean) => void;
+  // openModal: (content: React.ReactNode) => void; // Make sure this is defined
 }
 
 type ModalId = "addPetPatient" | "addClinicStaff" | null;
@@ -61,19 +48,20 @@ interface MenuGroup {
   menuItems: MenuItem[];
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession(); // Moved inside component
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
-  const [visibleModal, setVisibleModal] = useState<ModalId>(null);
 
-  const openModal = (modalId: ModalId) => {
-    setVisibleModal(modalId);
-  };
+  // const [visibleModal, setVisibleModal] = useState<ModalId>(null);
 
-  const closeModal = () => {
-    setVisibleModal(null);
-  };
+  // const openModal = (modalId: ModalId) => {
+  //   setVisibleModal(modalId);
+  // };
+
+  // const closeModal = () => {
+  //   setVisibleModal(null);
+  // };
 
   // Role-based menu logic
   const getMenuGroups = (): MenuGroup[] => {
@@ -281,6 +269,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const menuGroups = getMenuGroups();
 
+  // const setModalContent = useContext(ModalContext);
+
+  // const openAddClinicStaff = () =>
+  //   setModalContent(<AddClinicStaff onClose={closeModal} />);
+  // const openAddPetPatient = () => setModalContent(<AddPetForm />);
+
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
@@ -362,14 +356,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               <div className="pb-2">
                 <Button
+                  as={Link}
                   className="w-full bg-blue-600 text-white hover:bg-blue-dark"
-                  onPress={() => openModal("addPetPatient")}
+                  // onPress={() => openModal("addPetPatient")}
+                  // onClick={handleOpenAddPetForm}
                   startContent={<Plus />}
+                  href="/dashboard/add-patient"
                 >
                   Add Pet Patient
                 </Button>
               </div>
-              <Modal
+              {/* <Modal
                 size="2xl"
                 isOpen={visibleModal === "addPetPatient"}
                 onClose={closeModal}
@@ -377,21 +374,25 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 backdrop="blur"
               >
                 <AddPetForm />
-              </Modal>
+              </Modal> */}
             </div>
 
-            {session?.user?.role === "ADMIN" && (
+            {(session?.user?.role === "ADMIN" ||
+              session?.user?.role === "VET_RECEPTIONIST") && (
               <div>
                 <div className="pb-2">
                   <Button
+                    as={Link}
                     className="w-full bg-primary text-white hover:bg-primaryho"
-                    onPress={() => openModal("addClinicStaff")}
+                    // onPress={() => openModal("addClinicStaff")}
+                    // onClick={handleOpenAddClinicStaff}
                     startContent={<UserRoundPlus />}
+                    href="/dashboard/add-account"
                   >
-                    Add Staff or User
+                    Add User Account
                   </Button>
                 </div>
-                <Modal
+                {/* <Modal
                   size="xl"
                   isOpen={visibleModal === "addClinicStaff"}
                   onClose={closeModal}
@@ -399,8 +400,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   scrollBehavior="inside"
                   backdrop="blur"
                 >
-                  <AddClinicStaff />
-                </Modal>
+                  <AddClinicStaff onClose={closeModal} />
+                </Modal> */}
               </div>
             )}
 

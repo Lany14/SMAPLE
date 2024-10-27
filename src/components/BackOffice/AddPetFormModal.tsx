@@ -15,9 +15,8 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-import { DrawerContent } from "../ui/drawer";
 
-const AddPetForm2: React.FC = () => {
+const AddPetFormModal: React.FC = () => {
   const [formData, setFormData] = useState({
     petName: "",
     sex: "",
@@ -106,8 +105,8 @@ const AddPetForm2: React.FC = () => {
   };
 
   return (
-    <DrawerContent>
-      <div>
+    <ModalContent>
+      {(onClose) => (
         <form onSubmit={handleSubmit}>
           <ModalHeader className="justify-center text-center text-xl">
             Add Pet Record
@@ -298,9 +297,9 @@ const AddPetForm2: React.FC = () => {
             </Button>
           </ModalFooter>
         </form>
-      </div>
-    </DrawerContent>
+      )}
+    </ModalContent>
   );
 };
 
-export default AddPetForm2;
+export default AddPetFormModal;
