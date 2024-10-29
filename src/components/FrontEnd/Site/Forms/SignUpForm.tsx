@@ -80,6 +80,8 @@ export default function RegisterForm({
         router.push("/verify-account");
       } else {
         console.log(user.error);
+        setLoading(false);
+        toast.error("User Creation Failed");
       }
     } catch (error) {
       console.log(error);

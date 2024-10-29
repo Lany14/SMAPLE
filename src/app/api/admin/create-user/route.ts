@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { Resend } from "resend";
 import { generatePassword } from "@/utils/passwordGenerator";
 import { AccountCreatedEmail } from "@/components/Emails/AccountCreatedEmail";
+import { generateId } from "@/utils/generateId";
 
 const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -26,6 +27,8 @@ export async function POST(request: Request) {
     // Generate a random password
     const password = generatePassword();
 
+    const generatedUserId = generateId();
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -39,6 +42,7 @@ export async function POST(request: Request) {
     // Create user in the database
     const user = await prisma.user.create({
       data: {
+        userId: generatedUserId,
         name: `${firstName} ${lastName}`,
         email,
         role,
@@ -60,7 +64,7 @@ export async function POST(request: Request) {
           specialization,
           user: {
             connect: {
-              id: user.id,
+              userId: user.userId,
             },
           },
         },
@@ -77,7 +81,7 @@ export async function POST(request: Request) {
           phoneNumber,
           user: {
             connect: {
-              id: user.id,
+              userId: user.userId,
             },
           },
         },
@@ -87,7 +91,7 @@ export async function POST(request: Request) {
     // Send welcome email with credentials
     await resend.emails.send({
       from: "Abys Agrivet <onboarding@resend.dev>",
-      to: email,
+      to: "jhaysonquirao@gmail.com",
       subject: "Welcome to Abys Agrivet",
       react: AccountCreatedEmail({ firstName, email, password }),
     });
