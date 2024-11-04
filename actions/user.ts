@@ -33,11 +33,11 @@ export default async function signup(formData: SignUpInputProps) {
       const max = 999999; // Maximum 6-figure number
       return Math.floor(Math.random() * (max - min + 1)) + min;
     };
-    const generatedUserId = generateId();
+    // const generatedUserId = generateId();
     const userToken = generateToken();
     const newUser = await prismaClient.user.create({
       data: {
-        userId: generatedUserId,
+        // userId: generatedUserId,
         name,
         email,
         password: hashedPassword,
@@ -50,9 +50,9 @@ export default async function signup(formData: SignUpInputProps) {
         data: {
           firstName,
           lastName,
-          petOwnerUser: {
+          user: {
             connect: {
-              userId: newUser.userId,
+              id: newUser.id,
             },
           },
         },
@@ -65,8 +65,8 @@ export default async function signup(formData: SignUpInputProps) {
     const message =
       "Thank you for registering with Abys Agrivet Vet Clinic Portal. To complete your registration and verify your email address, please enter the following 6-digit verification code on our website :";
     const sendMail = await resend.emails.send({
-      from: "Abys Agrivet <onboarding@resend.dev>",
-      to: "jhaysonquirao@gmail.com",
+      from: "Abys Agrivet <noreply@abysagrivet.online>",
+      to: email,
       subject: "Verify Your Email Address",
       react: EmailVerification({
         firstName,
@@ -115,6 +115,7 @@ export async function updateUserById(id: string) {
         },
         data: {
           isVerified: true,
+          emailVerified: new Date(),
         },
       });
       return updatedUser;

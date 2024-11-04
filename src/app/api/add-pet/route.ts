@@ -12,6 +12,7 @@ export async function POST(request: Request) {
     const {
       // Pet basic information
       name,
+      sex,
       species,
       breed,
       age,
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
       ownerId,
 
       // Owner information
+      ownerEmail,
       ownerFirstName,
       ownerLastName,
 
@@ -36,8 +38,9 @@ export async function POST(request: Request) {
     // Create pet with a new ObjectId for petId
     const pet = await prisma.pet.create({
       data: {
-        petId: new ObjectId().toString(), // Generate a unique petId
+        // petId: new ObjectId().toString(), // Generate a unique petId
         name,
+        sex,
         species,
         breed,
         age,
@@ -139,8 +142,8 @@ export async function POST(request: Request) {
     });
 
     await resend.emails.send({
-      from: "Abys Agrivet <onboarding@resend.dev>",
-      to: "jhaysonquirao@gmail.com",
+      from: "Abys Agrivet <noreply@abysagrivet.online>",
+      to: ownerEmail,
       subject: "Added a new pet to your profile",
       react: AddPetNotif({
         ownerFirstName,

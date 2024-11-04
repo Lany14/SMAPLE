@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Resend } from "resend";
 import { generatePassword } from "@/utils/passwordGenerator";
 import { AccountCreatedEmail } from "@/components/Emails/AccountCreatedEmail";
-import { generateId } from "@/utils/generateId";
+import { prismaClient } from "@/lib/db";
 
-const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
@@ -24,74 +22,108 @@ export async function POST(request: Request) {
       specialization,
     } = await request.json();
 
-    // Generate a random password
-    const password = generatePassword();
+    // Validate required fields
+    if (!firstName || !lastName || !email || !phoneNumber || !role) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
 
-    const generatedUserId = generateId();
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const generateToken = () => {
-      const min = 100000; // Minimum 6-figure number
-      const max = 999999; // Maximum 6-figure number
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
-    const userToken = generateToken();
-
-    // Create user in the database
-    const user = await prisma.user.create({
-      data: {
-        userId: generatedUserId,
-        name: `${firstName} ${lastName}`,
-        email,
-        role,
-        password: hashedPassword,
-        token: userToken,
-      },
+    // Check for existing user by email
+    const existingUser = await prismaClient.user.findUnique({
+      where: { email },
     });
 
-    if (role === "VET_DOCTOR" || role === "VET_NURSE") {
-      await prisma.doctorNurseProfile.create({
-        data: {
-          firstName,
-          lastName,
-          sex,
-          birthDate: new Date(birthDate),
-          age: parseInt(age),
-          phoneNumber,
-          licenseNumber,
-          specialization,
-          user: {
-            connect: {
-              userId: user.userId,
-            },
-          },
-        },
-      });
-    }
-    if (role === "VET_RECEPTIONIST") {
-      await prisma.receptionistProfile.create({
-        data: {
-          firstName,
-          lastName,
-          sex,
-          birthDate: new Date(birthDate),
-          age: parseInt(age),
-          phoneNumber,
-          user: {
-            connect: {
-              userId: user.userId,
-            },
-          },
-        },
+    if (existingUser) {
+      return NextResponse.json({
+        error: `User with email ${email} already exists`,
+        status: 409,
       });
     }
 
-    // Send welcome email with credentials
+    // Check for existing phone number across all profile types
+    const profileTypes = [
+      "adminProfile",
+      "receptionistProfile",
+      "doctorNurseProfile",
+      "petOwnerProfile",
+    ];
+    const phoneNumberQueries = profileTypes.map((type) =>
+      (prismaClient[type as keyof typeof prismaClient] as any).findUnique({
+        where: { phoneNumber },
+      }),
+    );
+
+    const existingProfiles = await Promise.all(phoneNumberQueries);
+    if (existingProfiles.some((profile) => profile)) {
+      return NextResponse.json({
+        error: `Phone number ${phoneNumber} already exists`,
+        status: 409,
+      });
+    }
+
+    // Generate credentials
+    const password = generatePassword();
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userToken = Math.floor(100000 + Math.random() * 900000); // 6-digit token
+
+    // Base user data
+    const baseProfileData = {
+      firstName,
+      lastName,
+      sex,
+      birthDate: new Date(birthDate),
+      age: parseInt(age),
+      phoneNumber,
+      user: {
+        connect: { id: "" }, // Will be set after user creation
+      },
+    };
+
+    // Create user and profile in a transaction
+    const result = await prismaClient.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name: `${firstName} ${lastName}`,
+          email,
+          role,
+          password: hashedPassword,
+          token: userToken,
+        },
+      });
+
+      baseProfileData.user.connect.id = user.id;
+
+      switch (role) {
+        case "PET_OWNER":
+          await tx.petOwnerProfile.create({ data: baseProfileData });
+          break;
+        case "ADMIN":
+          await tx.adminProfile.create({ data: baseProfileData });
+          break;
+        case "VET_DOCTOR":
+        case "VET_NURSE":
+          await tx.doctorNurseProfile.create({
+            data: {
+              ...baseProfileData,
+              licenseNumber,
+              specialization,
+            },
+          });
+          break;
+        case "VET_RECEPTIONIST":
+          await tx.receptionistProfile.create({ data: baseProfileData });
+          break;
+      }
+
+      return user;
+    });
+
+    // Send welcome email
     await resend.emails.send({
-      from: "Abys Agrivet <onboarding@resend.dev>",
-      to: "jhaysonquirao@gmail.com",
+      from: "Abys Agrivet <noreply@abysagrivet.online>",
+      to: email,
       subject: "Welcome to Abys Agrivet",
       react: AccountCreatedEmail({ firstName, email, password }),
     });
@@ -103,7 +135,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error creating user:", error);
     return NextResponse.json(
-      { message: "Error creating user" },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

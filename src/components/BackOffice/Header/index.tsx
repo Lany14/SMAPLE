@@ -101,7 +101,19 @@ const Header = (props: {
         <div className="hidden xl:block">
           <div>
             <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              {greeting} {session?.user?.firstName}!
+              {greeting} 
+              {session?.user?.role === "ADMIN" && (
+                <span>{session?.adminProfile?.firstName}</span>
+              )}
+              {session?.user?.role === "RECEPTIONIST" && (
+                <span>{session?.receptionistProfile?.firstName}</span>
+              )}
+              {session?.user?.role === "DOCTOR" && (
+                <span>{session?.doctorNurseProfile?.firstName}</span>
+              )}
+              {session?.user?.role === "NURSE" && (
+                <span>{session?.doctorNurseProfile?.firstName}</span>
+              )}
             </h1>
             <p className="font-medium">{session?.user?.role} Dashboard</p>
           </div>

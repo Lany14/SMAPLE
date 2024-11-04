@@ -48,7 +48,7 @@ enum UserRole {
 
 model User {
   id                      String            @id @default(auto()) @map("_id") @db.ObjectId
-  userId                  Int               @unique @db.Int
+  // userId                  Int               @unique @db.Int
   name                    String
   email                   String            @unique 
   password                String?
@@ -64,9 +64,25 @@ model User {
   Account                 Account[]
   Session                 Session[]
   
+  adminProfile            AdminProfile?
   doctorNurseProfile      DoctorNurseProfile?  
   receptionistProfile     ReceptionistProfile?
   petOwnerProfile         PetOwnerProfile?
+}
+
+
+model AdminProfile {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String
+  lastName        String
+  sex             String
+  address         String?
+  phoneNumber     String    @unique
+  birthDate       DateTime
+  age             Int
+  
+  user            User      @relation(fields: [adminId], references: [id])
+  adminId         String    @unique @db.ObjectId
 }
 
 model ReceptionistProfile {
@@ -74,7 +90,8 @@ model ReceptionistProfile {
   firstName       String
   lastName        String
   sex             String
-  phoneNumber     String
+  address         String?
+  phoneNumber     String    @unique
   birthDate       DateTime
   age             Int
   
@@ -88,10 +105,11 @@ model DoctorNurseProfile {
   firstName       String
   lastName        String
   sex             String
-  phoneNumber     String
+  address         String?
+  phoneNumber     String    @unique
   birthDate       DateTime
   age             Int
-  licenseNumber   String?   @unique
+  licenseNumber   String    @unique
   specialization  String?
   user            User      @relation(fields: [doctorNurseId], references: [id])
   doctorNurseId   String    @unique @db.ObjectId
@@ -105,7 +123,8 @@ model PetOwnerProfile {
   firstName       String
   lastName        String
   sex             String?
-  phoneNumber     String?
+  address         String?
+  phoneNumber     String?      @unique
   birthDate       DateTime?
   age             Int?
 
@@ -121,19 +140,19 @@ model PetOwnerProfile {
 // -------------------- PET MODEL --------------------
 model Pet {
   id                String        @id @default(auto()) @map("_id") @db.ObjectId
-  petId             String        @unique
-  name              String
-  sex               String
-  species           String        // Added: Type of pet (e.g., Dog, Cat)
-  breed             String
-  birthDate         DateTime?     // Added: Pet's birth date
-  age               Int
-  weight            Float?        // Added: Current weight
-  colorAndMarkings  String?       // Added: Pet's color
+  // petId             String        @unique
+  petName           String
+  petSex            String
+  petSpecies        String        // Added: Type of pet (e.g., Dog, Cat)
+  petBreed          String
+  petBirthdate      DateTime?     // Added: Pet's birth date
+  petAge            Int
+  petWeight         Float?        // Added: Current weight
+  petColorAndMarkings  String?       // Added: Pet's color
   
 
   owner      PetOwnerProfile         @relation("OwnerPets", fields: [petOwnerId], references: [id])
-  petOwnerId    String               @unique @db.ObjectId
+  petOwnerId    String               @db.ObjectId
   
   appointments      Appointment[]
 
@@ -164,7 +183,7 @@ model Pet {
 // -------------------- MEDICAL HISTORY --------------------
 model MedicalHistory {
   id              String            @id @default(auto()) @map("_id") @db.ObjectId
-  petId           String            @unique @db.ObjectId
+  petId           String            @db.ObjectId
   pet             Pet               @relation(fields: [petId], references: [id])
   type            String
   date            DateTime
@@ -178,7 +197,7 @@ model MedicalHistory {
 // -------------------- MEDICINE --------------------
 model Medicine {
   id              String          @id @default(auto()) @map("_id") @db.ObjectId
-  petId           String          @unique @db.ObjectId
+  petId           String          @db.ObjectId
   pet             Pet             @relation(fields: [petId], references: [id])
   name            String
   startDate       DateTime
@@ -194,7 +213,7 @@ model Medicine {
 // -------------------- ANTIPARASITIC --------------------
 model Antiparasitic {
   id                String      @id @default(auto()) @map("_id") @db.ObjectId
-  petId             String      @unique @db.ObjectId
+  petId             String      @db.ObjectId
   pet               Pet         @relation(fields: [petId], references: [id])
   name              String
   dateAdministered  DateTime
@@ -211,7 +230,7 @@ model Antiparasitic {
 // -------------------- PRESCRIPTION --------------------
 model Prescription {
   id                String      @id @default(auto()) @map("_id") @db.ObjectId
-  petId             String      @unique @db.ObjectId
+  petId             String      @db.ObjectId
   pet               Pet         @relation(fields: [petId], references: [id])
   name              String
   veterinarian      String      // Veterinarian Name
@@ -226,7 +245,7 @@ model Prescription {
 // -------------------- LAB RESULT --------------------
 model LabResult {
   id              String         @id @default(auto()) @map("_id") @db.ObjectId
-  petId           String         @unique @db.ObjectId
+  petId           String         @db.ObjectId
   pet             Pet            @relation(fields: [petId], references: [id])
   name            String         // Name of Lab Result
   datePerformed   DateTime
@@ -240,7 +259,7 @@ model LabResult {
 // -------------------- VACCINATION --------------------
 model Vaccination {
   id                    String        @id @default(auto()) @map("_id") @db.ObjectId
-  petId                 String        @unique @db.ObjectId
+  petId                 String        @db.ObjectId
   pet                   Pet           @relation(fields: [petId], references: [id])
   dateAdministered      DateTime
   petWeight             Float
@@ -262,11 +281,11 @@ model Vaccination {
 model Appointment {
   id              String                  @id @default(auto()) @map("_id") @db.ObjectId
   pet             Pet                     @relation(fields: [petId], references: [id])
-  petId           String                  @unique @db.ObjectId  
+  petId           String                  @db.ObjectId  
   petOwner        PetOwnerProfile         @relation("OwnerAppointments", fields: [petOwnerId], references: [id])
-  petOwnerId      String                  @unique @db.ObjectId
+  petOwnerId      String                  @db.ObjectId
   veterinarian    DoctorNurseProfile      @relation("VeterinarianAppointments", fields: [veterinarianId], references: [id])
-  veterinarianId  String                  @unique @db.ObjectId
+  veterinarianId  String                  @db.ObjectId
   
 
   googleMeetLink  String?

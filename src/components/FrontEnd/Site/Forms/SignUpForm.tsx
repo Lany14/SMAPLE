@@ -77,7 +77,7 @@ export default function RegisterForm({
         setLoading(false);
         toast.success("User Created Successfully");
         console.log(user.data);
-        router.push("/verify-account");
+        router.push(`/verify-account/${user.data?.id}`);
       } else {
         console.log(user.error);
         setLoading(false);
