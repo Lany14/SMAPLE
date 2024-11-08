@@ -5,9 +5,9 @@ import { useState } from "react";
 const Hero = () => {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  // };
 
   return (
     <>
@@ -30,16 +30,14 @@ const Hero = () => {
               </p> */}
 
               <div className="mt-10">
-                <form onSubmit={handleSubmit}>
-                  <div className="flex flex-wrap gap-5">
-                    <button
-                      aria-label="get started button"
-                      className="flex rounded-full bg-primary px-7.5 py-2.5 text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark dark:hover:bg-blackho"
-                    >
-                      Book Now
-                    </button>
-                  </div>
-                </form>
+                <div className="flex flex-wrap gap-5">
+                  <button
+                    aria-label="get started button"
+                    className="flex rounded-full bg-primary px-7.5 py-2.5 text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark dark:hover:bg-blackho"
+                  >
+                    Book Now
+                  </button>
+                </div>
               </div>
             </div>
 

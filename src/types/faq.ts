@@ -1,5 +1,5 @@
 export type FAQ = {
-  header: string;
   id: number;
-  text: string;
+  quest: string;
+  ans: string;
 };
