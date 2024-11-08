@@ -1,9 +1,4 @@
 export type Brand = {
-  visitors: number;
-  revenues: string;
-  sales: number;
-  conversion: number;
-  logo: string;
   id: number;
   name: string;
   href: string;
