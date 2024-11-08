@@ -15,7 +15,6 @@ const config: Config = {
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "class",
   theme: {
     fontFamily: {
       poppins: ["Poppins", "sans-serif"],
