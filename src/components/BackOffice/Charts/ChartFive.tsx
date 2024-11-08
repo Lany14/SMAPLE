@@ -51,7 +51,7 @@ const ChartFive: React.FC = () => {
       fontFamily: "Poppins",
 
       markers: {
-        radius: 99,
+        size: 99,
       },
     },
     grid: {
