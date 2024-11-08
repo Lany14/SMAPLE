@@ -5,6 +5,7 @@ import { generatePassword } from "@/utils/passwordGenerator";
 import { AccountCreatedEmail } from "@/components/Emails/AccountCreatedEmail";
 import { prismaClient } from "@/lib/db";
 import toast from "react-hot-toast";
+import { generateId } from "@/src/utils/generateId";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -86,6 +87,7 @@ export async function POST(request: Request) {
     const result = await prismaClient.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
+          userId: parseInt(generateId()),
           name: `${firstName} ${lastName}`,
           email,
           role,

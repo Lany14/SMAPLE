@@ -241,7 +241,7 @@ const PetOwnerOnboardingForm = () => {
 
     setErrors(newErrors);
     return isValid;
-  }, []);
+  }, [cardName, cardNumber, cvv.length, expiryDate]);
 
   const validateForm = useCallback(() => {
     const newErrors: FormErrors = {};
@@ -272,7 +272,7 @@ const PetOwnerOnboardingForm = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, []);
+  }, [formData]);
 
   const handleAddPet = useCallback(() => {
     if (validateForm()) {
@@ -363,7 +363,17 @@ const PetOwnerOnboardingForm = () => {
       console.log("Form submitted:", userData);
       alert("Onboarding completed successfully!");
     }
-  }, [validateForm, validatePaymentForm]);
+  }, [
+    validateForm,
+    validatePaymentForm,
+    formData,
+    phoneNumber,
+    petProfiles,
+    cardNumber,
+    cardName,
+    expiryDate,
+    cvv,
+  ]);
 
   const handleNext = useCallback(() => {
     if (currentIndex < tabs.length - 1) {
