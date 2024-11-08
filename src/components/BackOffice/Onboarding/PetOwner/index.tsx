@@ -216,7 +216,7 @@ const PetOwnerOnboardingForm = () => {
       zipCode: "Zip code",
     };
 
-    const validateForm = () => {
+    const validatePaymentForm = useCallback(() => {
       let isValid = true;
       const newErrors = {
         cardNumber: "",
@@ -258,22 +258,39 @@ const PetOwnerOnboardingForm = () => {
 
       setErrors(newErrors);
       return isValid;
-    };
+    }, [cardName, cardNumber, cvv, expiryDate]);
 
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
+    const handleSubmit = useCallback(() => {
       if (validateForm()) {
-        console.log("Form submitted:", {
-          cardNumber,
-          cardName,
-          expiryDate,
-          cvv,
-        });
-        // Here you would typically send the data to your server or payment processor
-      } else {
-        console.log("Form has errors");
+        const fullPhoneNumber = `+63${phoneNumber}`;
+        const fullAddress = `${formData.streetAddress}, ${formData.city}, ${formData.province}, ${formData.barangay}, ${formData.zipCode}`;
+
+        const userData = {
+          ...formData,
+          phoneNumber: fullPhoneNumber,
+          address: fullAddress,
+          pets: petProfiles,
+          paymentInfo: {
+            cardNumber,
+            cardName,
+            expiryDate,
+            cvv,
+          },
+        };
+
+        console.log("Form submitted:", userData);
+        alert("Onboarding completed successfully!");
       }
-    };
+    }, [
+      formData,
+      phoneNumber,
+      petProfiles,
+      validateForm,
+      cardNumber,
+      cardName,
+      expiryDate,
+      cvv,
+    ]);
 
     Object.entries(requiredFields).forEach(([field, label]) => {
       if (!formData[field as keyof FormData]?.trim()) {
@@ -389,13 +406,27 @@ const PetOwnerOnboardingForm = () => {
         phoneNumber: fullPhoneNumber,
         address: fullAddress,
         pets: petProfiles,
+        paymentInfo: {
+          cardNumber,
+          cardName,
+          expiryDate,
+          cvv,
+        },
       };
 
-      // Here you would typically send the data to your server
       console.log("Form submitted:", userData);
       alert("Onboarding completed successfully!");
     }
-  }, [formData, phoneNumber, petProfiles, validateForm]);
+  }, [
+    formData,
+    phoneNumber,
+    petProfiles,
+    validateForm,
+    cardNumber,
+    cardName,
+    expiryDate,
+    cvv,
+  ]);
 
   const handleNext = useCallback(() => {
     if (currentIndex < tabs.length - 1) {

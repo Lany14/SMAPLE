@@ -45,6 +45,11 @@ const FormSchema = z
     path: ["confirmPassword"],
   });
 
+// Add this function before the component
+const calculateStrength = (password: string): number => {
+  return passwordStrength(password).id;
+};
+
 export default function RegisterForm({
   role = "PET_OWNER",
 }: {
@@ -95,9 +100,10 @@ export default function RegisterForm({
   // Password Strength state
   const [strength, setStrength] = useState(0);
   const [pass, setPass] = useState<string>("");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    setStrength(passwordStrength(pass).id as Strength);
-  });
+    setStrength(calculateStrength(pass));
+  }, []);
 
   return (
     <>
