@@ -1,6 +1,6 @@
 import PetOwnerOnboardingForm from "@/components/BackOffice/Onboarding/PetOwner";
 import DoctorNurseOnboardingForm from "@/components/BackOffice/Onboarding/VetDoctorNurse";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import React from "react";
 
 const OnboardingPage = () => {
@@ -10,7 +10,7 @@ const OnboardingPage = () => {
   return (
     <>
       {/* Form Container */}
-      <div className="rounded-2xl bg-white p-8 shadow-sm">
+      <div className="mx-auto max-w-4xl">
         {/* Conditional Form Rendering */}
         {/* {session?.user?.role === "PET_OWNER" ? (
               <PetOwnerOnboardingForm />

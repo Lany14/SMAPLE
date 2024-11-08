@@ -30,11 +30,34 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  sessionToken String   @unique
-  userId       String   @db.ObjectId
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                        String              @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken              String              @unique
+  userId                    String              @db.ObjectId
+  adminProfileId            String?             @db.ObjectId
+  receptionistProfileId     String?             @db.ObjectId
+  doctorNurseProfileId      String?             @db.ObjectId
+  petOwnerProfileId         String?             @db.ObjectId
+  appointmentId             String?             @db.ObjectId
+  medicalhistoryId          String?             @db.ObjectId
+  medicineId                String?             @db.ObjectId
+  antiparasiticId           String?             @db.ObjectId
+  prescriptionId            String?             @db.ObjectId
+  labResultId               String?             @db.ObjectId
+  vaccinationId             String?             @db.ObjectId
+  expires                   DateTime
+  user                      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminProfile              AdminProfile?        @relation(fields: [adminProfileId], references: [id], onDelete: Cascade)
+  receptionistProfile       ReceptionistProfile? @relation(fields: [receptionistProfileId], references: [id], onDelete: Cascade)
+  doctorNurseProfile        DoctorNurseProfile?  @relation(fields: [doctorNurseProfileId], references: [id], onDelete: Cascade)
+  petOwnerProfile           PetOwnerProfile?     @relation(fields: [petOwnerProfileId], references: [id], onDelete: Cascade)
+  pet                       Pet?                 @relation(fields: [doctorNurseProfileId], references: [id], onDelete: Cascade)
+  appointment               Appointment?         @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  medicalhistory            MedicalHistory?      @relation(fields: [medicalhistoryId], references: [id], onDelete: Cascade)
+  medicine                  Medicine?            @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  antiparasitic             Antiparasitic?       @relation(fields: [antiparasiticId], references: [id], onDelete: Cascade)
+  prescription              Prescription?        @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  labResult                 LabResult?           @relation(fields: [labResultId], references: [id], onDelete: Cascade)
+  vaccination               Vaccination?         @relation(fields: [vaccinationId], references: [id], onDelete: Cascade)
 }
 
 // -------------------- USER MODEL --------------------
@@ -48,9 +71,10 @@ enum UserRole {
 
 model User {
   id                      String            @id @default(auto()) @map("_id") @db.ObjectId
-  // userId                  Int               @unique @db.Int
+  userId                  Int               @unique
   name                    String
   email                   String            @unique 
+  phoneNumber             String?           @unique
   password                String?
   emailVerified           DateTime?
   image                   String?
@@ -77,9 +101,10 @@ model AdminProfile {
   lastName        String
   sex             String
   address         String?
-  phoneNumber     String    @unique
   birthDate       DateTime
   age             Int
+
+  sessions          Session[]         
   
   user            User      @relation(fields: [adminId], references: [id])
   adminId         String    @unique @db.ObjectId
@@ -91,9 +116,10 @@ model ReceptionistProfile {
   lastName        String
   sex             String
   address         String?
-  phoneNumber     String    @unique
   birthDate       DateTime
   age             Int
+
+  Session                 Session[]
   
   user            User      @relation(fields: [receptionistId], references: [id])
   receptionistId  String    @unique @db.ObjectId
@@ -106,13 +132,14 @@ model DoctorNurseProfile {
   lastName        String
   sex             String
   address         String?
-  phoneNumber     String    @unique
   birthDate       DateTime
   age             Int
   licenseNumber   String    @unique
   specialization  String?
   user            User      @relation(fields: [doctorNurseId], references: [id])
   doctorNurseId   String    @unique @db.ObjectId
+
+  Session                 Session[]
 
   veterinarianAppointments Appointment[] @relation("VeterinarianAppointments")
 }
@@ -124,13 +151,13 @@ model PetOwnerProfile {
   lastName        String
   sex             String?
   address         String?
-  phoneNumber     String?      @unique
   birthDate       DateTime?
   age             Int?
 
   user            User            @relation(fields: [petOwnerId], references: [id])
   petOwnerId      String          @unique @db.ObjectId
 
+  Session         Session[]
   pets            Pet[]           @relation("OwnerPets")
   appointments    Appointment[]   @relation("OwnerAppointments")
 
@@ -140,7 +167,7 @@ model PetOwnerProfile {
 // -------------------- PET MODEL --------------------
 model Pet {
   id                String        @id @default(auto()) @map("_id") @db.ObjectId
-  // petId             String        @unique
+  petId             Int          @unique
   petName           String
   petSex            String
   petSpecies        String        // Added: Type of pet (e.g., Dog, Cat)
@@ -149,9 +176,9 @@ model Pet {
   petAge            Int
   petWeight         Float?        // Added: Current weight
   petColorAndMarkings  String?       // Added: Pet's color
-  
 
-  owner      PetOwnerProfile         @relation("OwnerPets", fields: [petOwnerId], references: [id])
+
+  owner         PetOwnerProfile         @relation("OwnerPets", fields: [petOwnerId], references: [id])
   petOwnerId    String               @db.ObjectId
   
   appointments      Appointment[]
@@ -178,6 +205,8 @@ model Pet {
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+
+  sessions          Session[]       
 }
 
 // -------------------- MEDICAL HISTORY --------------------
@@ -192,6 +221,8 @@ model MedicalHistory {
   
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+
+  Session                 Session[]
 }
 
 // -------------------- MEDICINE --------------------
@@ -208,6 +239,8 @@ model Medicine {
   
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+
+  Session                 Session[]
 }
 
 // -------------------- ANTIPARASITIC --------------------
@@ -225,6 +258,8 @@ model Antiparasitic {
   
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
+
+  Session                 Session[]
 }
 
 // -------------------- PRESCRIPTION --------------------
@@ -240,6 +275,8 @@ model Prescription {
   
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
+
+  Session                 Session[]
 }
 
 // -------------------- LAB RESULT --------------------
@@ -252,8 +289,10 @@ model LabResult {
   note            String?
   file            String?        // File Attachment (URL or Path)
   
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  Session                 Session[]
 }
 
 // -------------------- VACCINATION --------------------
@@ -275,6 +314,8 @@ model Vaccination {
   
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
+
+  Session                 Session[]
 }
 
 // -------------------- APPOINTMENT MODEL --------------------
@@ -296,6 +337,8 @@ model Appointment {
 
   createdAt       DateTime                @default(now())
   updatedAt       DateTime           @updatedAt
+
+  Session                 Session[]
 }
 
 enum AppointmentStatus {

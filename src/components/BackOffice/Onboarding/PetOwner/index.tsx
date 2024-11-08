@@ -68,6 +68,12 @@ interface FormErrors {
   petAge?: string;
   petWeight?: string;
   petColorAndMarkings?: string;
+
+  // credit/debit data
+  cardNumber?: string;
+  cardName?: string;
+  expiryDate?: string;
+  cvv?: string;
 }
 
 interface PetProfile {
@@ -129,6 +135,45 @@ const PetOwnerOnboardingForm = () => {
   const [currentPet, setCurrentPet] = useState<PetProfile>(INITIAL_PET_PROFILE);
   const [errors, setErrors] = useState<FormErrors>({});
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
+
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || "";
+    const parts = [];
+
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+
+    if (parts.length) {
+      return parts.join(" ");
+    } else {
+      return value;
+    }
+  };
+
+  const formatExpiryDate = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    if (v.length >= 2) {
+      return v.slice(0, 2) + "/" + v.slice(2, 4);
+    }
+    return v;
+  };
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatCardNumber(e.target.value);
+    setCardNumber(formattedValue);
+  };
+
+  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatExpiryDate(e.target.value);
+    setExpiryDate(formattedValue);
+  };
 
   const tabs = useMemo(() => ["personal", "addPet", "addPaymentInfo"], []);
   const currentIndex = tabs.indexOf(selected);
@@ -169,6 +214,65 @@ const PetOwnerOnboardingForm = () => {
       province: "Province",
       barangay: "Barangay",
       zipCode: "Zip code",
+    };
+
+    const validateForm = () => {
+      let isValid = true;
+      const newErrors = {
+        cardNumber: "",
+        cardName: "",
+        expiryDate: "",
+        cvv: "",
+      };
+
+      if (cardNumber.replace(/\s/g, "").length !== 16) {
+        newErrors.cardNumber = "Card number must be 16 digits";
+        isValid = false;
+      }
+
+      if (cardName.trim().length === 0) {
+        newErrors.cardName = "Card name is required";
+        isValid = false;
+      }
+
+      if (expiryDate.length !== 5) {
+        newErrors.expiryDate = "Invalid expiry date";
+        isValid = false;
+      } else {
+        const [month, year] = expiryDate.split("/");
+        const currentYear = new Date().getFullYear() % 100;
+        const currentMonth = new Date().getMonth() + 1;
+        if (
+          parseInt(year) < currentYear ||
+          (parseInt(year) === currentYear && parseInt(month) < currentMonth)
+        ) {
+          newErrors.expiryDate = "Card has expired";
+          isValid = false;
+        }
+      }
+
+      if (cvv.length !== 3) {
+        newErrors.cvv = "CVV must be 3 digits";
+        isValid = false;
+      }
+
+      setErrors(newErrors);
+      return isValid;
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (validateForm()) {
+        console.log("Form submitted:", {
+          cardNumber,
+          cardName,
+          expiryDate,
+          cvv,
+        });
+        // Here you would typically send the data to your server or payment processor
+      } else {
+        console.log("Form has errors");
+      }
     };
 
     Object.entries(requiredFields).forEach(([field, label]) => {
@@ -307,234 +411,234 @@ const PetOwnerOnboardingForm = () => {
 
   // Rest of the JSX remains the same...
   return (
-    <div className="mx-auto max-w-4xl p-4">
+    <Card className="p-4">
       <Tabs
         selectedKey={selected}
         onSelectionChange={(key) => setSelected(key as string)}
         aria-label="Onboarding steps"
       >
         <Tab key="personal" title="Personal Info">
-          <Card>
-            <CardBody className="p-8">
-              <form className="grid grid-cols-2 gap-4 ">
+          <CardBody>
+            <form className="gap-4 md:grid md:grid-cols-2">
+              <Input
+                isRequired
+                label="First Name"
+                name="firstName"
+                value={
+                  session?.petOwnerProfile?.firstName || formData.firstName
+                }
+                onChange={handleInputChange}
+                isInvalid={!!errors.firstName}
+                errorMessage={errors.firstName}
+              />
+              <Input
+                isRequired
+                label="Last Name"
+                name="lastName"
+                value={session?.petOwnerProfile?.lastName || formData.lastName}
+                onChange={handleInputChange}
+                isInvalid={!!errors.lastName}
+                errorMessage={errors.lastName}
+              />
+              <Select
+                isRequired
+                label="Sex"
+                placeholder="Choose Sex"
+                value={formData.sex}
+                isInvalid={!!errors.sex}
+                errorMessage={errors.sex}
+              >
+                {SexProp.map((sex) => (
+                  <SelectItem value={sex.key} key={sex.key}>
+                    {sex.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Input
+                isRequired
+                className=""
+                type="date"
+                label="Birthdate"
+                id="birthDate"
+                name="birthDate"
+                value={formData.birthDate}
+                onChange={handleInputChange}
+                max={new Date().toISOString().split("T")[0]}
+                isInvalid={!!errors.birthDate}
+                errorMessage={errors.birthDate}
+              />
+              <Input
+                isRequired
+                isReadOnly
+                type="number"
+                label="Age"
+                id="age"
+                name="age"
+                value={formData.age}
+                isInvalid={!!errors.age}
+                errorMessage={errors.age}
+              />
+              <Input
+                isRequired
+                label="Phone Number"
+                placeholder="ex. 9XXXXXXXXX"
+                value={session?.user?.phoneNumber || phoneNumber}
+                onChange={handlePhoneChange}
+                startContent={<span className="text-small">+63</span>}
+                endContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span
+                      className={`text-small ${isValid ? "text-success" : "text-danger"}`}
+                    >
+                      {phoneNumber.length}/10
+                    </span>
+                  </div>
+                }
+                type="tel"
+                isInvalid={!isValid && phoneNumber.length > 0}
+                errorMessage={
+                  !isValid && phoneNumber.length > 0
+                    ? "Phone number must be 10 digits"
+                    : ""
+                }
+                classNames={{
+                  input: "pl-1",
+                  innerWrapper: "bg-transparent",
+                }}
+              />
+              <div className="col-span-2">
+                <Divider className="my-4" />
+              </div>
+              <Input
+                isRequired
+                className="col-span-2"
+                label="Street Address"
+                name="streetAddress"
+                value={formData.streetAddress}
+                onChange={handleInputChange}
+                isInvalid={!!errors.streetAddress}
+                errorMessage={errors.streetAddress}
+              />
+              <Input
+                isRequired
+                label="Province"
+                name="province"
+                value={formData.province}
+                onChange={handleInputChange}
+                isInvalid={!!errors.province}
+                errorMessage={errors.province}
+              />
+              <Input
+                isRequired
+                label="Municipality/City"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                isInvalid={!!errors.city}
+                errorMessage={errors.city}
+              />
+              <Input
+                isRequired
+                label="Barangay"
+                name="barangay"
+                value={formData.barangay}
+                onChange={handleInputChange}
+                isInvalid={!!errors.barangay}
+                errorMessage={errors.barangay}
+              />
+              <Input
+                isRequired
+                label="Zip Code"
+                name="zipCode"
+                value={formData.zipCode}
+                onChange={handleInputChange}
+                isInvalid={!!errors.zipCode}
+                errorMessage={errors.zipCode}
+              />
+            </form>
+          </CardBody>
+        </Tab>
+        <Tab key="addPet" title="Pet Info">
+          <CardBody>
+            <h3 className="text-lg font-semibold">Added Pets:</h3>
+            {petProfiles.map((pet, index) => (
+              <div
+                key={index}
+                className="flex justify-between rounded-xl border border-default-200 p-4"
+              >
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="flex flex-col">
+                    <span>{pet.petName}</span>
+                    <span className="text-tiny text-default-500">
+                      {pet.petSpecies}
+                    </span>
+                    <span className="text-tiny text-default-500">
+                      {pet.petBreed}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <Button
+                    className="items-center"
+                    isIconOnly
+                    color="danger"
+                    onClick={() => handleDeletePet(index)}
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <div>
+              <form className="gap-4 md:grid md:grid-cols-2">
                 <Input
                   isRequired
-                  label="First Name"
-                  name="firstName"
-                  value={session?.user?.firstName || formData.firstName}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.firstName}
-                  errorMessage={errors.firstName}
-                />
-                <Input
-                  isRequired
-                  label="Last Name"
-                  name="lastName"
-                  value={session?.user?.lastName || formData.lastName}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.lastName}
-                  errorMessage={errors.lastName}
+                  label="Pet Name"
+                  name="name"
+                  value={currentPet.petName}
+                  onChange={handlePetInputChange}
+                  isInvalid={!!errors.petName}
+                  errorMessage={errors.petName}
                 />
                 <Select
                   isRequired
                   label="Sex"
-                  placeholder="Choose Sex"
-                  value={formData.sex}
-                  isInvalid={!!errors.sex}
-                  errorMessage={errors.sex}
+                  name="sex"
+                  value={currentPet.petSex}
+                  onChange={(e) =>
+                    handlePetInputChange({
+                      target: { name: "sex", value: e.target.value },
+                    } as React.ChangeEvent<HTMLInputElement>)
+                  }
+                  isInvalid={!!errors.petSex}
+                  errorMessage={errors.petSex}
                 >
-                  {SexProp.map((sex) => (
-                    <SelectItem value={sex.key} key={sex.key}>
-                      {sex.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem key="male" value="male">
+                    Male
+                  </SelectItem>
+                  <SelectItem key="female" value="female">
+                    Female
+                  </SelectItem>
                 </Select>
                 <Input
                   isRequired
-                  className=""
-                  type="date"
-                  label="Birthdate"
-                  id="birthDate"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleInputChange}
-                  max={new Date().toISOString().split("T")[0]}
-                  isInvalid={!!errors.birthDate}
-                  errorMessage={errors.birthDate}
+                  label="Species"
+                  name="species"
+                  value={currentPet.petSpecies}
+                  onChange={handlePetInputChange}
+                  isInvalid={!!errors.petSpecies}
+                  errorMessage={errors.petSpecies}
                 />
                 <Input
                   isRequired
-                  isReadOnly
-                  type="number"
-                  label="Age"
-                  id="age"
-                  name="age"
-                  value={formData.age}
-                  isInvalid={!!errors.age}
-                  errorMessage={errors.age}
+                  label="Breed"
+                  name="breed"
+                  value={currentPet.petBreed}
+                  onChange={handlePetInputChange}
+                  isInvalid={!!errors.petBreed}
+                  errorMessage={errors.petBreed}
                 />
-                <Input
-                  isRequired
-                  label="Phone Number"
-                  placeholder="ex. 9XXXXXXXXX"
-                  value={phoneNumber}
-                  onChange={handlePhoneChange}
-                  startContent={<span className="text-small">+63</span>}
-                  endContent={
-                    <div className="pointer-events-none flex items-center">
-                      <span
-                        className={`text-small ${isValid ? "text-success" : "text-danger"}`}
-                      >
-                        {phoneNumber.length}/10
-                      </span>
-                    </div>
-                  }
-                  type="tel"
-                  isInvalid={!isValid && phoneNumber.length > 0}
-                  errorMessage={
-                    !isValid && phoneNumber.length > 0
-                      ? "Phone number must be 10 digits"
-                      : ""
-                  }
-                  classNames={{
-                    input: "pl-1",
-                    innerWrapper: "bg-transparent",
-                  }}
-                />
-                <div className="col-span-2">
-                  <Divider className="my-4" />
-                </div>
-                <Input
-                  isRequired
-                  className="col-span-2"
-                  label="Street Address"
-                  name="streetAddress"
-                  value={formData.streetAddress}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.streetAddress}
-                  errorMessage={errors.streetAddress}
-                />
-                <Input
-                  isRequired
-                  label="Province"
-                  name="province"
-                  value={formData.province}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.province}
-                  errorMessage={errors.province}
-                />
-                <Input
-                  isRequired
-                  label="Municipality/City"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.city}
-                  errorMessage={errors.city}
-                />
-                <Input
-                  isRequired
-                  label="Barangay"
-                  name="barangay"
-                  value={formData.barangay}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.barangay}
-                  errorMessage={errors.barangay}
-                />
-                <Input
-                  isRequired
-                  label="Zip Code"
-                  name="zipCode"
-                  value={formData.zipCode}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.zipCode}
-                  errorMessage={errors.zipCode}
-                />
-              </form>
-            </CardBody>
-          </Card>
-        </Tab>
-        <Tab key="addPet" title="Pet Info">
-          <Card>
-            <CardBody className="p-8">
-              <h3 className="text-lg font-semibold">Added Pets:</h3>
-              {petProfiles.map((pet, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between rounded-xl border border-default-200 p-4"
-                >
-                  <div className="mb-2 flex items-center gap-2">
-                    <div className="flex flex-col">
-                      <span>{pet.petName}</span>
-                      <span className="text-tiny text-default-500">
-                        {pet.petSpecies}
-                      </span>
-                      <span className="text-tiny text-default-500">
-                        {pet.petBreed}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <Button
-                      className="items-center"
-                      isIconOnly
-                      color="danger"
-                      onClick={() => handleDeletePet(index)}
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              <div>
-                <form className="grid grid-cols-2 gap-4">
-                  <Input
-                    isRequired
-                    label="Pet Name"
-                    name="name"
-                    value={currentPet.petName}
-                    onChange={handlePetInputChange}
-                    isInvalid={!!errors.petName}
-                    errorMessage={errors.petName}
-                  />
-                  <Select
-                    isRequired
-                    label="Sex"
-                    name="sex"
-                    value={currentPet.petSex}
-                    onChange={(e) =>
-                      handlePetInputChange({
-                        target: { name: "sex", value: e.target.value },
-                      } as React.ChangeEvent<HTMLInputElement>)
-                    }
-                    isInvalid={!!errors.petSex}
-                    errorMessage={errors.petSex}
-                  >
-                    <SelectItem key="male" value="male">
-                      Male
-                    </SelectItem>
-                    <SelectItem key="female" value="female">
-                      Female
-                    </SelectItem>
-                  </Select>
-                  <Input
-                    isRequired
-                    label="Species"
-                    name="species"
-                    value={currentPet.petSpecies}
-                    onChange={handlePetInputChange}
-                    isInvalid={!!errors.petSpecies}
-                    errorMessage={errors.petSpecies}
-                  />
-                  <Input
-                    isRequired
-                    label="Breed"
-                    name="breed"
-                    value={currentPet.petBreed}
-                    onChange={handlePetInputChange}
-                    isInvalid={!!errors.petBreed}
-                    errorMessage={errors.petBreed}
-                  />
+                <div className="md:flex ">
                   <Input
                     isRequired
                     type="date"
@@ -556,39 +660,75 @@ const PetOwnerOnboardingForm = () => {
                     isInvalid={!!errors.petAge}
                     errorMessage={errors.petAge}
                   />
-                  <Input
-                    isRequired
-                    label="Weight"
-                    name="weight"
-                    value={currentPet.petWeight}
-                    onChange={handlePetInputChange}
-                    isInvalid={!!errors.petWeight}
-                    errorMessage={errors.petWeight}
-                  />
-                  <Textarea
-                    placeholder="Describe your Pet"
-                    className="max-w col-span-2"
-                    label="Color and Markings"
-                    name="colorAndMarkings"
-                    value={currentPet.petColorAndMarkings}
-                    onChange={handlePetInputChange}
-                    isInvalid={!!errors.petColorAndMarkings}
-                    errorMessage={errors.petColorAndMarkings}
-                  />
-                  <Button onClick={handleAddPet} color="primary">
-                    Add Pet
-                  </Button>
-                </form>
-              </div>
-            </CardBody>
-          </Card>
+                </div>
+
+                <Input
+                  isRequired
+                  label="Weight"
+                  name="weight"
+                  value={currentPet.petWeight}
+                  onChange={handlePetInputChange}
+                  isInvalid={!!errors.petWeight}
+                  errorMessage={errors.petWeight}
+                />
+                <Textarea
+                  placeholder="Describe your Pet"
+                  className="max-w col-span-2"
+                  label="Color and Markings"
+                  name="colorAndMarkings"
+                  value={currentPet.petColorAndMarkings}
+                  onChange={handlePetInputChange}
+                  isInvalid={!!errors.petColorAndMarkings}
+                  errorMessage={errors.petColorAndMarkings}
+                />
+                <Button onClick={handleAddPet} color="primary">
+                  Add Pet
+                </Button>
+              </form>
+            </div>
+          </CardBody>
         </Tab>
         <Tab key="addPaymentInfo" title="Payment Info">
-          <Card>
-            <CardBody>
-              <p>Payment Info details will be displayed here.</p>
-            </CardBody>
-          </Card>
+          <CardBody>
+            <form className="gap-4 md:grid md:grid-cols-2">
+              <Input
+                isRequired
+                label="Card Number"
+                placeholder="1234 5678 9012 3456"
+                value={cardNumber}
+                onChange={handleCardNumberChange}
+                maxLength={19}
+                errorMessage={errors.cardNumber}
+              />
+              <Input
+                isRequired
+                label="Cardholder Name"
+                placeholder="John Doe"
+                value={cardName}
+                onChange={(e) => setCardName(e.target.value)}
+                errorMessage={errors.cardName}
+              />
+              <Input
+                isRequired
+                label="Expiry Date"
+                placeholder="MM/YY"
+                value={expiryDate}
+                onChange={handleExpiryDateChange}
+                maxLength={5}
+                errorMessage={errors.expiryDate}
+              />
+              <Input
+                isRequired
+                label="CVV"
+                placeholder="123"
+                value={cvv}
+                onChange={(e) => setCvv(e.target.value)}
+                maxLength={3}
+                type="password"
+                errorMessage={errors.cvv}
+              />
+            </form>
+          </CardBody>
         </Tab>
       </Tabs>
       <div className="mt-4 flex justify-between">
@@ -608,7 +748,7 @@ const PetOwnerOnboardingForm = () => {
           </Button>
         )}
       </div>
-    </div>
+    </Card>
   );
 };
 

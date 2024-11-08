@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
-import CalendarBox from "@/components/BackOffice/CalenderBox";
+// import CalendarBox from "@/components/BackOffice/CalenderBox";
 
 export const metadata: Metadata = {
   title: "AbyVet | Admin",
@@ -12,7 +12,7 @@ const CalendarPage = () => {
       <div className="mx-auto max-w-7xl">
         <Breadcrumb pageName="Calendar" />
 
-        <CalendarBox />
+        {/* <CalendarBox /> */}
       </div>
     </div>
   );

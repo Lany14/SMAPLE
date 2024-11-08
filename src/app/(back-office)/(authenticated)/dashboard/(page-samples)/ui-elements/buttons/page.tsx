@@ -1,5 +1,5 @@
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
-import { Metadata } from "next";
+// import { Metadata } from "next";
 import ButtonDefault from "@/components/BackOffice/Buttons/ButtonDefault";
 
 const Buttons = () => {

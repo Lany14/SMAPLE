@@ -5,6 +5,8 @@ import {
   Card,
   CardBody,
   CardFooter,
+  CardHeader,
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -12,74 +14,64 @@ import {
   Input,
   Radio,
   RadioGroup,
+  Select,
+  SelectedItems,
+  SelectItem,
   Textarea,
 } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import { PawPrint, PawPrintIcon } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { users } from "@/types/users";
+import { Avatar } from "@radix-ui/react-avatar";
+
+type User = {
+  id: number;
+  name: string;
+  role: string;
+  team: string;
+  status: string;
+  age: string;
+  avatar: string;
+  email: string;
+};
 
 const AddPetForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    sex: "",
-    species: "",
-    breed: "",
-    birthDate: "",
-    age: "",
-    weight: "",
-    colorAndMarkings: "",
+    petName: "",
+    petSex: "",
+    petSpecies: "",
+    petBreed: "",
+    petBirthdate: "",
+    petAge: "",
+    petWeight: "",
+    petColorAndMarkings: "",
   });
 
   const [errors, setErrors] = useState({
-    name: "",
-    sex: "",
-    species: "",
-    breed: "",
-    birthDate: "",
-    age: "",
-    weight: "",
-    colorAndMarkings: "",
+    petName: "",
+    petSex: "",
+    petSpecies: "",
+    petBreed: "",
+    petBirthdate: "",
+    petAge: "",
+    petWeight: "",
+    petColorAndMarkings: "",
   });
-
-  const [selection, setSelection] = useState("birthday");
-  const [monthOrYear, setMonthOrYear] = useState("year");
-
-  const calculateAge = (birthdate: string): number => {
-    const today = new Date();
-    const birthDate = new Date(birthdate);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDifference = today.getMonth() - birthDate.getMonth();
-
-    if (
-      monthDifference < 0 ||
-      (monthDifference === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
-  };
-
-  useEffect(() => {
-    if (formData.birthDate) {
-      const calculatedAge = calculateAge(formData.birthDate);
-      setFormData((prevData) => ({
-        ...prevData,
-        age: calculatedAge.toString(),
-      }));
-    }
-  }, [formData.birthDate]);
 
   const validateForm = () => {
     const newErrors = { ...errors };
 
-    newErrors.name = formData.name ? "" : "Pet name is required.";
-    newErrors.sex = formData.sex ? "" : "Please select the sex.";
-    newErrors.species = formData.species ? "" : "Species is required.";
-    newErrors.breed = formData.breed ? "" : "Breed is required.";
-    newErrors.birthDate = formData.birthDate ? "" : "Birth date is required.";
-    newErrors.age = formData.age ? "" : "Age is required.";
-    newErrors.weight =
-      formData.weight && !isNaN(Number(formData.weight))
+    newErrors.petName = formData.petName ? "" : "Pet name is required.";
+    newErrors.petSex = formData.petSex ? "" : "Please select the sex.";
+    newErrors.petSpecies = formData.petSpecies ? "" : "Species is required.";
+    newErrors.petBreed = formData.petBreed ? "" : "Breed is required.";
+    newErrors.petBirthdate = formData.petBirthdate
+      ? ""
+      : "Birth date is required.";
+    newErrors.petAge = formData.petAge ? "" : "Age is required.";
+    newErrors.petWeight =
+      formData.petWeight && !isNaN(Number(formData.petWeight))
         ? ""
         : "Weight must be a number.";
 
@@ -88,6 +80,42 @@ const AddPetForm: React.FC = () => {
     // Return true if there are no errors
     return Object.values(newErrors).every((error) => error === "");
   };
+
+  const calculateAge = useCallback(
+    (birthdate: string, petBirthdate: string) => {
+      const today = new Date();
+      const petBirthDate = new Date(petBirthdate);
+
+      let petAgeYears = today.getFullYear() - petBirthDate.getFullYear();
+      let petAgeMonths = today.getMonth() - petBirthDate.getMonth();
+
+      if (petAgeMonths < 0) {
+        petAgeYears--;
+        petAgeMonths += 12;
+      }
+
+      if (today.getDate() < petBirthDate.getDate()) petAgeMonths--;
+
+      const petAgeFormatted = `${petAgeYears} yr${petAgeYears !== 1 ? "s" : ""}${
+        petAgeMonths > 0
+          ? ` and ${petAgeMonths} mo${petAgeMonths !== 1 ? "s" : ""}`
+          : ""
+      }`;
+
+      return { petAge: petAgeFormatted };
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (formData.petBirthdate) {
+      const { petAge } = calculateAge(
+        formData.petBirthdate,
+        formData.petBirthdate,
+      );
+      setFormData((prev) => ({ ...prev, petAge }));
+    }
+  }, [formData.petBirthdate, calculateAge]);
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -108,14 +136,14 @@ const AddPetForm: React.FC = () => {
           toast.success("Pet added successfully");
           // Reset form data
           setFormData({
-            name: "",
-            sex: "",
-            species: "",
-            breed: "",
-            birthDate: "",
-            age: "",
-            weight: "",
-            colorAndMarkings: "",
+            petName: "",
+            petSex: "",
+            petSpecies: "",
+            petBreed: "",
+            petBirthdate: "",
+            petAge: "",
+            petWeight: "",
+            petColorAndMarkings: "",
           });
         } else {
           // Log the full response for debugging
@@ -139,190 +167,187 @@ const AddPetForm: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
+    <Card className="p-4">
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-4 gap-4">
-          <div className="col-span-2">
+        <CardBody>
+          <CardHeader className="flex gap-3">
+            <div className="flex flex-col">
+              <p className="text-md">Add Pet Profile</p>
+              <p className="text-small text-default-500">
+                Add a new pet profile to your account
+              </p>
+            </div>
+          </CardHeader>
+          <div className="gap-4 md:grid md:grid-cols-2">
             <Input
               isRequired
-              type="text"
-              label="Pet's Name"
-              id="petName"
-              name="name"
-              value={formData.name}
+              label="Pet Name"
+              name="petName"
+              value={formData.petName}
               onChange={handleInputChange}
-              isInvalid={!!errors.name}
+              isInvalid={!!errors.petName}
+              errorMessage={errors.petName}
             />
-            {errors.name && (
-              <span className="text-xs text-red-500">{errors.name}</span>
-            )}
-          </div>
-          <div className="col-span-2">
-            <RadioGroup
+            <Select
               isRequired
               label="Sex"
-              orientation="horizontal"
-              value={formData.sex}
-              onValueChange={(value) =>
-                setFormData({ ...formData, sex: value })
+              name="petSex"
+              value={formData.petSex}
+              onChange={(e) =>
+                handleInputChange({
+                  target: { name: "petSex", value: e.target.value },
+                } as React.ChangeEvent<HTMLInputElement>)
               }
-              isInvalid={!!errors.sex}
+              isInvalid={!!errors.petSex}
+              errorMessage={errors.petSex}
             >
-              <Radio value="Male">Male</Radio>
-              <Radio value="Female">Female</Radio>
-            </RadioGroup>
-            {errors.sex && (
-              <span className="text-xs text-red-500">{errors.sex}</span>
-            )}
-          </div>
-          <div className="col-span-2">
+              <SelectItem key="male" value="male">
+                Male
+              </SelectItem>
+              <SelectItem key="female" value="female">
+                Female
+              </SelectItem>
+            </Select>
             <Input
               isRequired
-              type="text"
               label="Species"
-              placeholder="ex. Cat, Dog, etc."
-              id="species"
-              name="species"
-              value={formData.species}
+              name="petSpecies"
+              value={formData.petSpecies}
               onChange={handleInputChange}
-              // helperText={errors.species}
-              isInvalid={!!errors.species}
+              isInvalid={!!errors.petSpecies}
+              errorMessage={errors.petSpecies}
             />
-            {errors.sex && (
-              <span className="text-xs text-red-500">{errors.species}</span>
-            )}
-          </div>
-          <div className="col-span-2">
             <Input
               isRequired
-              type="text"
               label="Breed"
-              id="breed"
-              name="breed"
-              value={formData.breed}
+              name="petBreed"
+              value={formData.petBreed}
               onChange={handleInputChange}
-              // helperText={errors.breed}
-              isInvalid={!!errors.breed}
+              isInvalid={!!errors.petBreed}
+              errorMessage={errors.petBreed}
             />
-            {errors.sex && (
-              <span className="text-xs text-red-500">{errors.breed}</span>
-            )}
-          </div>
-          <div className="col-span-2">
-            <RadioGroup
-              value={selection}
-              onValueChange={setSelection}
-              defaultValue="birthday"
-              // onValueChange={setInputType}
-              className="flex space-x-4"
-              label="Birthday or Age"
-              orientation="horizontal"
-            >
-              <Radio value="birthday">Birthday</Radio>
-              <Radio value="age">Age</Radio>
-            </RadioGroup>
-          </div>
-
-          {selection === "birthday" ? (
-            <div className="col-span-2">
+            <div className="md:flex ">
               <Input
-                label="Date"
+                isRequired
                 type="date"
-                placeholder="MM/DD/YYYY"
-                labelPlacement="outside"
+                label="Birthdate"
+                name="petBirthdate"
+                value={formData.petBirthdate}
+                onChange={handleInputChange}
+                max={new Date().toISOString().split("T")[0]}
+                isInvalid={!!errors.petBirthdate}
+                errorMessage={errors.petBirthdate}
+              />
+              <Input
+                isRequired
+                isReadOnly
+                type="text"
+                label="Age"
+                name="petAge"
+                value={formData.petAge}
+                isInvalid={!!errors.petAge}
+                errorMessage={errors.petAge}
               />
             </div>
-          ) : (
-            <div className="col-span-2">
-              <span className="text-sm font-light">Month or year</span>
-              <div className="flex space-x-4">
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Button variant="bordered" className="w-32">
-                      {monthOrYear}
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    aria-label="Month or year selection"
-                    onAction={(key) => setMonthOrYear(key.toString())}
-                  >
-                    <DropdownItem key="month">Month</DropdownItem>
-                    <DropdownItem key="year">Year</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-                <Input
-                  type="number"
-                  placeholder="Enter number"
-                  labelPlacement="outside"
-                />
-              </div>
-            </div>
-          )}
-          {/* <div>
-                <Input
-                  isRequired
-                  type="date"
-                  label="Birthdate"
-                  id="birthDate"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleInputChange}
-                  max={new Date().toISOString().split("T")[0]}
-                  isInvalid={!!errors.birthDate}
-                />
-                {errors.birthDate && (
-                  <span className="text-xs text-red-500">
-                    {errors.birthDate}
-                  </span>
-                )}
-              </div>
-              <div>
-                <Input
-                  isRequired
-                  isReadOnly
-                  type="number"
-                  label="Age"
-                  id="age"
-                  name="age"
-                  value={formData.age}
-                />
-                {errors.age && (
-                  <span className="text-xs text-red-500">{errors.age}</span>
-                )}
-              </div> */}
-          <div className="col-span-4">
+
             <Input
               isRequired
-              type="text"
-              label="Weight (in kg)"
-              id="weight"
-              name="weight"
-              value={formData.weight}
+              label="Weight"
+              name="petWeight"
+              value={formData.petWeight}
               onChange={handleInputChange}
-              // helperText={errors.weight}
-              isInvalid={!!errors.weight}
+              isInvalid={!!errors.petWeight}
+              errorMessage={errors.petWeight}
             />
-            {errors.sex && (
-              <span className="text-xs text-red-500">{errors.weight}</span>
-            )}
+            <Textarea
+              placeholder="Describe your Pet"
+              className="max-w col-span-2"
+              label="Color and Markings"
+              name="petColorAndMarkings"
+              value={formData.petColorAndMarkings}
+              onChange={handleInputChange}
+              isInvalid={!!errors.petColorAndMarkings}
+              errorMessage={errors.petColorAndMarkings}
+            />
+            <Divider className="col-span-2" />
+            {/* <Select
+              items={users}
+              label="Assigned to"
+              className="max-w-xs"
+              variant="bordered"
+              classNames={{
+                label: "group-data-[filled=true]:-translate-y-5",
+                trigger: "min-h-16",
+                listboxWrapper: "max-h-[400px]",
+              }}
+              listboxProps={{
+                itemClasses: {
+                  base: [
+                    "rounded-md",
+                    "text-default-500",
+                    "transition-opacity",
+                    "data-[hover=true]:text-foreground",
+                    "data-[hover=true]:bg-default-100",
+                    "dark:data-[hover=true]:bg-default-50",
+                    "data-[selectable=true]:focus:bg-default-50",
+                    "data-[pressed=true]:opacity-70",
+                    "data-[focus-visible=true]:ring-default-500",
+                  ],
+                },
+              }}
+              popoverProps={{
+                classNames: {
+                  base: "before:bg-default-200",
+                  content: "p-0 border-small border-divider bg-background",
+                },
+              }}
+              renderValue={(items) => {
+                return items.map((item) => (
+                  <div key={item.key} className="flex items-center gap-2">
+                    <Avatar
+                      alt={item.data.name}
+                      className="flex-shrink-0"
+                      size="sm"
+                      src={item.data.avatar}
+                    />
+                    <div className="flex flex-col">
+                      <span>{item.data.name}</span>
+                      <span className="text-tiny text-default-500">
+                        ({item.data.email})
+                      </span>
+                    </div>
+                  </div>
+                ));
+              }}
+            >
+              {(user) => (
+                <SelectItem key={user.id} textValue={user.name}>
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      alt={user.name}
+                      className="flex-shrink-0"
+                      size="sm"
+                      src={user.avatar}
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-small">{user.name}</span>
+                      <span className="text-tiny text-default-400">
+                        {user.email}
+                      </span>
+                    </div>
+                  </div>
+                </SelectItem>
+              )}
+            </Select> */}
           </div>
-
-          <Textarea
-            label="Color and Special Markings"
-            placeholder="Enter Pet Special Markings"
-            className="col-span-4"
-            name="colorAndMarkings"
-            value={formData.colorAndMarkings}
-            onChange={handleInputChange}
-          />
-        </div>
+        </CardBody>
         <div className="flex justify-end">
           <Button color="primary" type="submit">
             Done
           </Button>
         </div>
       </form>
-    </div>
+    </Card>
   );
 };
 

@@ -22,6 +22,7 @@ import {
   LogOut,
   PawPrint,
   Plus,
+  Settings,
   SquareActivity,
   UserRoundPen,
   UserRoundPlus,
@@ -74,6 +75,11 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             label: "Profile",
             route: "/dashboard/profile",
           },
+          {
+            icon: <Settings />,
+            label: "Setting",
+            route: "/dashboard/setting",
+          },
         ],
       },
     ];
@@ -118,7 +124,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        ...baseMenu,
+        {
+          name: "ACCOUNT",
+          menuItems: [
+            {
+              icon: <Settings />,
+              label: "Setting",
+              route: "/dashboard/setting",
+            },
+          ],
+        },
       ];
     } else if (session?.user?.role === "VET_DOCTOR") {
       return [
@@ -144,7 +159,21 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        ...baseMenu,
+        {
+          name: "ACCOUNT",
+          menuItems: [
+            {
+              icon: <UserRoundPen />,
+              label: "Profile",
+              route: "/dashboard/profile",
+            },
+            {
+              icon: <Settings />,
+              label: "Setting",
+              route: "/dashboard/setting",
+            },
+          ],
+        },
       ];
     } else if (session?.user?.role === "VET_NURSE") {
       return [
@@ -178,7 +207,21 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        ...baseMenu,
+        {
+          name: "ACCOUNT",
+          menuItems: [
+            {
+              icon: <UserRoundPen />,
+              label: "Profile",
+              route: "/dashboard/profile",
+            },
+            {
+              icon: <Settings />,
+              label: "Setting",
+              route: "/dashboard/setting",
+            },
+          ],
+        },
       ];
     } else if (session?.user?.role === "VET_RECEPTIONIST") {
       return [
@@ -227,7 +270,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        ...baseMenu,
+        {
+          name: "ACCOUNT",
+          menuItems: [
+            {
+              icon: <Settings />,
+              label: "Setting",
+              route: "/dashboard/setting",
+            },
+          ],
+        },
       ];
     } else if (session?.user?.role === "PET_OWNER") {
       return [
@@ -261,7 +313,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        ...baseMenu,
+        {
+          name: "ACCOUNT",
+          menuItems: [
+            {
+              icon: <Settings />,
+              label: "Setting",
+              route: "/dashboard/setting",
+            },
+          ],
+        },
       ];
     }
     return baseMenu;

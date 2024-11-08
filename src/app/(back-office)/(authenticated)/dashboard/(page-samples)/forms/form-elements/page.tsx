@@ -1,13 +1,9 @@
 import React from "react";
-import FormElements from "@/components/BackOffice/FormElements";
-import { Metadata } from "next";
+// import FormElements from "@/components/BackOffice/FormElements";
+// import { Metadata } from "next";
 
 const FormElementsPage = () => {
-  return (
-    <>
-      <FormElements />
-    </>
-  );
+  return <>{/* <FormElements /> */}</>;
 };
 
 export default FormElementsPage;

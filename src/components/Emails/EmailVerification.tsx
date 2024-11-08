@@ -11,6 +11,7 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import { CopyrightIcon } from "lucide-react";
 interface EmailVerificationProps {
   firstName: string;
   token: number;
@@ -54,7 +55,7 @@ export const EmailVerification = ({
         </Text>
 
         <Text style={footer}>
-          GitHub, Inc. ・88 Colin P Kelly Jr Street ・San Francisco, CA 94107
+          <CopyrightIcon /> Abysagrivet 2024.
         </Text>
       </Container>
     </Body>

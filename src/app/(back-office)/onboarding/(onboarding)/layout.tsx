@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Right Panel - Image Section */}
-      <div className="hidden bg-blue-50 lg:block lg:w-[40%]">
+      <div className="hidden bg-primary lg:block lg:w-[40%]">
         <div className="relative h-full">
           {/* <Image
             src="/assets/images/register-img.png"
@@ -39,7 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             className="object-cover"
             priority
           /> */}
-          <div className="absolute inset-0 bg-gradient-to-t from-blue-500/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
         </div>
       </div>
     </div>

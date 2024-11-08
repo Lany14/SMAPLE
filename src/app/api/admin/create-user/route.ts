@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { generatePassword } from "@/utils/passwordGenerator";
 import { AccountCreatedEmail } from "@/components/Emails/AccountCreatedEmail";
 import { prismaClient } from "@/lib/db";
+import toast from "react-hot-toast";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     if (existingProfiles.some((profile) => profile)) {
       return NextResponse.json({
         error: `Phone number ${phoneNumber} already exists`,
-        status: 409,
+        status: 410,
       });
     }
 

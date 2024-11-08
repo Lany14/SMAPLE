@@ -1,7 +1,7 @@
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 
-import { Metadata } from "next";
-import SettingBoxes from "@/components/BackOffice/SettingBoxes";
+// import { Metadata } from "next";
+// import SettingBoxes from "@/components/BackOffice/SettingBoxes";
 
 const Settings = () => {
   return (
@@ -9,7 +9,7 @@ const Settings = () => {
       <div className="mx-auto w-full max-w-[1080px]">
         <Breadcrumb pageName="Settings" />
 
-        <SettingBoxes />
+        {/* <SettingBoxes /> */}
       </div>
     </>
   );

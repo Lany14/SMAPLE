@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { FaGoogle } from "react-icons/fa";
 import { EyeFilledIcon } from "../../../../../public/images/icon/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../../../../public/images/icon/EyeSlashFilledIcon";
 import { SignInInputProps } from "@/types/credInputs";

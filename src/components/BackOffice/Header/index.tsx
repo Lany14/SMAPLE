@@ -1,56 +1,87 @@
 import Link from "next/link";
 import DarkModeSwitcher from "./DarkModeSwitcher";
 import DropdownNotification from "./DropdownNotification";
-import DropdownUser from "./DropdownUser";
-import Image from "next/image";
 import SearchForm from "@/components/BackOffice/Header/SearchForm";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
+import "next-auth";
 
-const Header = (props: {
-  sidebarOpen: string | boolean | undefined;
-  setSidebarOpen: (arg0: boolean) => void;
-}) => {
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+  interface AdminProfile {
+    adminProfile?: {
+      firstName: string;
+    };
+  }
+
+  interface PetOwnerProfile {
+    petOwnerProfile?: {
+      firstName: string;
+    };
+  }
+  interface ReceptionistProfile {
+    receptionistProfile?: {
+      firstName: string;
+    };
+  }
+  interface DoctorNurseProfile {
+    doctorNurseProfile?: {
+      firstName: string;
+    };
+  }
+}
+
+interface HeaderProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (isOpen: boolean) => void;
+}
+
+const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
   const [greeting, setGreeting] = useState<string>("");
+  const { data: session } = useSession();
 
-  const getGreeting = () => {
+  const getGreeting = useCallback(() => {
     const currentHour = new Date().getHours();
-
-    if (currentHour < 12) {
-      return "Good Morning";
-    } else if (currentHour >= 12 && currentHour < 18) {
-      return "Good Afternoon";
-    } else {
-      return "Good Evening";
-    }
-  };
-
-  useEffect(() => {
-    // Set greeting initially
-    setGreeting(getGreeting());
-
-    // Update greeting every minute
-    const interval = setInterval(() => {
-      setGreeting(getGreeting());
-    }, 60000);
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
+    if (currentHour < 12) return "Good Morning";
+    if (currentHour < 18) return "Good Afternoon";
+    return "Good Evening";
   }, []);
 
-  const { data: session } = useSession();
-  // console.log(session);
+  useEffect(() => {
+    setGreeting(getGreeting());
+    const interval = setInterval(() => setGreeting(getGreeting()), 60000);
+    return () => clearInterval(interval);
+  }, [getGreeting]);
+
+  const getUserFirstName = () => {
+    const role = session?.user?.role;
+    if (!role) return null;
+
+    const profileMap = {
+      PET_OWNER: session?.petOwnerProfile?.firstName,
+      ADMIN: session?.adminProfile?.firstName,
+      VET_RECEPTIONIST: session?.receptionistProfile?.firstName,
+      VET_DOCTOR: session?.doctorNurseProfile?.firstName,
+      VET_NURSE: session?.doctorNurseProfile?.firstName,
+    };
+
+    return profileMap[role as keyof typeof profileMap];
+  };
 
   return (
     <header className="sticky top-0 z-999 flex w-full border-b border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark">
       <div className="flex flex-grow items-center justify-between px-4 py-5 shadow-2 md:px-5 2xl:px-10">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           {/* <!-- Hamburger Toggle BTN --> */}
-          <button
+          {/* <button
+            aria-label="Toggle Sidebar"
+            aria-expanded={sidebarOpen}
             aria-controls="sidebar"
             onClick={(e) => {
               e.stopPropagation();
-              props.setSidebarOpen(!props.sidebarOpen);
+              setSidebarOpen(!sidebarOpen);
             }}
             className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-dark-3 dark:bg-dark-2 lg:hidden"
           >
@@ -58,34 +89,34 @@ const Header = (props: {
               <span className="du-block absolute right-0 h-full w-full">
                 <span
                   className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-[0] duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && "!w-full delay-300"
+                    !sidebarOpen && "!w-full delay-300"
                   }`}
                 ></span>
                 <span
                   className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-150 duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && "delay-400 !w-full"
+                    !sidebarOpen && "delay-400 !w-full"
                   }`}
                 ></span>
                 <span
                   className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-200 duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && "!w-full delay-500"
+                    !sidebarOpen && "!w-full delay-500"
                   }`}
                 ></span>
               </span>
               <span className="absolute right-0 h-full w-full rotate-45">
                 <span
                   className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-dark delay-300 duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && "!h-0 !delay-[0]"
+                    !sidebarOpen && "!h-0 !delay-[0]"
                   }`}
                 ></span>
                 <span
                   className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-dark duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && "!h-0 !delay-200"
+                    !sidebarOpen && "!h-0 !delay-200"
                   }`}
                 ></span>
               </span>
             </span>
-          </button>
+          </button> */}
           {/* <!-- Hamburger Toggle BTN --> */}
 
           {/* <Link className="block flex-shrink-0 lg:hidden" href="/">
@@ -101,19 +132,7 @@ const Header = (props: {
         <div className="hidden xl:block">
           <div>
             <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              {greeting} 
-              {session?.user?.role === "ADMIN" && (
-                <span>{session?.adminProfile?.firstName}</span>
-              )}
-              {session?.user?.role === "RECEPTIONIST" && (
-                <span>{session?.receptionistProfile?.firstName}</span>
-              )}
-              {session?.user?.role === "DOCTOR" && (
-                <span>{session?.doctorNurseProfile?.firstName}</span>
-              )}
-              {session?.user?.role === "NURSE" && (
-                <span>{session?.doctorNurseProfile?.firstName}</span>
-              )}
+              {greeting} {getUserFirstName()}!
             </h1>
             <p className="font-medium">{session?.user?.role} Dashboard</p>
           </div>

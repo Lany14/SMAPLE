@@ -33,11 +33,11 @@ export default async function signup(formData: SignUpInputProps) {
       const max = 999999; // Maximum 6-figure number
       return Math.floor(Math.random() * (max - min + 1)) + min;
     };
-    // const generatedUserId = generateId();
+    const generatedUserId = generateId();
     const userToken = generateToken();
     const newUser = await prismaClient.user.create({
       data: {
-        // userId: generatedUserId,
+        userId: parseInt(generatedUserId),
         name,
         email,
         password: hashedPassword,

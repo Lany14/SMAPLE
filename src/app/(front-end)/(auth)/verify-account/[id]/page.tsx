@@ -1,6 +1,3 @@
-import { HiInformationCircle } from "react-icons/hi";
-import { Alert } from "flowbite-react";
-
 import VerifyTokenForm from "@/components/FrontEnd/Site/Forms/VerifyTokenForm";
 import { getUserById } from "../../../../../../actions/user";
 

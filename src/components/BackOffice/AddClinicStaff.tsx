@@ -11,7 +11,13 @@ import {
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { ModalContext } from "./Layouts/DefaultLayout";
@@ -70,28 +76,33 @@ const AddClinicStaff: React.FC = () => {
     return age;
   }, []);
 
-  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value.replace(/[^0-9]/g, "");
-    if (input.length <= 10 && (!input.length || input[0] === "9")) {
-      setPhoneNumber(input);
-    }
-  }, []);
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const input = e.target.value.replace(/[^0-9]/g, "");
+      if (input.length <= 10 && (!input.length || input[0] === "9")) {
+        setPhoneNumber(input);
+      }
+    },
+    [],
+  );
 
-  const handleInputChange = useCallback((
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }, []);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
 
   const handleSelectChange = useCallback((name: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
-      ...(name === "role" && value === "PET_OWNER" && {
-        licenseNumber: "",
-        specialization: "",
-      }),
+      ...(name === "role" &&
+        value === "PET_OWNER" && {
+          licenseNumber: "",
+          specialization: "",
+        }),
     }));
   }, []);
 
@@ -99,11 +110,11 @@ const AddClinicStaff: React.FC = () => {
     const tempErrors: Record<string, string> = {};
     const requiredFields = {
       firstName: "First name",
-      lastName: "Last name", 
+      lastName: "Last name",
       sex: "Sex",
       birthDate: "Birthdate",
       email: "Email",
-      role: "Role"
+      role: "Role",
     };
 
     Object.entries(requiredFields).forEach(([field, label]) => {
@@ -132,7 +143,7 @@ const AddClinicStaff: React.FC = () => {
   useEffect(() => {
     if (formData.birthDate) {
       const calculatedAge = calculateAge(formData.birthDate);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         age: calculatedAge.toString(),
       }));
@@ -165,14 +176,18 @@ const AddClinicStaff: React.FC = () => {
         body: JSON.stringify(userData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         toast.success("User account created successfully");
         setFormData(INITIAL_FORM_DATA);
         setPhoneNumber("");
       } else if (response.status === 409) {
-        toast.error("The email already exists in the Database.");
+        toast.error("This email address is already registered in the system.");
+      } else if (response.status === 410) {
+        toast.error("This phone number is already registered in the system.");
       } else {
-        console.error("Error response:", await response.text());
+        console.error("Error response:", data.error);
         toast.error("Failed to create user account.");
       }
       toast.dismiss(loadingToast);
@@ -279,13 +294,21 @@ const AddClinicStaff: React.FC = () => {
                   onChange={handlePhoneChange}
                   startContent={<span className="text-small">+63</span>}
                   endContent={
-                    <span className={`text-small ${isValid ? "text-success" : "text-danger"}`}>
+                    <span
+                      className={`text-small ${isValid ? "text-success" : "text-danger"}`}
+                    >
                       {phoneNumber.length}/10
                     </span>
                   }
                   type="tel"
                   isInvalid={!isValid && phoneNumber.length > 0}
-                  errorMessage={!isValid && phoneNumber.length > 0 ? "Phone number must be 10 digits" : ""}
+                  errorMessage={
+                    phoneNumber.length === 0
+                      ? "Phone number is required"
+                      : !isValid && phoneNumber.length > 0
+                        ? "Phone number must be 10 digits"
+                        : ""
+                  }
                   classNames={{
                     input: "pl-1",
                     innerWrapper: "bg-transparent",
@@ -298,7 +321,11 @@ const AddClinicStaff: React.FC = () => {
                   value={formData.role}
                   onChange={(e) => handleSelectChange("role", e.target.value)}
                   isDisabled={session?.user?.role === "VET_RECEPTIONIST"}
-                  defaultSelectedKeys={session?.user?.role === "VET_RECEPTIONIST" ? ["PET_OWNER"] : undefined}
+                  defaultSelectedKeys={
+                    session?.user?.role === "VET_RECEPTIONIST"
+                      ? ["PET_OWNER"]
+                      : undefined
+                  }
                   className="col-span-2"
                   isInvalid={!!errors.role}
                   errorMessage={errors.role}

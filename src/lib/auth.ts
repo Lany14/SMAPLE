@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
           const max = 999999; // Maximum 6-figure number
           return Math.floor(Math.random() * (max - min + 1)) + min;
         };
-        // const generatedUserId = generateId();
+        const generatedUserId = generateId();
         const userToken = generateToken();
         const existingUser = await prismaClient.user.findUnique({
           where: { email: profile.email },
@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
         if (!existingUser) {
           await prismaClient.user.create({
             data: {
-              // userId: generatedUserId,
+              userId: parseInt(generatedUserId),
               name: profile.name ?? "",
               email: profile.email ?? "",
               image: profile.image ?? null,
@@ -131,8 +131,6 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id;
         session.user.name = token.name;
-        session.user.firstName = token.firstName;
-        session.user.lastName = token.lastName;
         session.user.email = token.email;
         session.user.image = token.picture;
         session.user.role = token.role;
