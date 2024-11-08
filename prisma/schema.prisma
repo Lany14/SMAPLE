@@ -74,7 +74,6 @@ model User {
   userId                  Int               @unique
   name                    String
   email                   String            @unique 
-  phoneNumber             String?           @unique
   password                String?
   emailVerified           DateTime?
   image                   String?
@@ -99,6 +98,7 @@ model AdminProfile {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   firstName       String
   lastName        String
+  phoneNumber     String?           @unique
   sex             String
   address         String?
   birthDate       DateTime
@@ -114,6 +114,7 @@ model ReceptionistProfile {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   firstName       String
   lastName        String
+  phoneNumber     String?           @unique
   sex             String
   address         String?
   birthDate       DateTime
@@ -130,6 +131,7 @@ model DoctorNurseProfile {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   firstName       String
   lastName        String
+  phoneNumber     String?           @unique
   sex             String
   address         String?
   birthDate       DateTime
@@ -149,6 +151,7 @@ model PetOwnerProfile {
   id              String         @id @default(auto()) @map("_id") @db.ObjectId
   firstName       String
   lastName        String
+  phoneNumber     String?          @unique
   sex             String?
   address         String?
   birthDate       DateTime?

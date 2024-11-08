@@ -10,7 +10,7 @@ declare module "next-auth" {
   interface User {
     role?: string;
   }
-  interface AdminProfile {
+  interface session {
     adminProfile?: {
       firstName: string;
     };
@@ -60,11 +60,11 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
     if (!role) return null;
 
     const profileMap = {
-      PET_OWNER: session?.petOwnerProfile?.firstName,
-      ADMIN: session?.adminProfile?.firstName,
-      VET_RECEPTIONIST: session?.receptionistProfile?.firstName,
-      VET_DOCTOR: session?.doctorNurseProfile?.firstName,
-      VET_NURSE: session?.doctorNurseProfile?.firstName,
+      PET_OWNER: session?.user?.name,
+      ADMIN: session?.user?.name,
+      VET_RECEPTIONIST: session?.user?.name,
+      VET_DOCTOR: session?.user?.name,
+      VET_NURSE: session?.user?.name,
     };
 
     return profileMap[role as keyof typeof profileMap];
