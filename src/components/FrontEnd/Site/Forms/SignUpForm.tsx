@@ -100,10 +100,9 @@ export default function RegisterForm({
   // Password Strength state
   const [strength, setStrength] = useState(0);
   const [pass, setPass] = useState<string>("");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setStrength(calculateStrength(pass));
-  }, []);
+  }, [pass]);
 
   return (
     <>

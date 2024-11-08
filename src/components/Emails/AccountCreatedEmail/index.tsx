@@ -41,7 +41,7 @@ export const AccountCreatedEmail: React.FC<WelcomeEmailProps> = ({
           Log In
         </Button>
         <Text style={paragraph}>
-          If you have any questions, please don't hesitate to contact us.
+          If you have any questions, please don&apos;t hesitate to contact us.
         </Text>
         <Text style={paragraph}>Best regards,</Text>
         <Text style={paragraph}>The Clinic Management Team</Text>

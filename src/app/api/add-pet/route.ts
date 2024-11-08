@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { ObjectId } from "mongodb";
 import { Resend } from "resend";
-import AddPetNotif from "@/components/Emails/AddPetNotif";
+// import AddPetNotif from "@/components/Emails/AddPetNotif";
+import { generateId } from "@/src/utils/generateId";
 
 const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -11,20 +11,20 @@ export async function POST(request: Request) {
   try {
     const {
       // Pet basic information
-      name,
-      sex,
-      species,
-      breed,
-      age,
-      weight,
-      colorAndMarkings,
+      petName,
+      petSex,
+      petSpecies,
+      petBreed,
+      petAge,
+      petWeight,
+      petColorAndMarkings,
       birthDate,
       ownerId,
 
-      // Owner information
-      ownerEmail,
-      ownerFirstName,
-      ownerLastName,
+      // // Owner information
+      // ownerEmail,
+      // ownerFirstName,
+      // ownerLastName,
 
       // Optional medical records
       medicalHistory,
@@ -38,20 +38,18 @@ export async function POST(request: Request) {
     // Create pet with a new ObjectId for petId
     const pet = await prisma.pet.create({
       data: {
-        // petId: new ObjectId().toString(), // Generate a unique petId
-        name,
-        sex,
-        species,
-        breed,
-        age,
-        weight,
-        colorAndMarkings,
-        birthDate: birthDate ? new Date(birthDate) : null,
+        petId: parseInt(generateId()),
+        petName,
+        petSex,
+        petSpecies,
+        petBreed,
+        petAge,
+        petWeight,
+        petColorAndMarkings,
+        petBirthdate: birthDate ? new Date(birthDate) : null,
         owner: {
           connect: {
             id: ownerId,
-            firstName: ownerFirstName,
-            lastName: ownerLastName,
           },
         },
 
@@ -141,15 +139,15 @@ export async function POST(request: Request) {
       },
     });
 
-    await resend.emails.send({
-      from: "Abys Agrivet <noreply@abysagrivet.online>",
-      to: ownerEmail,
-      subject: "Added a new pet to your profile",
-      react: AddPetNotif({
-        ownerFirstName,
-        ownerLastName,
-      }),
-    });
+    // await resend.emails.send({
+    //   from: "Abys Agrivet <noreply@abysagrivet.online>",
+    //   to: ownerEmail,
+    //   subject: "Added a new pet to your profile",
+    //   react: AddPetNotif({
+    //     ownerFirstName,
+    //     ownerLastName,
+    //   }),
+    // });
 
     return NextResponse.json(
       { message: "Pet profile created successfully", pet },

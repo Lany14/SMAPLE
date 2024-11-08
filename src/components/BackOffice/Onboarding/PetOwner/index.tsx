@@ -199,6 +199,50 @@ const PetOwnerOnboardingForm = () => {
     [],
   );
 
+  const validatePaymentForm = useCallback(() => {
+    let isValid = true;
+    const newErrors = {
+      cardNumber: "",
+      cardName: "",
+      expiryDate: "",
+      cvv: "",
+    };
+
+    if (cardNumber.replace(/\s/g, "").length !== 16) {
+      newErrors.cardNumber = "Card number must be 16 digits";
+      isValid = false;
+    }
+
+    if (cardName.trim().length === 0) {
+      newErrors.cardName = "Card name is required";
+      isValid = false;
+    }
+
+    if (expiryDate.length !== 5) {
+      newErrors.expiryDate = "Invalid expiry date";
+      isValid = false;
+    } else {
+      const [month, year] = expiryDate.split("/");
+      const currentYear = new Date().getFullYear() % 100;
+      const currentMonth = new Date().getMonth() + 1;
+      if (
+        parseInt(year) < currentYear ||
+        (parseInt(year) === currentYear && parseInt(month) < currentMonth)
+      ) {
+        newErrors.expiryDate = "Card has expired";
+        isValid = false;
+      }
+    }
+
+    if (cvv.length !== 3) {
+      newErrors.cvv = "CVV must be 3 digits";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  }, []);
+
   const validateForm = useCallback(() => {
     const newErrors: FormErrors = {};
     const requiredFields = {
@@ -216,82 +260,6 @@ const PetOwnerOnboardingForm = () => {
       zipCode: "Zip code",
     };
 
-    const validatePaymentForm = useCallback(() => {
-      let isValid = true;
-      const newErrors = {
-        cardNumber: "",
-        cardName: "",
-        expiryDate: "",
-        cvv: "",
-      };
-
-      if (cardNumber.replace(/\s/g, "").length !== 16) {
-        newErrors.cardNumber = "Card number must be 16 digits";
-        isValid = false;
-      }
-
-      if (cardName.trim().length === 0) {
-        newErrors.cardName = "Card name is required";
-        isValid = false;
-      }
-
-      if (expiryDate.length !== 5) {
-        newErrors.expiryDate = "Invalid expiry date";
-        isValid = false;
-      } else {
-        const [month, year] = expiryDate.split("/");
-        const currentYear = new Date().getFullYear() % 100;
-        const currentMonth = new Date().getMonth() + 1;
-        if (
-          parseInt(year) < currentYear ||
-          (parseInt(year) === currentYear && parseInt(month) < currentMonth)
-        ) {
-          newErrors.expiryDate = "Card has expired";
-          isValid = false;
-        }
-      }
-
-      if (cvv.length !== 3) {
-        newErrors.cvv = "CVV must be 3 digits";
-        isValid = false;
-      }
-
-      setErrors(newErrors);
-      return isValid;
-    }, [cardName, cardNumber, cvv, expiryDate]);
-
-    const handleSubmit = useCallback(() => {
-      if (validateForm()) {
-        const fullPhoneNumber = `+63${phoneNumber}`;
-        const fullAddress = `${formData.streetAddress}, ${formData.city}, ${formData.province}, ${formData.barangay}, ${formData.zipCode}`;
-
-        const userData = {
-          ...formData,
-          phoneNumber: fullPhoneNumber,
-          address: fullAddress,
-          pets: petProfiles,
-          paymentInfo: {
-            cardNumber,
-            cardName,
-            expiryDate,
-            cvv,
-          },
-        };
-
-        console.log("Form submitted:", userData);
-        alert("Onboarding completed successfully!");
-      }
-    }, [
-      formData,
-      phoneNumber,
-      petProfiles,
-      validateForm,
-      cardNumber,
-      cardName,
-      expiryDate,
-      cvv,
-    ]);
-
     Object.entries(requiredFields).forEach(([field, label]) => {
       if (!formData[field as keyof FormData]?.trim()) {
         newErrors[field as keyof FormErrors] = `${label} is required`;
@@ -304,36 +272,14 @@ const PetOwnerOnboardingForm = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData]);
-
-  const validatePetForm = useCallback(() => {
-    const newErrors: FormErrors = {};
-    const requiredFields = {
-      petName: "Pet name",
-      petSex: "Sex",
-      petSpecies: "Species",
-      petBreed: "Breed",
-      petBirthdate: "Birthdate",
-      petAge: "Age",
-      petWeight: "Weight",
-    };
-
-    Object.entries(requiredFields).forEach(([field, label]) => {
-      if (!currentPet[field as keyof PetProfile]?.trim()) {
-        newErrors[field as keyof FormErrors] = `${label} is required`;
-      }
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [currentPet]);
+  }, []);
 
   const handleAddPet = useCallback(() => {
-    if (validatePetForm()) {
+    if (validateForm()) {
       setPetProfiles((prev) => [...prev, currentPet]);
       setCurrentPet(INITIAL_PET_PROFILE);
     }
-  }, [currentPet, validatePetForm]);
+  }, [currentPet, validateForm]);
 
   const handleDeletePet = useCallback((indexToDelete: number) => {
     setPetProfiles((prev) =>
@@ -397,7 +343,7 @@ const PetOwnerOnboardingForm = () => {
   }, [formData.birthDate, currentPet.petBirthdate, calculateAge]);
 
   const handleSubmit = useCallback(() => {
-    if (validateForm()) {
+    if (validateForm() && validatePaymentForm()) {
       const fullPhoneNumber = `+63${phoneNumber}`;
       const fullAddress = `${formData.streetAddress}, ${formData.city}, ${formData.province}, ${formData.barangay}, ${formData.zipCode}`;
 
@@ -417,16 +363,7 @@ const PetOwnerOnboardingForm = () => {
       console.log("Form submitted:", userData);
       alert("Onboarding completed successfully!");
     }
-  }, [
-    formData,
-    phoneNumber,
-    petProfiles,
-    validateForm,
-    cardNumber,
-    cardName,
-    expiryDate,
-    cvv,
-  ]);
+  }, [validateForm, validatePaymentForm]);
 
   const handleNext = useCallback(() => {
     if (currentIndex < tabs.length - 1) {
