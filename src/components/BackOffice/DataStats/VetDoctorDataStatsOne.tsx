@@ -136,8 +136,7 @@ const DataStatsOne: React.FC<dataStats> = () => {
             className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark"
           >
             <div
-              className="flex h-14.5 w-14.5 items-center justify-center rounded-full"
-              style={{ backgroundColor: item.color }}
+             className={`flex h-14.5 w-14.5 items-center justify-center rounded-full bg-[${item.color}]`}
             >
               {item.icon}
             </div>

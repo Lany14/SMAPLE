@@ -11,6 +11,7 @@ const SwitcherFour = () => {
       >
         <div className="relative">
           <input
+            title="Toggle switch"
             type="checkbox"
             id="toggle4"
             className="sr-only"

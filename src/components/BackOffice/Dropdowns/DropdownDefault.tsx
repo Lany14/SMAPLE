@@ -8,6 +8,7 @@ const DropdownDefault = () => {
     <ClickOutside onClick={() => setDropdownOpen(false)}>
       <div className="relative flex">
         <button
+          title="Open dropdown"
           className="hover:text-primary"
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >

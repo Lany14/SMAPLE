@@ -18,6 +18,7 @@ const SelectGroupThree: React.FC = () => {
 
       <div className="dark:bg-form-input relative z-20 bg-transparent">
         <select
+          title="Select subject"
           value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);
