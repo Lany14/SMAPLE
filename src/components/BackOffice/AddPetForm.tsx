@@ -252,7 +252,7 @@ const AddPetForm: React.FC = () => {
 
             <Input
               isRequired
-              label="Weight"
+              label="Weight (in kg.)"
               name="petWeight"
               value={formData.petWeight}
               onChange={handleInputChange}

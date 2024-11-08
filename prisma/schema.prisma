@@ -78,6 +78,7 @@ model User {
   emailVerified           DateTime?
   image                   String?
   role                    UserRole          @default(PET_OWNER)
+  status                  UserStatus        @default(PENDING)
 
 
   isVerified              Boolean           @default(false)
@@ -93,6 +94,12 @@ model User {
   petOwnerProfile         PetOwnerProfile?
 }
 
+enum UserStatus {
+  PENDING
+  ONLINE
+  OFFLINE
+  ACTIVE
+}
 
 model AdminProfile {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
@@ -176,9 +183,10 @@ model Pet {
   petSpecies        String        // Added: Type of pet (e.g., Dog, Cat)
   petBreed          String
   petBirthdate      DateTime?     // Added: Pet's birth date
-  petAge            Int
-  petWeight         Float?        // Added: Current weight
+  petAge            String?
+  petWeight         String?        // Added: Current weight
   petColorAndMarkings  String?       // Added: Pet's color
+  petAvatar          String?       // Added: Pet's avatar
 
 
   owner         PetOwnerProfile         @relation("OwnerPets", fields: [petOwnerId], references: [id])

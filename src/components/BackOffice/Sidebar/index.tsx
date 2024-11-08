@@ -71,11 +71,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         name: "ACCOUNT",
         menuItems: [
           {
-            icon: <UserRoundPen />,
-            label: "Profile",
-            route: "/dashboard/profile",
-          },
-          {
             icon: <Settings />,
             label: "Setting",
             route: "/dashboard/setting",
@@ -95,18 +90,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               label: "Pet Patients",
               route: "/dashboard/patient",
             },
-            { icon: <Users />, label: "Fur Parents", route: "/dashboard/user" },
             {
-              icon: <Hospital />,
-              label: "Clinic Staff",
-              route: "/dashboard/staff",
+              icon: <Users />,
+              label: "User Accounts",
+              route: "/dashboard/user",
             },
             { icon: <Inbox />, label: "Inbox", route: "/dashboard/inbox" },
-            {
-              icon: <BriefcaseMedical />,
-              label: "Vet Doctors",
-              route: "/dashboard/doctor",
-            },
             {
               icon: <Calendar />,
               label: "Calendar",
@@ -124,16 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        {
-          name: "ACCOUNT",
-          menuItems: [
-            {
-              icon: <Settings />,
-              label: "Setting",
-              route: "/dashboard/setting",
-            },
-          ],
-        },
+        ...baseMenu,
       ];
     } else if (session?.user?.role === "VET_DOCTOR") {
       return [
@@ -145,6 +125,11 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               icon: <PawPrint />,
               label: "Pet Patients",
               route: "/dashboard/patient",
+            },
+            {
+              icon: <Users />,
+              label: "Fur Parents",
+              route: "/dashboard/user",
             },
             {
               icon: <AlarmClock />,
@@ -189,6 +174,11 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               icon: <PawPrint />,
               label: "Pet Patients",
               route: "/dashboard/patient",
+            },
+            {
+              icon: <Users />,
+              label: "Fur Parents",
+              route: "/dashboard/user",
             },
             {
               icon: <AlarmClock />,
@@ -240,13 +230,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
             {
               icon: <Users />,
-              label: "Fur Parents",
+              label: "User Accounts",
               route: "/dashboard/user",
-            },
-            {
-              icon: <BriefcaseMedical />,
-              label: "Vet Doctors",
-              route: "/dashboard/doctor",
             },
             {
               icon: <AlarmClock />,
@@ -270,16 +255,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        {
-          name: "ACCOUNT",
-          menuItems: [
-            {
-              icon: <Settings />,
-              label: "Setting",
-              route: "/dashboard/setting",
-            },
-          ],
-        },
+        ...baseMenu,
       ];
     } else if (session?.user?.role === "PET_OWNER") {
       return [
@@ -313,16 +289,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             },
           ],
         },
-        {
-          name: "ACCOUNT",
-          menuItems: [
-            {
-              icon: <Settings />,
-              label: "Setting",
-              route: "/dashboard/setting",
-            },
-          ],
-        },
+        ...baseMenu,
       ];
     }
     return baseMenu;
