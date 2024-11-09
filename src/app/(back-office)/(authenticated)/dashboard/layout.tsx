@@ -9,7 +9,7 @@ import ClientModalWrapper from "@/components/ClientModalWrapper";
 import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { NextUIProvider } from "@nextui-org/react";
-import AuthWrapper from "@/src/components/AuthWrapper";
+import AuthGuard from "@/components/AuthGuard";
 
 const DashboardWrapper = dynamic(
   () => import("@/components/DashboardWrapper"),
@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <AuthWrapper>
+        <AuthGuard>
           <NextUIProvider>
             <ClientModalWrapper>
               <DashboardWrapper>
@@ -33,7 +33,7 @@ export default function RootLayout({
               </DashboardWrapper>
             </ClientModalWrapper>
           </NextUIProvider>
-        </AuthWrapper>
+        </AuthGuard>
       </body>
     </html>
   );
