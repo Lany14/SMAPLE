@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/lib/db";
 import { getServerSession } from "next-auth";
@@ -8,10 +10,7 @@ export async function GET() {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userRole = session.user.role;
@@ -25,9 +24,9 @@ export async function GET() {
         where: {
           owner: {
             user: {
-              id: userId
-            }
-          }
+              id: userId,
+            },
+          },
         },
         select: {
           id: true,
@@ -45,13 +44,17 @@ export async function GET() {
                 select: {
                   name: true,
                   image: true,
-                }
-              }
-            }
-          }
-        }
+                },
+              },
+            },
+          },
+        },
       });
-    } else if (["ADMIN", "VET_DOCTOR", "VET_NURSE", "VET_RECEPTIONIST"].includes(userRole)) {
+    } else if (
+      ["ADMIN", "VET_DOCTOR", "VET_NURSE", "VET_RECEPTIONIST"].includes(
+        userRole,
+      )
+    ) {
       // Fetch all pets for staff roles
       pets = await prismaClient.pet.findMany({
         select: {
@@ -70,17 +73,14 @@ export async function GET() {
                 select: {
                   name: true,
                   image: true,
-                }
-              }
-            }
-          }
-        }
+                },
+              },
+            },
+          },
+        },
       });
     } else {
-      return NextResponse.json(
-        { error: "Unauthorized role" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Unauthorized role" }, { status: 403 });
     }
 
     return NextResponse.json(pets);
@@ -88,7 +88,7 @@ export async function GET() {
     console.error("Error fetching pets:", error);
     return NextResponse.json(
       { error: "Failed to fetch pets" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

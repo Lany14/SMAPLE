@@ -1,6 +1,7 @@
 "use client";
 
-import { Metadata } from "next";
+export const dynamic = "force-dynamic";
+
 import AdminDashboard from "@/components/BackOffice/Dashboard/AdminDashboard";
 import VetDoctorDashboard from "@/components/BackOffice/Dashboard/VetDoctorDashboard";
 import VetNurseDashboard from "@/components/BackOffice/Dashboard/VetNurseDashboard";
