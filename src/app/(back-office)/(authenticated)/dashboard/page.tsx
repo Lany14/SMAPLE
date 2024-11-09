@@ -1,3 +1,5 @@
+"use client";
+
 import DashboardClient from "./client";
 
 export default function Page() {
