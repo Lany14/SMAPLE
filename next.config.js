@@ -1,3 +1,5 @@
+const webpack = require("webpack");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack: (config, { isServer }) => {
@@ -14,8 +16,9 @@ const nextConfig = {
         assert: require.resolve("assert/"),
         buffer: require.resolve("buffer/"),
       };
+
       config.plugins.push(
-        new config.webpack.ProvidePlugin({
+        new webpack.ProvidePlugin({
           process: "process/browser",
           Buffer: ["buffer", "Buffer"],
         }),
