@@ -1,6 +1,7 @@
 "use client";
 
-"use client";
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 import AdminDashboard from "@/components/BackOffice/Dashboard/AdminDashboard";
 import VetDoctorDashboard from "@/components/BackOffice/Dashboard/VetDoctorDashboard";
