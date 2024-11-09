@@ -1,9 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = false;
-export const fetchCache = "force-no-store";
-
 import AdminDashboard from "@/components/BackOffice/Dashboard/AdminDashboard";
 import VetDoctorDashboard from "@/components/BackOffice/Dashboard/VetDoctorDashboard";
 import VetNurseDashboard from "@/components/BackOffice/Dashboard/VetNurseDashboard";
