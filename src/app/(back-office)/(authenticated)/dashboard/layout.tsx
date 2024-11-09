@@ -1,3 +1,5 @@
+"use client";
+
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/poppins.css";
 import "@/css/style.css";
@@ -8,12 +10,21 @@ import { Toaster } from "react-hot-toast";
 import DashboardWrapper from "@/components/DashboardWrapper";
 import { NextUIProvider } from "@nextui-org/react";
 import AuthWrapper from "@/components/AuthWrapper";
+import Loader from "@/src/components/BackOffice/common/Loader";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+  if (!isClient) {
+    return <Loader />;
+  }
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>

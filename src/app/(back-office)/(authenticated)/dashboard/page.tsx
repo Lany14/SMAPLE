@@ -1,6 +1,8 @@
 "use client";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 import AdminDashboard from "@/components/BackOffice/Dashboard/AdminDashboard";
 import VetDoctorDashboard from "@/components/BackOffice/Dashboard/VetDoctorDashboard";
@@ -16,8 +18,13 @@ const Page: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Handle loading state
-  if (status === "loading") {
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (status === "loading" || !isClient) {
     return <Loader />;
   }
 
