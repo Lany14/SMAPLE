@@ -76,6 +76,8 @@ export default function RegisterForm({
     data.role = role;
     try {
       const user = await createUser(data);
+      console.log(user);
+      console.log(user.status);
       if (user && user.status === 200) {
         console.log("User Created Successfully");
         reset();

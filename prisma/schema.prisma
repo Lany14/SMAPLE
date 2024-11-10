@@ -103,9 +103,9 @@ enum UserStatus {
 
 model AdminProfile {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName       String
-  lastName        String
-  phoneNumber     String?           @unique
+  firstName       String?
+  lastName        String?
+  phoneNumber     String?           //@unique
   sex             String
   address         String?
   birthDate       DateTime
@@ -119,9 +119,9 @@ model AdminProfile {
 
 model ReceptionistProfile {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName       String
-  lastName        String
-  phoneNumber     String?           @unique
+  firstName       String?
+  lastName        String?
+  phoneNumber     String?           //@unique
   sex             String
   address         String?
   birthDate       DateTime
@@ -136,9 +136,9 @@ model ReceptionistProfile {
 // -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
 model DoctorNurseProfile {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName       String
-  lastName        String
-  phoneNumber     String?           @unique
+  firstName       String?
+  lastName        String?
+  phoneNumber     String?           //@unique
   sex             String
   address         String?
   birthDate       DateTime
@@ -156,9 +156,9 @@ model DoctorNurseProfile {
 // -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
 model PetOwnerProfile {
   id              String         @id @default(auto()) @map("_id") @db.ObjectId
-  firstName       String
-  lastName        String
-  phoneNumber     String?          @unique
+  firstName       String?
+  lastName        String?
+  phoneNumber     String?          //@unique
   sex             String?
   address         String?
   birthDate       DateTime?
@@ -331,32 +331,34 @@ model Vaccination {
 
 // -------------------- APPOINTMENT MODEL --------------------
 model Appointment {
-  id              String                  @id @default(auto()) @map("_id") @db.ObjectId
-  pet             Pet                     @relation(fields: [petId], references: [id])
-  petId           String                  @db.ObjectId  
-  petOwner        PetOwnerProfile         @relation("OwnerAppointments", fields: [petOwnerId], references: [id])
-  petOwnerId      String                  @db.ObjectId
-  veterinarian    DoctorNurseProfile      @relation("VeterinarianAppointments", fields: [veterinarianId], references: [id])
-  veterinarianId  String                  @db.ObjectId
-  
+  id              String              @id @default(auto()) @map("_id") @db.ObjectId
+  pet             Pet                 @relation(fields: [petId], references: [id])
+  petId           String              @db.ObjectId  
+  petOwner        PetOwnerProfile     @relation("OwnerAppointments", fields: [petOwnerId], references: [id])
+  petOwnerId      String              @db.ObjectId
+  veterinarian    DoctorNurseProfile?  @relation("VeterinarianAppointments", fields: [veterinarianId], references: [id])
+  veterinarianId  String?              @db.ObjectId
 
   googleMeetLink  String?
-  status          AppointmentStatus       @default(SCHEDULED)
+  status          AppointmentStatus   @default(PENDING)   // Start with 'PENDING' status
   date            DateTime
   time            String
   note            String?
 
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime           @updatedAt
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
-  Session                 Session[]
+  Session         Session[]
 }
 
 enum AppointmentStatus {
-  SCHEDULED
-  RESCHEDULED
-  COMPLETED
-  CANCELED
+  PENDING       // Newly requested appointments that await vet doctor approval
+  APPROVED      // Approved by the vet doctor
+  DENIED        // Denied by the vet doctor
+  SCHEDULED     // Scheduled after approval
+  RESCHEDULED   // If rescheduling occurs after approval
+  COMPLETED     // When the appointment is finished
+  CANCELED      // If the appointment is canceled
 }
 
 // -------------------- INVOICE & PAYMENT MODEL --------------------

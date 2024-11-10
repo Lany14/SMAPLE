@@ -1,6 +1,8 @@
+// lib/auth.ts
+
 import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prismaClient } from "@/lib/db"; // Use this pre-existing instance
+import { prismaClient } from "@/lib/db";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
@@ -20,17 +22,12 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      // profile(profile) {
-      //   return {
-      //     id: profile.sub,
-      //     name: profile.name,
-      //     email: profile.email,
-      //     image: profile.picture,
-      //     // You can add custom fields here if needed
-      //     firstName: profile.given_name,
-      //     lastName: profile.family_name,
-      //   }
-      // },
+      authorization: {
+        params: {
+          scope:
+            "openid profile email https://www.googleapis.com/auth/calendar.readonly",
+        },
+      },
     }),
 
     // Credentials provider for manual email/password sign-in
@@ -82,11 +79,10 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      // Google sign-in logic
       if (account?.provider === "google" && profile) {
         const generateToken = () => {
-          const min = 100000; // Minimum 6-figure number
-          const max = 999999; // Maximum 6-figure number
+          const min = 100000;
+          const max = 999999;
           return Math.floor(Math.random() * (max - min + 1)) + min;
         };
         const generatedUserId = generateId();
@@ -103,37 +99,35 @@ export const authOptions: NextAuthOptions = {
               email: profile.email ?? "",
               image: profile.image ?? null,
               isVerified: true,
-              password: null, // Add this line
-              token: userToken, // Ensure token is a number
+              password: null,
+              token: userToken,
             },
           });
         }
       }
       return true;
     },
-    async jwt({ token, user }) {
-      const dbUser = await prismaClient.user.findFirst({
-        where: { email: token?.email ?? "" },
-      });
-      if (!dbUser) {
-        token.id = user!.id;
-        return token;
+    async jwt({ token, account, user }) {
+      // If the user is signing in for the first time, store access token from Google
+      if (account?.access_token) {
+        token.accessToken = account.access_token;
       }
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        role: dbUser.role,
-        picture: dbUser.image,
-      };
+      // Add user id to token for session callback
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
     },
     session({ session, token }) {
+      // Include access token in the session for Google Calendar API requests
       if (token && session.user) {
         session.user.id = token.id;
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.image = token.picture;
         session.user.role = token.role;
+        session.accessToken = token.accessToken; // Add accessToken to session
       }
       return session;
     },
