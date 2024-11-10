@@ -13,9 +13,9 @@ datasource db {
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
   userId            String  @db.ObjectId
-  type              String
-  provider          String
-  providerAccountId String
+  type              String?
+  provider          String?
+  providerAccountId String?
   refresh_token     String? @db.String
   access_token      String? @db.String
   expires_at        Int?
@@ -24,7 +24,7 @@ model Account {
   id_token          String? @db.String
   session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -77,7 +77,7 @@ model User {
   password                String?
   emailVerified           DateTime?
   image                   String?
-  role                    UserRole          @default(PET_OWNER)
+  role                    UserRole          @default(VET_DOCTOR)
   status                  UserStatus        @default(PENDING)
 
 
@@ -141,16 +141,28 @@ model DoctorNurseProfile {
   phoneNumber     String?           //@unique
   sex             String
   address         String?
-  birthDate       DateTime
+  birthDate       DateTime?
   age             Int
-  licenseNumber   String    @unique
+  licenseNumber   String?    @unique
   specialization  String?
-  user            User      @relation(fields: [doctorNurseId], references: [id])
-  doctorNurseId   String    @unique @db.ObjectId
+  user            User?      @relation(fields: [doctorNurseId], references: [id])
+  doctorNurseId   String?    @unique @db.ObjectId
 
   Session                 Session[]
 
   veterinarianAppointments Appointment[] @relation("VeterinarianAppointments")
+  schedules                 DoctorSchedule[]    @relation("DoctorSchedules")
+}
+
+model DoctorSchedule {
+  id         String              @id @default(auto()) @map("_id") @db.ObjectId
+  doctorId   String              @db.ObjectId
+  dayOfWeek  Int                 // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime  DateTime            // Start of working hours for this day
+  endTime    DateTime            // End of working hours for this day
+  doctor          DoctorNurseProfile @relation("DoctorSchedules", fields: [doctorId], references: [id])
+
+  @@index([doctorId, dayOfWeek], name: "doctor_day_index") // To quickly query by doctor and day
 }
 
 // -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
@@ -178,10 +190,10 @@ model PetOwnerProfile {
 model Pet {
   id                String        @id @default(auto()) @map("_id") @db.ObjectId
   petId             Int          @unique
-  petName           String
-  petSex            String
-  petSpecies        String        // Added: Type of pet (e.g., Dog, Cat)
-  petBreed          String
+  petName           String?
+  petSex            String?
+  petSpecies        String?        // Added: Type of pet (e.g., Dog, Cat)
+  petBreed          String?
   petBirthdate      DateTime?     // Added: Pet's birth date
   petAge            String?
   petWeight         String?        // Added: Current weight
@@ -189,8 +201,8 @@ model Pet {
   petAvatar          String?       // Added: Pet's avatar
 
 
-  owner         PetOwnerProfile         @relation("OwnerPets", fields: [petOwnerId], references: [id])
-  petOwnerId    String               @db.ObjectId
+  owner         PetOwnerProfile?         @relation("OwnerPets", fields: [petOwnerId], references: [id])
+  petOwnerId    String?               @db.ObjectId
   
   appointments      Appointment[]
 
@@ -332,10 +344,10 @@ model Vaccination {
 // -------------------- APPOINTMENT MODEL --------------------
 model Appointment {
   id              String              @id @default(auto()) @map("_id") @db.ObjectId
-  pet             Pet                 @relation(fields: [petId], references: [id])
-  petId           String              @db.ObjectId  
-  petOwner        PetOwnerProfile     @relation("OwnerAppointments", fields: [petOwnerId], references: [id])
-  petOwnerId      String              @db.ObjectId
+  pet             Pet?                 @relation(fields: [petId], references: [id])
+  petId           String?              @db.ObjectId  
+  petOwner        PetOwnerProfile?     @relation("OwnerAppointments", fields: [petOwnerId], references: [id])
+  petOwnerId      String?              @db.ObjectId
   veterinarian    DoctorNurseProfile?  @relation("VeterinarianAppointments", fields: [veterinarianId], references: [id])
   veterinarianId  String?              @db.ObjectId
 

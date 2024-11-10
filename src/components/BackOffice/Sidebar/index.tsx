@@ -52,6 +52,7 @@ interface MenuGroup {
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession(); // Moved inside component
+  console.log("Session data:", session);
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
 
   // const [visibleModal, setVisibleModal] = useState<ModalId>(null);
@@ -79,6 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       },
     ];
 
+    console.log("User role:", session?.user?.role);
     if (session?.user?.role === "ADMIN") {
       return [
         {
@@ -386,12 +388,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                 <Button
                   as={Link}
                   className="w-full bg-blue-600 text-white hover:bg-blue-dark"
-                  // onPress={() => openModal("addPetPatient")}
-                  // onClick={handleOpenAddPetForm}
                   startContent={<Plus />}
-                  href="/dashboard/add-patient"
+                  href={
+                    session?.user?.role === "VET_DOCTOR"
+                      ? "/dashboard/diagnose-patient"
+                      : "/dashboard/add-patient"
+                  }
                 >
-                  Add Pet Patient
+                  {session?.user?.role === "VET_DOCTOR"
+                    ? "Diagnose Pet"
+                    : "Add Pet"}
                 </Button>
               </div>
               {/* <Modal

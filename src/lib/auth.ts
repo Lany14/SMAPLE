@@ -87,6 +87,7 @@ export const authOptions: NextAuthOptions = {
         };
         const generatedUserId = generateId();
         const userToken = generateToken();
+
         const existingUser = await prismaClient.user.findUnique({
           where: { email: profile.email },
         });
@@ -108,26 +109,24 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, account, user }) {
-      // If the user is signing in for the first time, store access token from Google
       if (account?.access_token) {
         token.accessToken = account.access_token;
       }
-      // Add user id to token for session callback
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
-
+      console.log("Token in jwt callback:", token); // Add this for debugging
       return token;
     },
-    session({ session, token }) {
-      // Include access token in the session for Google Calendar API requests
+    async session({ session, token }) {
+      console.log("Token data in session callback:", token); // Debugging output
+
       if (token && session.user) {
         session.user.id = token.id;
-        session.user.name = token.name;
         session.user.email = token.email;
-        session.user.image = token.picture;
-        session.user.role = token.role;
-        session.accessToken = token.accessToken; // Add accessToken to session
+        session.user.role = token.role; // Ensure role is copied from token
+        session.user.accessToken = token.accessToken; // Add accessToken from token
       }
       return session;
     },

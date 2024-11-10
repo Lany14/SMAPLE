@@ -7,33 +7,19 @@ import {
   CardFooter,
   CardHeader,
   Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Input,
-  Radio,
-  RadioGroup,
   Select,
-  SelectedItems,
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
-import { PawPrint, PawPrintIcon } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { users } from "@/types/users";
-import { Avatar } from "@radix-ui/react-avatar";
 
-type User = {
-  id: number;
-  name: string;
-  role: string;
-  team: string;
-  status: string;
-  age: string;
-  avatar: string;
-  email: string;
+const speciesOptions = ["Dog", "Cat", "Bird"];
+const breedOptions = {
+  Dog: ["Shih Tzu", "Pomeranian", "Beagle", "Pug", "Golden Retriever"],
+  Cat: ["Siamese", "British Shorthair", "Maine", "Persian", "Sphynx", "Calico"],
+  Bird: ["Cockatiel", "Parrot", "Parakeet", "Lovebirds", "Dove"],
 };
 
 const AddPetForm: React.FC = () => {
@@ -55,8 +41,6 @@ const AddPetForm: React.FC = () => {
     petBreed: "",
     petBirthdate: "",
     petAge: "",
-    petWeight: "",
-    petColorAndMarkings: "",
   });
 
   const validateForm = () => {
@@ -69,59 +53,65 @@ const AddPetForm: React.FC = () => {
     newErrors.petBirthdate = formData.petBirthdate
       ? ""
       : "Birth date is required.";
-    newErrors.petAge = formData.petAge ? "" : "Age is required.";
-    newErrors.petWeight =
-      formData.petWeight && !isNaN(Number(formData.petWeight))
-        ? ""
-        : "Weight must be a number.";
 
     setErrors(newErrors);
-
-    // Return true if there are no errors
     return Object.values(newErrors).every((error) => error === "");
   };
 
-  const calculateAge = useCallback(
-    (birthdate: string, petBirthdate: string) => {
-      const today = new Date();
-      const petBirthDate = new Date(petBirthdate);
+  const calculateAge = useCallback((birthdate: string) => {
+    const today = new Date();
+    const petBirthDate = new Date(birthdate);
 
-      let petAgeYears = today.getFullYear() - petBirthDate.getFullYear();
-      let petAgeMonths = today.getMonth() - petBirthDate.getMonth();
+    let petAgeYears = today.getFullYear() - petBirthDate.getFullYear();
+    let petAgeMonths = today.getMonth() - petBirthDate.getMonth();
 
-      if (petAgeMonths < 0) {
-        petAgeYears--;
-        petAgeMonths += 12;
-      }
+    if (petAgeMonths < 0) {
+      petAgeYears--;
+      petAgeMonths += 12;
+    }
 
-      if (today.getDate() < petBirthDate.getDate()) petAgeMonths--;
+    const petAgeFormatted = `${petAgeYears} yr${petAgeYears !== 1 ? "s" : ""}${
+      petAgeMonths > 0
+        ? ` and ${petAgeMonths} mo${petAgeMonths !== 1 ? "s" : ""}`
+        : ""
+    }`;
 
-      const petAgeFormatted = `${petAgeYears} yr${petAgeYears !== 1 ? "s" : ""}${
-        petAgeMonths > 0
-          ? ` and ${petAgeMonths} mo${petAgeMonths !== 1 ? "s" : ""}`
-          : ""
-      }`;
-
-      return { petAge: petAgeFormatted };
-    },
-    [],
-  );
+    return petAgeFormatted;
+  }, []);
 
   useEffect(() => {
     if (formData.petBirthdate) {
-      const { petAge } = calculateAge(
-        formData.petBirthdate,
-        formData.petBirthdate,
-      );
+      const petAge = calculateAge(formData.petBirthdate);
       setFormData((prev) => ({ ...prev, petAge }));
     }
   }, [formData.petBirthdate, calculateAge]);
 
+  const handleSpeciesChange = (species: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      petSpecies: species,
+      petBreed: "", // Reset breed when species changes
+    }));
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Form submitted");
+    console.log("Current form data:", formData);
+    const isFormValid = validateForm();
+    console.log("Validation result:", isFormValid);
+    console.log("Validation errors:", errors);
     if (validateForm()) {
-      console.log(formData);
-
+      console.log("Form data after passing validation:", formData);
       try {
         const response = await fetch("/api/add-pet", {
           method: "POST",
@@ -132,9 +122,7 @@ const AddPetForm: React.FC = () => {
         });
 
         if (response.ok) {
-          console.log("Form submitted:", formData);
           toast.success("Pet added successfully");
-          // Reset form data
           setFormData({
             petName: "",
             petSex: "",
@@ -146,24 +134,13 @@ const AddPetForm: React.FC = () => {
             petColorAndMarkings: "",
           });
         } else {
-          // Log the full response for debugging
-          console.error("Error response:", await response.text());
           toast.error("Failed to add pet.");
         }
       } catch (error) {
         console.error("Error adding pet:", error);
         toast.error("An unexpected error occurred.");
       }
-    } else {
-      console.log("Validation failed");
     }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   return (
@@ -208,16 +185,22 @@ const AddPetForm: React.FC = () => {
                 Female
               </SelectItem>
             </Select>
-            <Input
+            <Select
               isRequired
               label="Species"
               name="petSpecies"
               value={formData.petSpecies}
-              onChange={handleInputChange}
+              onChange={(e) => handleSpeciesChange(e.target.value)}
               isInvalid={!!errors.petSpecies}
               errorMessage={errors.petSpecies}
-            />
-            <Input
+            >
+              {speciesOptions.map((species) => (
+                <SelectItem key={species} value={species}>
+                  {species}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
               isRequired
               label="Breed"
               name="petBreed"
@@ -225,127 +208,43 @@ const AddPetForm: React.FC = () => {
               onChange={handleInputChange}
               isInvalid={!!errors.petBreed}
               errorMessage={errors.petBreed}
-            />
-            <div className="md:flex ">
-              <Input
-                isRequired
-                type="date"
-                label="Birthdate"
-                name="petBirthdate"
-                value={formData.petBirthdate}
-                onChange={handleInputChange}
-                max={new Date().toISOString().split("T")[0]}
-                isInvalid={!!errors.petBirthdate}
-                errorMessage={errors.petBirthdate}
-              />
-              <Input
-                isRequired
-                isReadOnly
-                type="text"
-                label="Age"
-                name="petAge"
-                value={formData.petAge}
-                isInvalid={!!errors.petAge}
-                errorMessage={errors.petAge}
-              />
-            </div>
-
+            >
+              {(
+                breedOptions[
+                  formData.petSpecies as keyof typeof breedOptions
+                ] || []
+              ).map((breed) => (
+                <SelectItem key={breed} value={breed}>
+                  {breed}
+                </SelectItem>
+              ))}
+            </Select>
             <Input
               isRequired
-              label="Weight (in kg.)"
-              name="petWeight"
-              value={formData.petWeight}
+              type="date"
+              label="Birthdate"
+              name="petBirthdate"
+              value={formData.petBirthdate}
               onChange={handleInputChange}
-              isInvalid={!!errors.petWeight}
-              errorMessage={errors.petWeight}
+              max={new Date().toISOString().split("T")[0]}
+              isInvalid={!!errors.petBirthdate}
+              errorMessage={errors.petBirthdate}
             />
-            <Textarea
-              placeholder="Describe your Pet"
-              className="max-w col-span-2"
-              label="Color and Markings"
-              name="petColorAndMarkings"
-              value={formData.petColorAndMarkings}
-              onChange={handleInputChange}
-              isInvalid={!!errors.petColorAndMarkings}
-              errorMessage={errors.petColorAndMarkings}
+            <Input
+              isReadOnly
+              label="Age"
+              name="petAge"
+              value={formData.petAge}
+              isInvalid={!!errors.petAge}
+              errorMessage={errors.petAge}
             />
-            <Divider className="col-span-2" />
-            {/* <Select
-              items={users}
-              label="Assigned to"
-              className="max-w-xs"
-              variant="bordered"
-              classNames={{
-                label: "group-data-[filled=true]:-translate-y-5",
-                trigger: "min-h-16",
-                listboxWrapper: "max-h-[400px]",
-              }}
-              listboxProps={{
-                itemClasses: {
-                  base: [
-                    "rounded-md",
-                    "text-default-500",
-                    "transition-opacity",
-                    "data-[hover=true]:text-foreground",
-                    "data-[hover=true]:bg-default-100",
-                    "dark:data-[hover=true]:bg-default-50",
-                    "data-[selectable=true]:focus:bg-default-50",
-                    "data-[pressed=true]:opacity-70",
-                    "data-[focus-visible=true]:ring-default-500",
-                  ],
-                },
-              }}
-              popoverProps={{
-                classNames: {
-                  base: "before:bg-default-200",
-                  content: "p-0 border-small border-divider bg-background",
-                },
-              }}
-              renderValue={(items) => {
-                return items.map((item) => (
-                  <div key={item.key} className="flex items-center gap-2">
-                    <Avatar
-                      alt={item.data.name}
-                      className="flex-shrink-0"
-                      size="sm"
-                      src={item.data.avatar}
-                    />
-                    <div className="flex flex-col">
-                      <span>{item.data.name}</span>
-                      <span className="text-tiny text-default-500">
-                        ({item.data.email})
-                      </span>
-                    </div>
-                  </div>
-                ));
-              }}
-            >
-              {(user) => (
-                <SelectItem key={user.id} textValue={user.name}>
-                  <div className="flex items-center gap-2">
-                    <Avatar
-                      alt={user.name}
-                      className="flex-shrink-0"
-                      size="sm"
-                      src={user.avatar}
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-small">{user.name}</span>
-                      <span className="text-tiny text-default-400">
-                        {user.email}
-                      </span>
-                    </div>
-                  </div>
-                </SelectItem>
-              )}
-            </Select> */}
           </div>
         </CardBody>
-        <div className="flex justify-end">
+        <CardFooter className="flex justify-end">
           <Button color="primary" type="submit">
-            Done
+            Submit
           </Button>
-        </div>
+        </CardFooter>
       </form>
     </Card>
   );

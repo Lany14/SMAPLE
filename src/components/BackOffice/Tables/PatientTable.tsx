@@ -95,9 +95,11 @@ OWNER: ${user.owner?.user?.name || "N/A"}
         setIsLoading(true);
         const response = await fetch("/api/pets");
         const data = await response.json();
-        setUsers(data);
+        // Ensure data is an array, or default to an empty array
+        setUsers(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching pets:", error);
+        setUsers([]); // Set users to an empty array on error
       } finally {
         setIsLoading(false);
       }
@@ -119,7 +121,7 @@ OWNER: ${user.owner?.user?.name || "N/A"}
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredUsers = Array.isArray(users) ? [...users] : [];
 
     if (filterValue) {
       filteredUsers = filteredUsers.filter((user) =>

@@ -1,16 +1,35 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { Resend } from "resend";
-// import AddPetNotif from "@/components/Emails/AddPetNotif";
+import { getServerSession } from "next-auth"; // Use the appropriate method to get session in your setup
+import { authOptions } from "@/lib/auth"; // Update with your NextAuth auth options path
 import { generateId } from "@/src/utils/generateId";
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
+    // Get the user session to retrieve the owner ID
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    // Fetch the petOwnerId from PetOwnerProfile using the user field
+    const userProfile = await prisma.petOwnerProfile.findUnique({
+      where: { petOwnerId: session.user.id },
+    });
+
+    if (!userProfile) {
+      return NextResponse.json(
+        { message: "User profile not found" },
+        { status: 404 },
+      );
+    }
+
+    const petOwnerId = userProfile.id;
+
+    // Extract pet data from request
     const {
-      // Pet basic information
       petName,
       petSex,
       petSpecies,
@@ -19,23 +38,21 @@ export async function POST(request: Request) {
       petWeight,
       petColorAndMarkings,
       birthDate,
-      ownerId,
-
-      // // Owner information
-      // ownerEmail,
-      // ownerFirstName,
-      // ownerLastName,
-
-      // Optional medical records
-      medicalHistory,
-      medicines,
-      antiparasitics,
-      prescriptions,
-      labResults,
-      vaccinations,
     } = await request.json();
 
-    // Create pet with a new ObjectId for petId
+    console.log("Received data:", {
+      petName,
+      petSex,
+      petSpecies,
+      petBreed,
+      petAge,
+      petWeight,
+      petColorAndMarkings,
+      birthDate,
+      petOwnerId,
+    });
+
+    // Create pet with the derived petOwnerId
     const pet = await prisma.pet.create({
       data: {
         petId: parseInt(generateId()),
@@ -49,114 +66,22 @@ export async function POST(request: Request) {
         petBirthdate: birthDate ? new Date(birthDate) : null,
         owner: {
           connect: {
-            id: ownerId,
+            id: petOwnerId,
           },
         },
-
-        // Create medical records if provided
-        medicalHistories: medicalHistory
-          ? {
-              create: medicalHistory.map((record: any) => ({
-                type: record.type,
-                date: new Date(record.date),
-                note: record.note,
-                file: record.file,
-              })),
-            }
-          : undefined,
-
-        medicines: medicines
-          ? {
-              create: medicines.map((medicine: any) => ({
-                name: medicine.name,
-                startDate: new Date(medicine.startDate),
-                endDate: medicine.endDate ? new Date(medicine.endDate) : null,
-                interval: medicine.interval,
-                dosage: medicine.dosage,
-                note: medicine.note,
-              })),
-            }
-          : undefined,
-
-        antiparasitics: antiparasitics
-          ? {
-              create: antiparasitics.map((treatment: any) => ({
-                name: treatment.name,
-                dateAdministered: new Date(treatment.dateAdministered),
-                petWeight: treatment.petWeight,
-                nextTreatmentDate: treatment.nextTreatmentDate
-                  ? new Date(treatment.nextTreatmentDate)
-                  : null,
-                veterinarian: treatment.veterinarian,
-                vetLicenseNumber: treatment.vetLicenseNumber,
-                note: treatment.note,
-              })),
-            }
-          : undefined,
-
-        prescriptions: prescriptions
-          ? {
-              create: prescriptions.map((prescription: any) => ({
-                name: prescription.name,
-                veterinarian: prescription.veterinarian,
-                vetLicenseNumber: prescription.vetLicenseNumber,
-                note: prescription.note,
-                file: prescription.file,
-              })),
-            }
-          : undefined,
-
-        labResults: labResults
-          ? {
-              create: labResults.map((result: any) => ({
-                name: result.name,
-                datePerformed: new Date(result.datePerformed),
-                note: result.note,
-                file: result.file,
-              })),
-            }
-          : undefined,
-
-        vaccinations: vaccinations
-          ? {
-              create: vaccinations.map((vaccination: any) => ({
-                dateAdministered: new Date(vaccination.dateAdministered),
-                petWeight: vaccination.petWeight,
-                name: vaccination.name,
-                against: vaccination.against,
-                nextVaccinationDate: vaccination.nextVaccinationDate
-                  ? new Date(vaccination.nextVaccinationDate)
-                  : null,
-                veterinarian: vaccination.veterinarian,
-                vetLicenseNumber: vaccination.vetLicenseNumber,
-                manufacturer: vaccination.manufacturer,
-                lotNumber: vaccination.lotNumber,
-                note: vaccination.note,
-                file: vaccination.file,
-              })),
-            }
-          : undefined,
       },
     });
 
-    // await resend.emails.send({
-    //   from: "Abys Agrivet <noreply@abysagrivet.online>",
-    //   to: ownerEmail,
-    //   subject: "Added a new pet to your profile",
-    //   react: AddPetNotif({
-    //     ownerFirstName,
-    //     ownerLastName,
-    //   }),
-    // });
+    console.log("Pet profile created successfully:", pet);
 
     return NextResponse.json(
       { message: "Pet profile created successfully", pet },
       { status: 201 },
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating pet profile:", error);
     return NextResponse.json(
-      { message: "Error creating pet profile" },
+      { message: "Error creating pet profile", error: error.message },
       { status: 500 },
     );
   }

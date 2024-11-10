@@ -21,6 +21,7 @@ const nextConfig = {
       http: require.resolve("stream-http"),
       https: require.resolve("https-browserify"),
       querystring: require.resolve("querystring-es3"),
+      vm: require.resolve("vm-browserify"),
     };
     return config;
   },
