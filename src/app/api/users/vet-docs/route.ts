@@ -1,22 +1,34 @@
 // src/app/api/users/vet-docs/route.ts
 
 import { NextResponse } from "next/server";
-import { PrismaClient, UserRole } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const vetDoctors = await prisma.user.findMany({
-      where: { role: UserRole.VET_DOCTOR },
+    const vetDoctors = await prisma.doctorNurseProfile.findMany({
+      where: {
+        user: {
+          role: "VET_DOCTOR",
+        },
+      },
       select: {
-        id: true,
-        name: true,
-        email: true,
-        // Remove specialization if it's not needed or doesn't exist
+        id: true, // This is the correct id field for DoctorSchedule
+        firstName: true,
+        lastName: true,
+        specialization: true, // Include other fields as necessary
       },
     });
-    return NextResponse.json(vetDoctors, { status: 200 });
+
+    // Format data to include full name for easier selection in the frontend
+    const formattedDoctors = vetDoctors.map((doctor) => ({
+      id: doctor.id,
+      name: `${doctor.firstName} ${doctor.lastName}`,
+      specialization: doctor.specialization,
+    }));
+
+    return NextResponse.json(formattedDoctors, { status: 200 });
   } catch (error) {
     console.error("Error fetching vet doctors:", error);
     return NextResponse.json(

@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prismaClient } from "@/lib/db";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const doctorId = searchParams.get("doctorId");
   const date = searchParams.get("date");
 
+  console.log("Received doctorId:", doctorId);
+  console.log("Received date:", date);
+
   if (!doctorId || !date) {
+    console.log("Missing doctorId or date");
     return NextResponse.json(
       { message: "Doctor ID and date are required" },
       { status: 400 },
@@ -17,28 +19,32 @@ export async function GET(request: Request) {
 
   try {
     const dayOfWeek = new Date(date).getDay();
+    console.log("Computed dayOfWeek:", dayOfWeek);
 
-    const schedule = await prisma.doctorSchedule.findFirst({
+    const schedule = await prismaClient.doctorSchedule.findFirst({
       where: {
         doctorId: doctorId,
         dayOfWeek: dayOfWeek,
       },
     });
+    console.log("Fetched schedule:", schedule);
 
     if (!schedule) {
+      console.log("No schedule found for this day.");
       return NextResponse.json(
         { message: "No schedule found for this day." },
         { status: 404 },
       );
     }
 
-    const appointments = await prisma.appointment.findMany({
+    const appointments = await prismaClient.appointment.findMany({
       where: {
         veterinarianId: doctorId,
         date: new Date(date),
       },
       select: { startTime: true, endTime: true },
     });
+    console.log("Fetched appointments for the date:", appointments);
 
     const startTime = new Date(schedule.startTime);
     const endTime = new Date(schedule.endTime);
@@ -61,6 +67,7 @@ export async function GET(request: Request) {
       }
     }
 
+    console.log("Available slots:", availableSlots);
     return NextResponse.json({ availableSlots });
   } catch (error: any) {
     console.error("Error fetching schedule:", error);

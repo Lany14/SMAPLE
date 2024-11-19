@@ -1,11 +1,10 @@
-// src/app/(back-office)/(authenticated)/dashboard/calendar/page.tsx
-
 "use client";
 
 import Breadcrumb from "@/components/BackOffice/Breadcrumbs/Breadcrumb";
 import { useEffect, useState } from "react";
-import { getSession } from "next-auth/react";
-import PendingAppointmentsTable from "@/components/BackOffice/Tables/PendingAppointment";
+import PendingAppointmentsTable from "@/src/components/BackOffice/Tables/AppointmentTable";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
 
 const CalendarPage = () => {
   const [events, setEvents] = useState<any[]>([]);
@@ -13,29 +12,32 @@ const CalendarPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch Google Calendar events
     const fetchEvents = async () => {
-      setLoading(true);
       try {
-        const session = await getSession();
-        if (session?.accessToken) {
-          const response = await fetch(
-            "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-            {
-              headers: {
-                Authorization: `Bearer ${session.accessToken}`,
-              },
-            },
-          );
-          const data = await response.json();
+        // Call the API route you created for fetching calendar events
+        const response = await fetch("/api/calendar");
+        const data = await response.json();
+        console.log("Fetched Google Calendar data:", data); // Debug the fetched data
+
+        if (response.ok && data.items) {
+          // Debug individual event details
+          data.items.forEach((event: any) => {
+            console.log("Event start:", event.start);
+            console.log("Event end:", event.end);
+          });
+
           const fetchedEvents = data.items.map((event: any) => ({
             title: event.summary || "No title",
-            start: new Date(event.start.dateTime || event.start.date),
-            end: new Date(event.end.dateTime || event.end.date),
+            start: new Date(
+              event.start.dateTime || event.start.date,
+            ).toISOString(), // Normalize timezone
+            end: new Date(event.end.dateTime || event.end.date).toISOString(), // Normalize timezone
           }));
+
+          console.log("Mapped events:", fetchedEvents); // Debug mapped events
           setEvents(fetchedEvents);
         } else {
-          console.error("No access token available.");
+          console.warn("No events found or failed to fetch calendar events.");
         }
       } catch (error) {
         console.error("Error fetching calendar events:", error);
@@ -44,7 +46,17 @@ const CalendarPage = () => {
       }
     };
 
-    // Fetch pending appointments
+    fetchEvents();
+
+    // Refetch events periodically (e.g., every 5 minutes)
+    const interval = setInterval(() => {
+      fetchEvents();
+    }, 300000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const fetchPendingAppointments = async () => {
       try {
         const response = await fetch(
@@ -57,7 +69,6 @@ const CalendarPage = () => {
       }
     };
 
-    fetchEvents();
     fetchPendingAppointments();
   }, []);
 
@@ -73,18 +84,18 @@ const CalendarPage = () => {
 
         <h1 className="mb-4 mt-8 text-xl font-bold">Google Calendar Events</h1>
 
-        <div className="custom-calendar-container mt-4">
-          <iframe
-            src="https://calendar.google.com/calendar/embed?src=mrlegaspina%40ccc.edu.ph&ctz=UTC"
-            style={{
-              border: 0,
-              width: "100%",
-              height: "600px",
-            }}
-            frameBorder="0"
-            scrolling="no"
-          ></iframe>
-        </div>
+        {loading ? (
+          <p>Loading calendar events...</p>
+        ) : (
+          <div className="custom-calendar-container mt-4">
+            <FullCalendar
+              plugins={[dayGridPlugin]}
+              initialView="dayGridMonth"
+              events={events}
+              height="auto"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
