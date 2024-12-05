@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth"; // Use the appropriate method to get session in your setup
 import { authOptions } from "@/lib/auth"; // Update with your NextAuth auth options path
 import { generateId } from "@/src/utils/generateId";
-
-const prisma = new PrismaClient();
+import db from "@/src/lib/db";
 
 export async function POST(request: Request) {
   try {
@@ -15,8 +13,8 @@ export async function POST(request: Request) {
     }
 
     // Fetch the petOwnerId from PetOwnerProfile using the user field
-    const userProfile = await prisma.petOwnerProfile.findUnique({
-      where: { petOwnerId: session.user.id },
+    const userProfile = await db.petOwnerProfile.findUnique({
+      where: { id: session.user.id },
     });
 
     if (!userProfile) {
@@ -53,7 +51,7 @@ export async function POST(request: Request) {
     });
 
     // Create pet with the derived petOwnerId
-    const pet = await prisma.pet.create({
+    const pet = await db.pet.create({
       data: {
         petId: parseInt(generateId()),
         petName,
@@ -63,8 +61,8 @@ export async function POST(request: Request) {
         petAge,
         petWeight,
         petColorAndMarkings,
-        petBirthdate: birthDate ? new Date(birthDate) : null,
-        owner: {
+        petBirthdate: birthDate ? new Date(birthDate) : "",
+        petOwner: {
           connect: {
             id: petOwnerId,
           },

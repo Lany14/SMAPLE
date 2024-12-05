@@ -1,0 +1,15 @@
+// -------------------- ADMIN PROFILE MODELS --------------------
+model AdminProfile {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  adminUser       User        @relation( name: "AdminProfile", fields: [adminUserId, adminFirstName, adminLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  adminUserId     String      @db.ObjectId
+  adminFirstName  String
+  adminLastName   String
+
+  sendEmail       Boolean     @default(false)
+  sendSMS         Boolean     @default(false)
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@unique([adminUserId, adminFirstName, adminLastName])
+}

@@ -1,0 +1,39 @@
+// -------------------- VACCINATION BOOKING MODEL --------------------
+
+model VaccinationBooking {
+  id                            String            @id @default(auto()) @map("_id") @db.ObjectId
+  doctor                        DoctorProfile?     @relation(name: "DoctorVaccinationBookings", fields: [doctorIdAdministered, doctorFirstNameAdministered, doctorLastNameAdministered], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorIdAdministered          String?            @db.ObjectId
+  doctorFirstNameAdministered   String?
+  doctorLastNameAdministered    String?
+
+  nurse                        NurseProfile?     @relation(name: "NurseVaccinationBookings", fields: [nurseIdAdministered, nurseFirstNameAdministered, nurseLastNameAdministered], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
+  nurseIdAdministered          String?            @db.ObjectId
+  nurseFirstNameAdministered   String?
+  nurseLastNameAdministered    String?
+
+  pet               Pet               @relation(name: "PetVaccinations", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId             Int               @unique
+  petName           String
+
+  petOwner          PetOwnerProfile   @relation(name: "PetOwnerVaccinationBookings", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId        String            @db.ObjectId
+  petOwnerFirstName String
+  petOwnerLastName  String
+  status            BookingStatus      @default(PENDING)   // Start with 'PENDING' status
+
+  date              DateTime
+  time              String
+  vaccineNeeded     String
+  note              String?
+  vaccineBooklet    String        // File Attachment (URL or Path)
+
+  // Audit Fields
+  createdBy       String?          @map("createdBy")
+  updatedBy       String?          @map("updatedBy")
+
+  // Audit Timestamps
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+

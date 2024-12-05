@@ -1,0 +1,17 @@
+model SMSNotification {
+  messageId      String?      // Semaphore message ID
+  account_id     String       @id @default(auto()) @map("_id") @db.ObjectId
+  user           User         @relation(name: "UserSMSNotification", fields: [userId, userEmail, recipient ], references: [id, email, phoneNumber], onDelete: Cascade, onUpdate: Cascade)
+  userId         String       @db.ObjectId
+  userEmail      String
+  recipient      String
+  message        String
+  sender_name    String       // "SEMAPHORE" OR "ABYSAGRIVET"
+  network        String       // "globe", "smart", "sun", etc.
+  status         String       // "Queued", "Pending", "Sent", "Failed", "Refunded"
+  type           String       // "one" or "bulk"
+  source         String       // "api" or "webtool"
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}

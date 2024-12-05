@@ -22,19 +22,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body suppressHydrationWarning={true}>
-        <AuthGuard>
-          <NextUIProvider>
-            <ClientModalWrapper>
-              <DashboardWrapper>
-                <Toaster position="bottom-right" reverseOrder={false} />
-                {children}
-              </DashboardWrapper>
-            </ClientModalWrapper>
-          </NextUIProvider>
-        </AuthGuard>
-      </body>
-    </html>
+    <AuthGuard>
+      <NextUIProvider>
+        <ClientModalWrapper>
+          <DashboardWrapper>
+            <Toaster position="bottom-right" reverseOrder={false} />
+            {children}
+          </DashboardWrapper>
+        </ClientModalWrapper>
+      </NextUIProvider>
+    </AuthGuard>
   );
 }

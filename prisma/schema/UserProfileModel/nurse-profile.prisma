@@ -1,0 +1,24 @@
+model NurseProfile {
+  id                          String    @id @default(auto()) @map("_id") @db.ObjectId
+  nurseUser             User      @relation(name: "NurseProfile", fields: [nurseId, nurseFirstName, nurseLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  nurseId               String      @db.ObjectId
+  nurseFirstName        String 
+  nurseLastName         String
+  licenseNumber         String
+
+  title                       String?
+  specializations             String[]
+
+  vaccinationBookings  VaccinationBooking[] @relation("NurseVaccinationBookings")
+
+  petWeightAdministered                    PetWeight[]   @relation("NursePetWeightCreated")
+  vaccinationsAdministered                     Vaccination[] @relation("NurseVaccinationsCreated")
+  @@unique([nurseId, nurseFirstName, nurseLastName, licenseNumber])
+  antiparasiticAdministered                    Antiparasitic[]  @relation("NurseAntiparasiticAdministered")
+  prescriptionsAdministered                    Prescription[]   @relation("NursePrescriptionsAdministered")
+  labResultsAdministered                       LabResult[]    @relation("NurseLabResultsAdministered")
+  medicinesAdministered                        Medicine[]    @relation("NurseMedicinesAdministered")
+  medicalHistoriesAdministered                MedicalHistory[]  @relation("NurseMedicalHistoriesAdministered")
+
+  @@unique([nurseId, nurseFirstName, nurseLastName])
+}

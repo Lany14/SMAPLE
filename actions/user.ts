@@ -1,22 +1,17 @@
-"use server";
-
 import { EmailVerification } from "@/components/Emails/EmailVerification";
-import { prismaClient } from "@/lib/db";
+import { getUserByEmail } from "@/data/user";
+import { generateNumericToken } from "@/lib/auth/token";
+import { db } from "@/lib/db";
 import { SignUpInputProps } from "@/types/credInputs";
 import { generateId } from "@/utils/generateId";
-import bcrypt from "bcrypt";
-import { exportTraceState } from "next/dist/trace";
+import { hashPassword } from "@/utils/password";
 import { Resend } from "resend";
 
 export default async function signup(formData: SignUpInputProps) {
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const { firstName, lastName, name, email, password, role } = formData;
+  const { firstName, lastName, email, password, role } = formData;
   try {
-    const existingUser = await prismaClient.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const existingUser = await getUserByEmail(email);
     if (existingUser) {
       // throw new Error(`User with this email ( ${email})  already exists in the Database`);
       return {
@@ -25,41 +20,41 @@ export default async function signup(formData: SignUpInputProps) {
         status: 409,
       };
     }
-    // Encrypt the Password =>bcrypt
-    const hashedPassword = await bcrypt.hash(password, 10);
-    //Generate Token
-    const generateToken = () => {
-      const min = 100000; // Minimum 6-figure number
-      const max = 999999; // Maximum 6-figure number
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
+    // Encrypt the Password
+    const hashedPassword = await hashPassword(password);
+    // Generate a unique userId
     const generatedUserId = generateId();
-    const userToken = generateToken();
-    const newUser = await prismaClient.user.create({
+    // Generate a 6 digit Token
+    const userToken = await generateNumericToken();
+    // Create a new User
+    const newUser = await db.user.create({
       data: {
         userId: parseInt(generatedUserId),
-        name,
+        firstName,
+        lastName,
         email,
         password: hashedPassword,
         role,
-        token: userToken,
+        emailVerificationToken: userToken,
+        emailVerificationTokenExpiry: new Date(
+          Date.now() + 1000 * 60 * 60 * 24,
+        ),
       },
     });
+
+    // Create PetOwnerProfile if role is PET_OWNER
     if (role === "PET_OWNER") {
-      await prismaClient.petOwnerProfile.create({
+      await db.petOwnerProfile.create({
         data: {
-          firstName,
-          lastName,
-          user: {
-            connect: {
-              id: newUser.id,
-            },
-          },
+          petOwnerId: newUser.id,
+          petOwnerFirstName: firstName,
+          petOwnerLastName: lastName,
         },
       });
     }
+
     //Send an Email with the Token on the link as a search param
-    const token = newUser.token;
+    const token = newUser.emailVerificationToken;
     // const name = newUser.firstName.split(" ")[0];
     const linkText = "Verify your Account ";
     const message =
@@ -94,7 +89,7 @@ export default async function signup(formData: SignUpInputProps) {
 export async function getUserById(id: string) {
   if (id) {
     try {
-      const user = await prismaClient.user.findUnique({
+      const user = await db.user.findUnique({
         where: {
           id,
         },
@@ -109,13 +104,16 @@ export async function getUserById(id: string) {
 export async function updateUserById(id: string) {
   if (id) {
     try {
-      const updatedUser = await prismaClient.user.update({
+      const updatedUser = await db.user.update({
         where: {
           id,
         },
         data: {
-          isVerified: true,
+          isEmailVerified: true,
           emailVerified: new Date(),
+          status: "ACTIVE",
+          emailVerificationToken: null,
+          emailVerificationTokenExpiry: null,
         },
       });
       return updatedUser;

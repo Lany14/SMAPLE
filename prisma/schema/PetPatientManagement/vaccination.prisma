@@ -1,0 +1,38 @@
+// -------------------- VACCINATION --------------------
+model Vaccination {
+  id                    String        @id @default(auto()) @map("_id") @db.ObjectId
+  createdByDoctor DoctorProfile?  @relation(name: "DoctorVaccinationsAdministered", fields: [createdByDoctorId, createdByDoctorFirstName, createdByDoctorLastName, createdByDoctorLicenseNumber], references: [doctorId, doctorFirstName, doctorLastName, licenseNumber], onDelete: Cascade, onUpdate: Cascade)
+  createdByDoctorId         String?      @db.ObjectId
+  createdByDoctorFirstName String?
+  createdByDoctorLastName String?
+  createdByDoctorLicenseNumber String?
+
+  createdByNurse NurseProfile? @relation(name: "NurseVaccinationsCreated", fields: [createdByNurseId, createdByNurseFirstName, createdByNurseLastName, createdByNurseLicenseNumber], references: [nurseId, nurseFirstName, nurseLastName, licenseNumber], onDelete: Cascade, onUpdate: Cascade)
+  createdByNurseId         String?      @db.ObjectId
+  createdByNurseFirstName String?
+  createdByNurseLastName  String?
+  createdByNurseLicenseNumber String?
+
+  createdByPetOwner PetOwnerProfile?  @relation(name: "PetVaccinationsCreated", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade) 
+  petOwnerId      String?            @db.ObjectId
+  petOwnerFirstName String?
+  petOwnerLastName   String?
+
+  petPatient            Pet               @relation(name: "PetVaccination", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId                 Int               @unique
+  petName               String
+  dateAdministered      DateTime
+  petWeight             Float
+  vaccinationName       String        // Vaccination Name
+  vaccinationAgainst    String        // Vaccination Against (e.g., Rabies)
+  nextVaccinationDate   DateTime?
+
+  licenseNumber         String?        // Veterinarian License Number
+  manufacturer          String?
+  lotNumber             String?
+  note                  String?
+  file                  String?       // File Attachment (URL or Path)
+  
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+}

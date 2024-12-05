@@ -1,0 +1,11 @@
+// -------------------- BOOKING STATUS --------------------
+enum BookingStatus {
+  PENDING       // Newly requested appointments that await vet doctor approval
+  APPROVED      // Approved by the vet doctor
+  DENIED        // Denied by the vet doctor
+  SCHEDULED     // Scheduled after approval
+  RESCHEDULED   // If rescheduling occurs after approval
+  COMPLETED     // When the appointment is finished
+  CANCELED      // If the appointment is canceled
+}
+// -------------------- END OF BOOKING STATUS --------------------

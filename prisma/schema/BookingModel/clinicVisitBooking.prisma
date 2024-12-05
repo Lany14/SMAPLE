@@ -1,0 +1,51 @@
+model ClinicVisitBooking {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  doctor            DoctorProfile     @relation(name: "DoctorClinicVisits", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId          String            @db.ObjectId
+  doctorFirstName   String
+  doctorLastName    String
+
+  pet               Pet               @relation(name: "PetsClinicVisits", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId             Int               @unique
+  petName           String
+
+  petOwner          PetOwnerProfile   @relation(name: "PetOwnerClinicVisits", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId        String            @db.ObjectId
+  petOwnerFirstName String
+  petOwnerLastName  String
+  status            BookingStatus      @default(PENDING)   // Start with 'PENDING' status
+  date              DateTime
+  time              String
+  note              String
+  file              String?        // File Attachment (URL or Path)
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model DoctorAvailabilityForClinicVisit {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  doctor  DoctorProfile @relation(name: "DoctorClinicVisitSchedules", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId         String      @db.ObjectId
+  doctorFirstName String
+  doctorLastName String
+
+  dayOfWeek  Int                 // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime  DateTime            // Start of working hours for this day
+  endTime    DateTime            // End of working hours for this day
+  
+  // Audit Fields
+  createdBy       String?          @map("createdBy")
+  updatedBy       String?          @map("updatedBy")
+
+  // Audit Timestamps
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+   @@index([doctorId, dayOfWeek], name: "doctor_day_index") // To quickly query by doctor and day
+}
+
+model ClinicVisitBookingHistory {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+}
+

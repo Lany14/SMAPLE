@@ -1,0 +1,57 @@
+// -------------------- ONLINE CONSULTATION MODEL --------------------
+model OnlineConsultationBooking {
+  id                       String                 @id @default(auto()) @map("_id") @db.ObjectId
+  petPatient               Pet                    @relation(name: "PetOnlineConsultations", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId                    Int                    @unique
+  petName                  String 
+
+  petOwner                 PetOwnerProfile        @relation(name: "PetOwnerOnlineConsultations", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId               String                 @db.ObjectId
+  petOwnerFirstName        String
+  petOwnerLastName         String
+
+  veterinarian             DoctorProfile?     @relation(name: "DoctorOnlineConsultations", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId                 String?                 @db.ObjectId
+  doctorFirstName          String?
+  doctorLastName           String?
+
+  googleMeetLink           String?
+  googleCalendarEventId    String?
+  status                   BookingStatus          @default(PENDING)
+  date                     DateTime
+  startTime                DateTime
+  endTime                  DateTime
+  note                     String?
+  file                     String?
+  
+  // Audit Fields
+  createdBy       String?          @map("createdBy")
+  updatedBy       String?          @map("updatedBy")
+
+  // Audit Timestamps
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+}
+
+
+model DoctorAvailabilityForOnlineConsultation {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  doctor  DoctorProfile @relation(name: "DoctorOnlineConsultationSchedules", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId         String      @db.ObjectId
+  doctorFirstName String
+  doctorLastName String
+
+  dayOfWeek  Int                 // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime  DateTime            // Start of working hours for this day
+  endTime    DateTime            // End of working hours for this day
+
+  // Audit Fields
+  createdBy       String?          @map("createdBy")
+  updatedBy       String?          @map("updatedBy")
+
+  // Audit Timestamps
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+   @@index([doctorId, dayOfWeek], name: "doctor_day_index") // To quickly query by doctor and day
+}

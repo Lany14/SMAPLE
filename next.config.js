@@ -3,9 +3,7 @@ const webpack = require("webpack");
 
 const nextConfig = {
   // Disable server-side rendering for the entire app
-  experimental: {
-    appDir: true,
-  },
+  experimental: {},
   // Transpile specific packages
   transpilePackages: ["next-auth"],
   // Disable image optimization to reduce build complexity

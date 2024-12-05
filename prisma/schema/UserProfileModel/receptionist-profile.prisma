@@ -1,0 +1,11 @@
+model ReceptionistProfile {
+  id                      String            @id @default(auto()) @map("_id") @db.ObjectId
+  receptionistUser        User              @relation(name: "ReceptionistProfile", fields: [receptionistUserId, receptionistFirstName, receptionistLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  receptionistUserId      String            @db.ObjectId
+  receptionistFirstName   String
+  receptionistLastName    String
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@unique([receptionistUserId, receptionistFirstName, receptionistLastName])
+}

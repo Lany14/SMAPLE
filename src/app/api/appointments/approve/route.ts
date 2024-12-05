@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prismaClient } from "@/lib/db";
+import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { createGoogleCalendarEvent } from "@/lib/google"; // Use the Google Calendar helper function
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     const userRole = session.user.role;
 
     // Only Vet Doctor can approve appointments
-    if (userRole !== "VET_DOCTOR") {
+    if (userRole !== "DOCTOR") {
       return NextResponse.json({ error: "Access Denied" }, { status: 403 });
     }
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     }
 
     // Fetch the appointment to ensure it exists
-    const appointment = await prismaClient.appointment.findUnique({
+    const appointment = await db.appointment.findUnique({
       where: { id: appointmentId },
       include: {
         veterinarian: {

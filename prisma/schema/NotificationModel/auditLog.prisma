@@ -1,0 +1,13 @@
+model AuditLog {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    user       User     @relation(name: "UserAuditLog", fields: [userId, userFirstName, userLastName ], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+    userId     String   @db.ObjectId
+    userFirstName String
+    userLastName  String
+
+
+    action     String
+    details    String
+    
+    createdAt  DateTime @default(now())
+}

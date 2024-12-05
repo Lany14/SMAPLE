@@ -1,0 +1,16 @@
+model DoctorRating {
+  id                    String            @id @default(auto()) @map("_id") @db.ObjectId
+  doctorProfile  DoctorProfile @relation(name: "DoctorDoctorRatings", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId         String      @db.ObjectId
+  doctorFirstName String
+  doctorLastName String
+  petOwner            PetOwnerProfile @relation(name: "PetOwnerDoctorRatings", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId          String      @db.ObjectId
+  petOwnerFirstName   String
+  petOwnerLastName    String
+  rating              Float
+  review              String?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}

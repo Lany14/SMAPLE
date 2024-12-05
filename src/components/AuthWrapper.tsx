@@ -17,7 +17,7 @@ export default function AuthWrapper({
   useEffect(() => {
     setLoading(false);
     // if (!session) {
-    //   router.push("/signin");
+    //   router.push("/sign-in");
     // }
     // else {
     //   router.push("/dashboard");

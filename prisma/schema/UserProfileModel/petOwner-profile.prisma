@@ -1,0 +1,29 @@
+// -------------------- PET OWNER PROFILE MODELS --------------------
+model PetOwnerProfile {
+  id                    String          @id @default(auto()) @map("_id") @db.ObjectId
+  petOwnerUser          User            @relation(name: "PetOwnerProfile", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId            String      @db.ObjectId
+  petOwnerFirstName     String
+  petOwnerLastName      String
+
+  petWeightsCreated           PetWeight[]                 @relation("PetWeightsCreated")
+  
+  antiparasiticsCreated      Antiparasitic[]             @relation("PetAntiparasiticCreated")
+  medicalHistoriesCreated    MedicalHistory[]            @relation("PetMedicalHistoriesCreated")
+  prescriptionsCreated        Prescription[]              @relation("PetPrescriptionCreated")
+  labResultsCreated           LabResult[]                 @relation("PetLabResultCreated")
+  vaccinationsCreated         Vaccination[]               @relation("PetVaccinationsCreated")
+  medicinesCreated            Medicine[]                  @relation("PetMedicineCreated")
+
+  pets                  Pet[]                      @relation("PetOwnerPets")
+  onlineConsultations   OnlineConsultationBooking[]  @relation("PetOwnerOnlineConsultations")
+  clinicVisits          ClinicVisitBooking[]         @relation("PetOwnerClinicVisits")        
+  vaccinationBookings   VaccinationBooking[]     @relation("PetOwnerVaccinationBookings")
+  doctorRating          DoctorRating[]       @relation("PetOwnerDoctorRatings")
+  invoices              Invoice[]               @relation("PetOwnerInvoices")
+  clinicServiceRate     ClinicServiceRate[]   @relation("PetOwnerClinicServiceRates")
+    
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@unique([petOwnerId, petOwnerFirstName, petOwnerLastName])
+}

@@ -1,0 +1,30 @@
+// -------------------- MEDICAL HISTORY --------------------
+model MedicalHistory {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdByDoctor DoctorProfile?  @relation(name: "DoctorMedicalHistoriesAdministered", fields: [createdByDoctorId, createdByDoctorFirstName, createdByDoctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByDoctorId         String?      @db.ObjectId
+  createdByDoctorFirstName String?
+  createdByDoctorLastName String?
+
+  createdByNurse NurseProfile? @relation(name: "NurseMedicalHistoriesAdministered", fields: [createdByNurseId, createdByNurseFirstName, createdByNurseLastName], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByNurseId         String?      @db.ObjectId
+  createdByNurseFirstName String?
+  createdByNurseLastName  String?
+
+  createdByPetOwner PetOwnerProfile?  @relation(name: "PetMedicalHistoriesCreated", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId      String?            @db.ObjectId
+  petOwnerFirstName String?
+  petOwnerLastName String?
+
+  petPatient        Pet               @relation(name: "PetMedicalHistory", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId             Int               @unique
+  petName           String
+
+  type              String
+  date              DateTime
+  note              String?
+  file              String           // File Attachment (URL or Path)
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}

@@ -138,7 +138,7 @@ const Footer = () => {
                   <ul>
                     <li>
                       <a
-                        href="/signin"
+                        href="/sign-in"
                         className="mb-3 inline-block hover:text-primary"
                       >
                         Login as Vet

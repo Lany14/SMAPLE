@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prismaClient } from "@/lib/db";
+import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -18,8 +18,14 @@ export async function GET() {
 
     if (userRole === "PET_OWNER") {
       // Fetch the PetOwnerProfile associated with this user
-      const petOwnerProfile = await prismaClient.petOwnerProfile.findUnique({
-        where: { petOwnerId: userId },
+      const petOwnerProfile = await db.petOwnerProfile.findUnique({
+        where: {
+          petOwnerId_petOwnerFirstName_petOwnerLastName: {
+            petOwnerId: userId,
+            petOwnerFirstName: session.user.firstName,
+            petOwnerLastName: session.user.lastName,
+          },
+        },,
         select: { id: true },
       });
 
@@ -34,7 +40,7 @@ export async function GET() {
       console.log("Fetched petOwnerId:", petOwnerId);
 
       // Fetch appointments for this petOwnerId
-      appointments = await prismaClient.appointment.findMany({
+      appointments = await db.onlineConsultationBooking.findMany({
         where: {
           petOwnerId: petOwnerId,
         },
@@ -66,10 +72,10 @@ export async function GET() {
           date: "asc",
         },
       });
-    } else if (userRole === "VET_DOCTOR") {
+    } else if (userRole === "DOCTOR") {
       // Fetch the DoctorNurseProfile associated with this user
-      const doctorProfile = await prismaClient.doctorNurseProfile.findUnique({
-        where: { doctorNurseId: userId },
+      const doctorProfile = await db.doctorProfile.findUnique({
+        where: { doctorId: userId },
         select: { id: true },
       });
 

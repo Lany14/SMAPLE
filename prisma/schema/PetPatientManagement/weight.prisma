@@ -1,0 +1,27 @@
+// -------------------- PET WEIGHT --------------------
+model PetWeight {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdByDoctor DoctorProfile?  @relation(name: "DoctorPetWeightCreated", fields: [createdByDoctorId, createdByDoctorFirstName, createdByDoctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByDoctorId         String?      @db.ObjectId
+  createdByDoctorFirstName String?
+  createdByDoctorLastName String?
+
+  createdByNurse NurseProfile? @relation(name: "NursePetWeightCreated", fields: [createdByNurseId, createdByNurseFirstName, createdByNurseLastName], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByNurseId         String?      @db.ObjectId
+  createdByNurseFirstName String?
+  createdByNurseLastName  String?
+
+  cretedByPetOwner PetOwnerProfile?  @relation(name: "PetWeightsCreated", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId      String?            @db.ObjectId
+  petOwnerFirstName String?
+  petOwnerLastName  String?
+
+  pet               Pet               @relation(name: "PetWeight", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId             Int               @unique
+  petName           String
+  
+  weight            Float
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}

@@ -1,0 +1,48 @@
+model Pet {
+  id                      String                  @id @default(auto()) @map("_id") @db.ObjectId
+  petOwner                PetOwnerProfile         @relation(name: "PetOwnerPets", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId              String                  @db.ObjectId
+  petOwnerFirstName       String
+  petOwnerLastName        String
+  petId                   Int                     @unique
+  petName                 String
+  petSex                  String
+  petSpecies              String                  // Added: Type of pet (e.g., Dog, Cat)
+  petBreed                String
+  petBirthdate            DateTime               // Added: Pet's birth date
+  petAge                  String
+  petWeight               PetWeight[]              @relation("PetWeight")
+  // petReproductiveStatus   String                 // neutered, not neutered, unknown
+  // petAllergies            String?                 // Added: Pet's allergies
+  petColorAndMarkings     String?               // Added: Pet's color
+  petAvatar               String?                // Added: Pet's avatar
+
+  vaccinationBookings     VaccinationBooking[]     @relation("PetVaccinations")
+  clinicVisitBookings     ClinicVisitBooking[]         @relation("PetsClinicVisits")  
+  onlineConsultations     OnlineConsultationBooking[]     @relation("PetOnlineConsultations")   
+  
+  // SOAP
+  soaps                   SOAP[]                @relation("PetSOAP")
+
+  // Medical History
+  medicalHistories        MedicalHistory[] @relation("PetMedicalHistory")
+
+  // Medicines
+  medicines               Medicine[] @relation("PetMedicine")
+
+  // Antiparasitic Treatments
+  antiparasitic         Antiparasitic[] @relation("PetAntiparasitic")
+
+  // Prescriptions
+  prescriptions           Prescription[] @relation("PetPrescription")
+
+  // Lab Results
+  labResults              LabResult[] @relation("PetLabResult")
+
+  // Vaccinations
+  vaccinations            Vaccination[] @relation("PetVaccination")
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@unique([petId, petName])
+}

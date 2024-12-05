@@ -33,11 +33,11 @@ const Page: React.FC = () => {
     switch (role) {
       case "ADMIN":
         return <AdminDashboard />;
-      case "VET_DOCTOR":
+      case "DOCTOR":
         return <VetDoctorDashboard />;
-      case "VET_NURSE":
+      case "NURSE":
         return <VetNurseDashboard />;
-      case "VET_RECEPTIONIST":
+      case "RECEPTIONIST":
         return <ReceptionistDashboard />;
       case "PET_OWNER":
         return <UserDashboard />;

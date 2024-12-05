@@ -1,12 +1,33 @@
 import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prismaClient } from "@/lib/db";
+import { db } from "@/lib/db";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios"; // Ensure axios is installed
 import { compare } from "bcrypt";
 import { generateId } from "@/utils/generateId";
-import { JWT } from "next-auth/jwt";
+import { UserRole } from "@prisma/client";
+
+interface GoogleProfile {
+  email?: string;
+  given_name?: string;
+  family_name?: string;
+  name?: string;
+  picture?: string;
+}
+
+interface GoogleAccount {
+  type: string;
+  provider: string;
+  providerAccountId: string;
+  access_token?: string;
+  refresh_token?: string;
+  expires_at?: number;
+  token_type?: string;
+  scope?: string;
+  id_token?: string;
+  session_state?: string;
+}
 
 // Function to refresh the Google access token
 async function refreshAccessToken(refreshToken: string) {
@@ -26,22 +47,31 @@ async function refreshAccessToken(refreshToken: string) {
       refreshToken: response.data.refresh_token || refreshToken, // Keep the same refresh token if not updated
     };
   } catch (error) {
-    console.error(
-      "Failed to refresh access token:",
-      error.response?.data || error.message,
-    );
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "Failed to refresh access token:",
+        error.response?.data || error.message,
+      );
+    } else {
+      console.error("Failed to refresh access token:", error);
+    }
     return null;
   }
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prismaClient),
+  adapter: PrismaAdapter(db),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
   pages: {
-    signIn: "/signin",
+    signIn: "/sign-in",
+    error: "/error",
+    signOut: "/sign-in",
+    newUser: "/dashboard",
   },
   providers: [
     // Google Provider for OAuth authentication
@@ -71,7 +101,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Missing email or password");
           }
 
-          const existingUser = await prismaClient.user.findUnique({
+          const existingUser = await db.user.findUnique({
             where: { email: credentials.email },
           });
 
@@ -111,38 +141,38 @@ export const authOptions: NextAuthOptions = {
       console.log("Account data in signIn callback:", account); // Log account details
 
       if (account?.provider === "google" && profile) {
-        const generateToken = () => {
-          const min = 100000;
-          const max = 999999;
-          return Math.floor(Math.random() * (max - min + 1)) + min;
-        };
-
-        const generatedUserId = generateId();
-        const userToken = generateToken();
-
+        const googleProfile = profile as GoogleProfile;
         // Check if the user already exists
-        let existingUser = await prismaClient.user.findUnique({
+        let existingUser = await db.user.findUnique({
           where: { email: profile.email },
         });
 
         if (!existingUser) {
           // If the user does not exist, create a new user with the default role
-          existingUser = await prismaClient.user.create({
+          existingUser = await db.user.create({
             data: {
-              userId: parseInt(generatedUserId),
-              name: profile.name ?? "",
-              email: profile.email ?? "",
-              image: profile.image ?? null,
-              isVerified: true,
-              password: null,
-              token: userToken,
-              role: "PET_OWNER", // Explicitly set the default role here
+              userId: parseInt(generateId()),
+              email: googleProfile.email || "",
+              firstName:
+                googleProfile.given_name || profile.name?.split(" ")[0] || "",
+              lastName:
+                googleProfile.family_name ||
+                profile.name?.split(" ").slice(1).join(" ") ||
+                "",
+              image: googleProfile.picture,
+              isEmailVerified: true,
+              role: UserRole.PET_OWNER,
+              status: "ACTIVE",
+            },
+            include: {
+              account: true,
+              petOwnerProfile: true,
             },
           });
         }
 
         // Check if an account already exists for this user and provider
-        const existingAccount = await prismaClient.account.findFirst({
+        const existingAccount = await db.account.findFirst({
           where: { userId: existingUser.id, provider: "google" },
         });
 
@@ -152,16 +182,17 @@ export const authOptions: NextAuthOptions = {
             console.log(
               `Updating missing refresh_token for user: ${existingUser.email}`,
             );
-            await prismaClient.account.update({
+            await db.account.update({
               where: { id: existingAccount.id },
               data: { refresh_token: account.refresh_token },
             });
           }
         } else {
           // If the account does not exist, create a new account linked to the user
-          await prismaClient.account.create({
+          await db.account.create({
             data: {
               userId: existingUser.id,
+              type: "oauth",
               provider: account.provider,
               providerAccountId: account.providerAccountId,
               access_token: account.access_token,
@@ -170,6 +201,7 @@ export const authOptions: NextAuthOptions = {
               token_type: account.token_type,
               scope: account.scope,
               id_token: account.id_token,
+              session_state: null,
             },
           });
         }
@@ -187,7 +219,7 @@ export const authOptions: NextAuthOptions = {
       }
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.role = user.role as UserRole;
       }
 
       console.log("JWT callback - Token after:", token); // Log the token after modification
@@ -196,7 +228,7 @@ export const authOptions: NextAuthOptions = {
 
     async redirect({ url, baseUrl }) {
       // Always redirect to the "My Pets" page
-      return "/dashboard/patient";
+      return "/dashboard";
     },
 
     async session({ session, token }) {
@@ -211,7 +243,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role;
 
         // Retrieve access token and refresh token from the Account table
-        const account = await prismaClient.account.findFirst({
+        const account = await db.account.findFirst({
           where: { userId: token.id, provider: "google" },
           select: { access_token: true, expires_at: true, refresh_token: true },
         });

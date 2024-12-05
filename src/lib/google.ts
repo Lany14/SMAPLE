@@ -1,5 +1,6 @@
 import axios from "axios";
-import { prismaClient } from "@/lib/db";
+import { db } from "@/lib/db";
+import { Debug } from "@prisma/client/runtime/library";
 
 interface CalendarEvent {
   email: string;
@@ -14,7 +15,7 @@ interface CalendarEvent {
 export async function createGoogleCalendarEvent(event: CalendarEvent) {
   try {
     // Fetch the user's account and access token from the database
-    const userAccount = await prismaClient.account.findFirst({
+    const userAccount = await db.account.findFirst({
       where: { provider: "google", user: { email: event.email } },
     });
 
@@ -32,7 +33,7 @@ export async function createGoogleCalendarEvent(event: CalendarEvent) {
 
       // Refresh the access token
       const refreshedTokens = await refreshGoogleAccessToken(
-        userAccount.refresh_token,
+        userAccount.refresh_token as string,
       );
 
       if (!refreshedTokens) {
@@ -42,7 +43,7 @@ export async function createGoogleCalendarEvent(event: CalendarEvent) {
       accessToken = refreshedTokens.accessToken;
 
       // Update the refreshed tokens in the database
-      await prismaClient.account.update({
+      await db.account.update({
         where: { id: userAccount.id },
         data: {
           access_token: refreshedTokens.accessToken,
@@ -113,7 +114,7 @@ async function refreshGoogleAccessToken(refreshToken: string) {
       expiresAt: Math.floor(Date.now() / 1000) + response.data.expires_in,
       refreshToken: response.data.refresh_token,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error(
       "Failed to refresh Google Access Token:",
       error.response?.data || error.message,
