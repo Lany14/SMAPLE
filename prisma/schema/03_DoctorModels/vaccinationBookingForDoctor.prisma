@@ -1,16 +1,11 @@
-// -------------------- VACCINATION BOOKING MODEL --------------------
-
-model VaccinationBooking {
+model VaccinationBookingForDoctor {
   id                            String            @id @default(auto()) @map("_id") @db.ObjectId
-  doctor                        DoctorProfile?     @relation(name: "DoctorVaccinationBookings", fields: [doctorIdAdministered, doctorFirstNameAdministered, doctorLastNameAdministered], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
-  doctorIdAdministered          String?            @db.ObjectId
-  doctorFirstNameAdministered   String?
-  doctorLastNameAdministered    String?
+  bookingId                     String            @unique
 
-  nurse                        NurseProfile?     @relation(name: "NurseVaccinationBookings", fields: [nurseIdAdministered, nurseFirstNameAdministered, nurseLastNameAdministered], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
-  nurseIdAdministered          String?            @db.ObjectId
-  nurseFirstNameAdministered   String?
-  nurseLastNameAdministered    String?
+  doctor                        DoctorProfile     @relation(name: "DoctorVaccinationBookings", fields: [doctorIdAdministered, doctorFirstNameAdministered, doctorLastNameAdministered], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorIdAdministered          String           @db.ObjectId
+  doctorFirstNameAdministered   String
+  doctorLastNameAdministered    String
 
   pet               Pet               @relation(name: "PetVaccinations", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
   petId             Int               @unique
@@ -36,4 +31,3 @@ model VaccinationBooking {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 }
-

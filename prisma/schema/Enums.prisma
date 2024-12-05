@@ -9,3 +9,18 @@ enum BookingStatus {
   CANCELED      // If the appointment is canceled
 }
 // -------------------- END OF BOOKING STATUS --------------------
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  NURSE
+  RECEPTIONIST
+  PET_OWNER
+}
+
+enum UserStatus {
+  PENDING
+  ONLINE
+  OFFLINE
+  ACTIVE
+}

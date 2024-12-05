@@ -9,10 +9,14 @@ model NurseProfile {
   title                       String?
   specializations             String[]
 
-  vaccinationBookings  VaccinationBooking[] @relation("NurseVaccinationBookings")
+  vaccinationBookings             VaccinationBookingForNurse[] @relation("NurseVaccinationBookings")
+  vaccinationHistories            VaccinationBookingHistoryForNurse[] @relation("NurseVaccinationBookingHistories")
+
+  vaccinationsAdministered                     Vaccination[] @relation("NurseVaccinationsCreated")
+
 
   petWeightAdministered                    PetWeight[]   @relation("NursePetWeightCreated")
-  vaccinationsAdministered                     Vaccination[] @relation("NurseVaccinationsCreated")
+
   @@unique([nurseId, nurseFirstName, nurseLastName, licenseNumber])
   antiparasiticAdministered                    Antiparasitic[]  @relation("NurseAntiparasiticAdministered")
   prescriptionsAdministered                    Prescription[]   @relation("NursePrescriptionsAdministered")

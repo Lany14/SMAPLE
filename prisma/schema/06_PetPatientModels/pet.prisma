@@ -17,9 +17,20 @@ model Pet {
   petColorAndMarkings     String?               // Added: Pet's color
   petAvatar               String?                // Added: Pet's avatar
 
-  vaccinationBookings     VaccinationBooking[]     @relation("PetVaccinations")
+// Vaccination Booking Model
+  vaccinationBookingsForDoctor     VaccinationBookingForDoctor[]     @relation("PetVaccinations")
+  vaccinationBookingsHistoriesForDoctor VaccinationBookingHistoryForDoctor[] @relation("PetsVaccinationBookingHistories")
+  
+  vaccinationBookingsForNurse     VaccinationBookingForNurse[]     @relation("PetVaccinations")
+  vaccinationBookingsHistoriesForNurse VaccinationBookingHistoryForNurse[] @relation("PetsVaccinationBookingHistories")
+
+  // Clinic Visits Model
   clinicVisitBookings     ClinicVisitBooking[]         @relation("PetsClinicVisits")  
+  clinicVisitBookingsHistories ClinicVisitBookingHistory[] @relation("PetsClinicVisitHistories")
+
   onlineConsultations     OnlineConsultationBooking[]     @relation("PetOnlineConsultations")   
+  onlineConsultationsHistories OnlineConsultationBookingHistory[] @relation("PetsOnlineConsultationBookingHistries")
+
   
   // SOAP
   soaps                   SOAP[]                @relation("PetSOAP")

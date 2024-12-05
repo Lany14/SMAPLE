@@ -1,0 +1,21 @@
+model DoctorAvailabilityForClinicVisit {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  doctor  DoctorProfile @relation(name: "DoctorClinicVisitSchedules", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId         String      @db.ObjectId
+  doctorFirstName String
+  doctorLastName String
+
+  dayOfWeek  Int                 // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime  DateTime            // Start of working hours for this day
+  endTime    DateTime            // End of working hours for this day
+  
+  // Audit Fields
+  createdBy       String?          @map("createdBy")
+  updatedBy       String?          @map("updatedBy")
+
+  // Audit Timestamps
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+   @@index([doctorId, dayOfWeek], name: "doctor_day_index") // To quickly query by doctor and day
+}

@@ -47,21 +47,5 @@ model User {
   @@unique([id, email])
   // twoFactorSecret String?
   // twoFactorEnabled Boolean @default(false)
-
-  
 }
 
-enum UserRole {
-  ADMIN
-  DOCTOR
-  NURSE
-  RECEPTIONIST
-  PET_OWNER
-}
-
-enum UserStatus {
-  PENDING
-  ONLINE
-  OFFLINE
-  ACTIVE
-}

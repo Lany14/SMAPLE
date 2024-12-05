@@ -20,14 +20,19 @@ model DoctorProfile {
 
   doctorRating                      DoctorRating[] @relation("DoctorDoctorRatings")
   
+  // Online Consultation Models
   onlineConsultations               OnlineConsultationBooking[] @relation("DoctorOnlineConsultations")
   onlineConsultationSchedules       DoctorAvailabilityForOnlineConsultation[] @relation("DoctorOnlineConsultationSchedules")
+  onlineConsultationHistories       OnlineConsultationBookingHistory[] @relation("DoctorOnlineConsultationBookingHistries")
   
-
+  // Clinic Visit Models
   clinicVisits                      ClinicVisitBooking[] @relation("DoctorClinicVisits")
   clinicVisitSchedules              DoctorAvailabilityForClinicVisit[] @relation("DoctorClinicVisitSchedules")
+  clinicVisitHistories       ClinicVisitBookingHistory[] @relation("DoctorClinicVisitHistories")
   
-  vaccinationBookings               VaccinationBooking[] @relation("DoctorVaccinationBookings")
+  // Vaccination Models
+  vaccinationBookingsForDoctor               VaccinationBookingForDoctor[] @relation("DoctorVaccinationBookings")
+  vaccinationBookingHistoriesForDoctor       VaccinationBookingHistoryForDoctor[] @relation("DoctorVaccinationBookingHistories")
 
   petWeightAdministered                    PetWeight[]  @relation("DoctorPetWeightCreated")
   soapsAdministered                        SOAP[] @relation("DoctorSOAPsAdministered")

@@ -1,0 +1,20 @@
+model VaccinationBookingHistoryForNurse {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+
+  nurse                        NurseProfile     @relation(name: "NurseVaccinationBookingHistories", fields: [nurseId, nurseFirstName, nurseLastName], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
+  nurseId                       String            @db.ObjectId
+  nurseFirstName               String
+  nurseLastName      String
+
+  pet               Pet               @relation(name: "PetsVaccinationBookingHistories", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId             Int               @unique
+  petName           String
+
+  petOwner          PetOwnerProfile   @relation(name: "PetOwnerVaccinationBookingHistories", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId        String            @db.ObjectId
+  petOwnerFirstName String
+  petOwnerLastName  String
+
+  bookingId         String            @unique 
+  message           String
+}

@@ -6,20 +6,46 @@
 ## default
 ```mermaid
 erDiagram
-"Invoice" {
+"AdminProfile" {
   String _id PK
-  String petOwnerId FK
-  String petOwnerFirstName
-  String petOwnerLastName
+  String adminUserId FK
+  String adminFirstName
+  String adminLastName
+  Boolean sendEmail
+  Boolean sendSMS
+  DateTime createdAt
+  DateTime updatedAt
+}
+"ReceptionistProfile" {
+  String _id PK
+  String receptionistUserId FK
+  String receptionistFirstName
+  String receptionistLastName
+  DateTime createdAt
+  DateTime updatedAt
+}
+"DoctorProfile" {
+  String _id PK
+  String doctorId FK
+  String doctorFirstName
+  String doctorLastName
+  String title "nullable"
+  String specializations
+  Int yearsOfExperience "nullable"
+  String qualifications
+  String licenseNumber "nullable"
+  String bio "nullable"
+  String competencies
+  String appointmentTypes
+  Json testimonials
   String services
-  Float totalAmount
-  String paymentStatus
-  String paymentMethod
+  String achievements
   DateTime createdAt
   DateTime updatedAt
 }
 "ClinicVisitBooking" {
   String _id PK
+  String bookingId UK
   String doctorId FK
   String doctorFirstName
   String doctorLastName
@@ -36,6 +62,32 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
+"ClinicVisitBookingHistory" {
+  String _id PK
+  String doctorId FK
+  String doctorFirstName
+  String doctorLastName
+  Int petId FK
+  String petName
+  String petOwnerId FK
+  String petOwnerFirstName
+  String petOwnerLastName
+  String bookingId UK
+  String message
+}
+"DoctorAvailabilityForOnlineConsultation" {
+  String _id PK
+  String doctorId FK
+  String doctorFirstName
+  String doctorLastName
+  Int dayOfWeek
+  DateTime startTime
+  DateTime endTime
+  String createdBy "nullable"
+  String updatedBy "nullable"
+  DateTime createdAt
+  DateTime updatedAt
+}
 "DoctorAvailabilityForClinicVisit" {
   String _id PK
   String doctorId FK
@@ -49,11 +101,9 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"ClinicVisitBookingHistory" {
-  String _id PK
-}
 "OnlineConsultationBooking" {
   String _id PK
+  String bookingId UK
   Int petId FK
   String petName
   String petOwnerId FK
@@ -75,27 +125,25 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"DoctorAvailabilityForOnlineConsultation" {
+"OnlineConsultationBookingHistory" {
   String _id PK
   String doctorId FK
   String doctorFirstName
   String doctorLastName
-  Int dayOfWeek
-  DateTime startTime
-  DateTime endTime
-  String createdBy "nullable"
-  String updatedBy "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  Int petId FK
+  String petName
+  String petOwnerId FK
+  String petOwnerFirstName
+  String petOwnerLastName
+  String bookingId UK
+  String message
 }
-"VaccinationBooking" {
+"VaccinationBookingForDoctor" {
   String _id PK
-  String doctorIdAdministered FK "nullable"
-  String doctorFirstNameAdministered "nullable"
-  String doctorLastNameAdministered "nullable"
-  String nurseIdAdministered FK "nullable"
-  String nurseFirstNameAdministered "nullable"
-  String nurseLastNameAdministered "nullable"
+  String bookingId UK
+  String doctorIdAdministered FK
+  String doctorFirstNameAdministered
+  String doctorLastNameAdministered
   Int petId FK
   String petName
   String petOwnerId FK
@@ -112,37 +160,68 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"AuditLog" {
+"VaccinationBookingHistoryForDoctor" {
   String _id PK
-  String userId FK
-  String userFirstName
-  String userLastName
-  String action
-  String details
-  DateTime createdAt
-}
-"EmailNotification" {
-  String _id PK
-  String userId FK
-  String recipientEmail
-  String recipientName
+  String doctorId FK
+  String doctorFirstName
+  String doctorLastName
+  Int petId FK
+  String petName
+  String petOwnerId FK
+  String petOwnerFirstName
+  String petOwnerLastName
+  String bookingId UK
   String message
-  String status
+}
+"NurseProfile" {
+  String _id PK
+  String nurseId FK
+  String nurseFirstName
+  String nurseLastName
+  String licenseNumber
+  String title "nullable"
+  String specializations
+}
+"VaccinationBookingForNurse" {
+  String _id PK
+  String bookingId UK
+  String nurseId FK
+  String nurseFirstName
+  String nurseLastName
+  Int petId FK
+  String petName
+  String petOwnerId FK
+  String petOwnerFirstName
+  String petOwnerLastName
+  BookingStatus status
+  DateTime date
+  String time
+  String vaccineNeeded
+  String note "nullable"
+  String vaccineBooklet
+  String createdBy "nullable"
+  String updatedBy "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
-"SMSNotification" {
-  String messageId "nullable"
+"VaccinationBookingHistoryForNurse" {
   String _id PK
-  String userId FK
-  String userEmail
-  String recipient
+  String nurseId FK
+  String nurseFirstName
+  String nurseLastName
+  Int petId FK
+  String petName
+  String petOwnerId FK
+  String petOwnerFirstName
+  String petOwnerLastName
+  String bookingId UK
   String message
-  String sender_name
-  String network
-  String status
-  String type
-  String source
+}
+"PetOwnerProfile" {
+  String _id PK
+  String petOwnerId FK
+  String petOwnerFirstName
+  String petOwnerLastName
   DateTime createdAt
   DateTime updatedAt
 }
@@ -328,6 +407,52 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
+"Invoice" {
+  String _id PK
+  String petOwnerId FK
+  String petOwnerFirstName
+  String petOwnerLastName
+  String services
+  Float totalAmount
+  String paymentStatus
+  String paymentMethod
+  DateTime createdAt
+  DateTime updatedAt
+}
+"AuditLog" {
+  String _id PK
+  String userId FK
+  String userFirstName
+  String userLastName
+  String action
+  String details
+  DateTime createdAt
+}
+"EmailNotification" {
+  String _id PK
+  String userId FK
+  String recipientEmail
+  String recipientName
+  String message
+  String status
+  DateTime createdAt
+  DateTime updatedAt
+}
+"SMSNotification" {
+  String messageId "nullable"
+  String _id PK
+  String userId FK
+  String userEmail
+  String recipient
+  String message
+  String sender_name
+  String network
+  String status
+  String type
+  String source
+  DateTime createdAt
+  DateTime updatedAt
+}
 "ClinicServiceRate" {
   String _id PK
   String petOwnerId FK
@@ -349,60 +474,6 @@ erDiagram
   String petOwnerLastName
   Float rating
   String review "nullable"
-  DateTime createdAt
-  DateTime updatedAt
-}
-"AdminProfile" {
-  String _id PK
-  String adminUserId FK
-  String adminFirstName
-  String adminLastName
-  Boolean sendEmail
-  Boolean sendSMS
-  DateTime createdAt
-  DateTime updatedAt
-}
-"DoctorProfile" {
-  String _id PK
-  String doctorId FK
-  String doctorFirstName
-  String doctorLastName
-  String title "nullable"
-  String specializations
-  Int yearsOfExperience "nullable"
-  String qualifications
-  String licenseNumber "nullable"
-  String bio "nullable"
-  String competencies
-  String appointmentTypes
-  Json testimonials
-  String services
-  String achievements
-  DateTime createdAt
-  DateTime updatedAt
-}
-"NurseProfile" {
-  String _id PK
-  String nurseId FK
-  String nurseFirstName
-  String nurseLastName
-  String licenseNumber
-  String title "nullable"
-  String specializations
-}
-"PetOwnerProfile" {
-  String _id PK
-  String petOwnerId FK
-  String petOwnerFirstName
-  String petOwnerLastName
-  DateTime createdAt
-  DateTime updatedAt
-}
-"ReceptionistProfile" {
-  String _id PK
-  String receptionistUserId FK
-  String receptionistFirstName
-  String receptionistLastName
   DateTime createdAt
   DateTime updatedAt
 }
@@ -452,22 +523,37 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"Invoice" }o--|| "PetOwnerProfile" : petOwner
+"AdminProfile" }o--|| "User" : adminUser
+"ReceptionistProfile" }o--|| "User" : receptionistUser
+"DoctorProfile" }o--|| "User" : doctorUser
 "ClinicVisitBooking" }o--|| "DoctorProfile" : doctor
 "ClinicVisitBooking" |o--|| "Pet" : pet
 "ClinicVisitBooking" }o--|| "PetOwnerProfile" : petOwner
+"ClinicVisitBookingHistory" }o--|| "DoctorProfile" : vetDoctor
+"ClinicVisitBookingHistory" |o--|| "Pet" : pet
+"ClinicVisitBookingHistory" }o--|| "PetOwnerProfile" : petOwner
+"DoctorAvailabilityForOnlineConsultation" }o--|| "DoctorProfile" : doctor
 "DoctorAvailabilityForClinicVisit" }o--|| "DoctorProfile" : doctor
 "OnlineConsultationBooking" |o--|| "Pet" : petPatient
 "OnlineConsultationBooking" }o--|| "PetOwnerProfile" : petOwner
 "OnlineConsultationBooking" }o--o| "DoctorProfile" : veterinarian
-"DoctorAvailabilityForOnlineConsultation" }o--|| "DoctorProfile" : doctor
-"VaccinationBooking" }o--o| "DoctorProfile" : doctor
-"VaccinationBooking" }o--o| "NurseProfile" : nurse
-"VaccinationBooking" |o--|| "Pet" : pet
-"VaccinationBooking" }o--|| "PetOwnerProfile" : petOwner
-"AuditLog" }o--|| "User" : user
-"EmailNotification" }o--|| "User" : user
-"SMSNotification" }o--|| "User" : user
+"OnlineConsultationBookingHistory" }o--|| "DoctorProfile" : vetDoctor
+"OnlineConsultationBookingHistory" |o--|| "Pet" : pet
+"OnlineConsultationBookingHistory" }o--|| "PetOwnerProfile" : petOwner
+"VaccinationBookingForDoctor" }o--|| "DoctorProfile" : doctor
+"VaccinationBookingForDoctor" |o--|| "Pet" : pet
+"VaccinationBookingForDoctor" }o--|| "PetOwnerProfile" : petOwner
+"VaccinationBookingHistoryForDoctor" }o--|| "DoctorProfile" : doctor
+"VaccinationBookingHistoryForDoctor" |o--|| "Pet" : pet
+"VaccinationBookingHistoryForDoctor" }o--|| "PetOwnerProfile" : petOwner
+"NurseProfile" }o--|| "User" : nurseUser
+"VaccinationBookingForNurse" }o--|| "NurseProfile" : nurse
+"VaccinationBookingForNurse" |o--|| "Pet" : pet
+"VaccinationBookingForNurse" }o--|| "PetOwnerProfile" : petOwner
+"VaccinationBookingHistoryForNurse" }o--|| "NurseProfile" : nurse
+"VaccinationBookingHistoryForNurse" |o--|| "Pet" : pet
+"VaccinationBookingHistoryForNurse" }o--|| "PetOwnerProfile" : petOwner
+"PetOwnerProfile" }o--|| "User" : petOwnerUser
 "Antiparasitic" }o--o| "DoctorProfile" : createdByDoctor
 "Antiparasitic" }o--o| "NurseProfile" : createdByNurse
 "Antiparasitic" }o--o| "PetOwnerProfile" : createdByPetOwner
@@ -499,29 +585,57 @@ erDiagram
 "PetWeight" }o--o| "NurseProfile" : createdByNurse
 "PetWeight" }o--o| "PetOwnerProfile" : cretedByPetOwner
 "PetWeight" |o--|| "Pet" : pet
+"Invoice" }o--|| "PetOwnerProfile" : petOwner
+"AuditLog" }o--|| "User" : user
+"EmailNotification" }o--|| "User" : user
+"SMSNotification" }o--|| "User" : user
 "ClinicServiceRate" }o--|| "PetOwnerProfile" : petOwner
 "DoctorRating" }o--|| "DoctorProfile" : doctorProfile
 "DoctorRating" }o--|| "PetOwnerProfile" : petOwner
-"AdminProfile" }o--|| "User" : adminUser
-"DoctorProfile" }o--|| "User" : doctorUser
-"NurseProfile" }o--|| "User" : nurseUser
-"PetOwnerProfile" }o--|| "User" : petOwnerUser
-"ReceptionistProfile" }o--|| "User" : receptionistUser
 "accounts" }o--|| "User" : user
 "sessions" }o--|| "User" : user
 ```
 
-### `Invoice`
+### `AdminProfile`
 
 **Properties**
   - `_id`: 
-  - `petOwnerId`: 
-  - `petOwnerFirstName`: 
-  - `petOwnerLastName`: 
+  - `adminUserId`: 
+  - `adminFirstName`: 
+  - `adminLastName`: 
+  - `sendEmail`: 
+  - `sendSMS`: 
+  - `createdAt`: 
+  - `updatedAt`: 
+
+### `ReceptionistProfile`
+
+**Properties**
+  - `_id`: 
+  - `receptionistUserId`: 
+  - `receptionistFirstName`: 
+  - `receptionistLastName`: 
+  - `createdAt`: 
+  - `updatedAt`: 
+
+### `DoctorProfile`
+
+**Properties**
+  - `_id`: 
+  - `doctorId`: 
+  - `doctorFirstName`: 
+  - `doctorLastName`: 
+  - `title`: 
+  - `specializations`: 
+  - `yearsOfExperience`: 
+  - `qualifications`: 
+  - `licenseNumber`: 
+  - `bio`: 
+  - `competencies`: 
+  - `appointmentTypes`: 
+  - `testimonials`: 
   - `services`: 
-  - `totalAmount`: 
-  - `paymentStatus`: 
-  - `paymentMethod`: 
+  - `achievements`: 
   - `createdAt`: 
   - `updatedAt`: 
 
@@ -529,6 +643,7 @@ erDiagram
 
 **Properties**
   - `_id`: 
+  - `bookingId`: 
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
@@ -542,6 +657,36 @@ erDiagram
   - `time`: 
   - `note`: 
   - `file`: 
+  - `createdAt`: 
+  - `updatedAt`: 
+
+### `ClinicVisitBookingHistory`
+
+**Properties**
+  - `_id`: 
+  - `doctorId`: 
+  - `doctorFirstName`: 
+  - `doctorLastName`: 
+  - `petId`: 
+  - `petName`: 
+  - `petOwnerId`: 
+  - `petOwnerFirstName`: 
+  - `petOwnerLastName`: 
+  - `bookingId`: 
+  - `message`: 
+
+### `DoctorAvailabilityForOnlineConsultation`
+
+**Properties**
+  - `_id`: 
+  - `doctorId`: 
+  - `doctorFirstName`: 
+  - `doctorLastName`: 
+  - `dayOfWeek`: 
+  - `startTime`: 
+  - `endTime`: 
+  - `createdBy`: 
+  - `updatedBy`: 
   - `createdAt`: 
   - `updatedAt`: 
 
@@ -560,15 +705,11 @@ erDiagram
   - `createdAt`: 
   - `updatedAt`: 
 
-### `ClinicVisitBookingHistory`
-
-**Properties**
-  - `_id`: 
-
 ### `OnlineConsultationBooking`
 
 **Properties**
   - `_id`: 
+  - `bookingId`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
@@ -590,31 +731,29 @@ erDiagram
   - `createdAt`: 
   - `updatedAt`: 
 
-### `DoctorAvailabilityForOnlineConsultation`
+### `OnlineConsultationBookingHistory`
 
 **Properties**
   - `_id`: 
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
-  - `dayOfWeek`: 
-  - `startTime`: 
-  - `endTime`: 
-  - `createdBy`: 
-  - `updatedBy`: 
-  - `createdAt`: 
-  - `updatedAt`: 
+  - `petId`: 
+  - `petName`: 
+  - `petOwnerId`: 
+  - `petOwnerFirstName`: 
+  - `petOwnerLastName`: 
+  - `bookingId`: 
+  - `message`: 
 
-### `VaccinationBooking`
+### `VaccinationBookingForDoctor`
 
 **Properties**
   - `_id`: 
+  - `bookingId`: 
   - `doctorIdAdministered`: 
   - `doctorFirstNameAdministered`: 
   - `doctorLastNameAdministered`: 
-  - `nurseIdAdministered`: 
-  - `nurseFirstNameAdministered`: 
-  - `nurseLastNameAdministered`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
@@ -631,43 +770,78 @@ erDiagram
   - `createdAt`: 
   - `updatedAt`: 
 
-### `AuditLog`
+### `VaccinationBookingHistoryForDoctor`
 
 **Properties**
   - `_id`: 
-  - `userId`: 
-  - `userFirstName`: 
-  - `userLastName`: 
-  - `action`: 
-  - `details`: 
-  - `createdAt`: 
-
-### `EmailNotification`
-
-**Properties**
-  - `_id`: 
-  - `userId`: 
-  - `recipientEmail`: 
-  - `recipientName`: 
+  - `doctorId`: 
+  - `doctorFirstName`: 
+  - `doctorLastName`: 
+  - `petId`: 
+  - `petName`: 
+  - `petOwnerId`: 
+  - `petOwnerFirstName`: 
+  - `petOwnerLastName`: 
+  - `bookingId`: 
   - `message`: 
+
+### `NurseProfile`
+
+**Properties**
+  - `_id`: 
+  - `nurseId`: 
+  - `nurseFirstName`: 
+  - `nurseLastName`: 
+  - `licenseNumber`: 
+  - `title`: 
+  - `specializations`: 
+
+### `VaccinationBookingForNurse`
+
+**Properties**
+  - `_id`: 
+  - `bookingId`: 
+  - `nurseId`: 
+  - `nurseFirstName`: 
+  - `nurseLastName`: 
+  - `petId`: 
+  - `petName`: 
+  - `petOwnerId`: 
+  - `petOwnerFirstName`: 
+  - `petOwnerLastName`: 
   - `status`: 
+  - `date`: 
+  - `time`: 
+  - `vaccineNeeded`: 
+  - `note`: 
+  - `vaccineBooklet`: 
+  - `createdBy`: 
+  - `updatedBy`: 
   - `createdAt`: 
   - `updatedAt`: 
 
-### `SMSNotification`
+### `VaccinationBookingHistoryForNurse`
 
 **Properties**
-  - `messageId`: 
   - `_id`: 
-  - `userId`: 
-  - `userEmail`: 
-  - `recipient`: 
+  - `nurseId`: 
+  - `nurseFirstName`: 
+  - `nurseLastName`: 
+  - `petId`: 
+  - `petName`: 
+  - `petOwnerId`: 
+  - `petOwnerFirstName`: 
+  - `petOwnerLastName`: 
+  - `bookingId`: 
   - `message`: 
-  - `sender_name`: 
-  - `network`: 
-  - `status`: 
-  - `type`: 
-  - `source`: 
+
+### `PetOwnerProfile`
+
+**Properties**
+  - `_id`: 
+  - `petOwnerId`: 
+  - `petOwnerFirstName`: 
+  - `petOwnerLastName`: 
   - `createdAt`: 
   - `updatedAt`: 
 
@@ -871,6 +1045,60 @@ erDiagram
   - `createdAt`: 
   - `updatedAt`: 
 
+### `Invoice`
+
+**Properties**
+  - `_id`: 
+  - `petOwnerId`: 
+  - `petOwnerFirstName`: 
+  - `petOwnerLastName`: 
+  - `services`: 
+  - `totalAmount`: 
+  - `paymentStatus`: 
+  - `paymentMethod`: 
+  - `createdAt`: 
+  - `updatedAt`: 
+
+### `AuditLog`
+
+**Properties**
+  - `_id`: 
+  - `userId`: 
+  - `userFirstName`: 
+  - `userLastName`: 
+  - `action`: 
+  - `details`: 
+  - `createdAt`: 
+
+### `EmailNotification`
+
+**Properties**
+  - `_id`: 
+  - `userId`: 
+  - `recipientEmail`: 
+  - `recipientName`: 
+  - `message`: 
+  - `status`: 
+  - `createdAt`: 
+  - `updatedAt`: 
+
+### `SMSNotification`
+
+**Properties**
+  - `messageId`: 
+  - `_id`: 
+  - `userId`: 
+  - `userEmail`: 
+  - `recipient`: 
+  - `message`: 
+  - `sender_name`: 
+  - `network`: 
+  - `status`: 
+  - `type`: 
+  - `source`: 
+  - `createdAt`: 
+  - `updatedAt`: 
+
 ### `ClinicServiceRate`
 
 **Properties**
@@ -896,70 +1124,6 @@ erDiagram
   - `petOwnerLastName`: 
   - `rating`: 
   - `review`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-
-### `AdminProfile`
-
-**Properties**
-  - `_id`: 
-  - `adminUserId`: 
-  - `adminFirstName`: 
-  - `adminLastName`: 
-  - `sendEmail`: 
-  - `sendSMS`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-
-### `DoctorProfile`
-
-**Properties**
-  - `_id`: 
-  - `doctorId`: 
-  - `doctorFirstName`: 
-  - `doctorLastName`: 
-  - `title`: 
-  - `specializations`: 
-  - `yearsOfExperience`: 
-  - `qualifications`: 
-  - `licenseNumber`: 
-  - `bio`: 
-  - `competencies`: 
-  - `appointmentTypes`: 
-  - `testimonials`: 
-  - `services`: 
-  - `achievements`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-
-### `NurseProfile`
-
-**Properties**
-  - `_id`: 
-  - `nurseId`: 
-  - `nurseFirstName`: 
-  - `nurseLastName`: 
-  - `licenseNumber`: 
-  - `title`: 
-  - `specializations`: 
-
-### `PetOwnerProfile`
-
-**Properties**
-  - `_id`: 
-  - `petOwnerId`: 
-  - `petOwnerFirstName`: 
-  - `petOwnerLastName`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-
-### `ReceptionistProfile`
-
-**Properties**
-  - `_id`: 
-  - `receptionistUserId`: 
-  - `receptionistFirstName`: 
-  - `receptionistLastName`: 
   - `createdAt`: 
   - `updatedAt`: 
 

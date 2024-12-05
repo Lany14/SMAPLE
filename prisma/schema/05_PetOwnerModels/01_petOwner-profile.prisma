@@ -16,12 +16,26 @@ model PetOwnerProfile {
   medicinesCreated            Medicine[]                  @relation("PetMedicineCreated")
 
   pets                  Pet[]                      @relation("PetOwnerPets")
+
+// Online Consultation Model
   onlineConsultations   OnlineConsultationBooking[]  @relation("PetOwnerOnlineConsultations")
-  clinicVisits          ClinicVisitBooking[]         @relation("PetOwnerClinicVisits")        
-  vaccinationBookings   VaccinationBooking[]     @relation("PetOwnerVaccinationBookings")
+  onlineConsultationHistories OnlineConsultationBookingHistory[] @relation("PetOwnerOnlineConsultationBookingHistries")
+
+// Clinic Visits Model
+  clinicVisits          ClinicVisitBooking[]         @relation("PetOwnerClinicVisits")      
+  clinicVisitHistories  ClinicVisitBookingHistory[]  @relation("PetOwnerClinicVisitHistories")
+
+// Vaccination Booking and Histories Model
+  vaccinationBookingsForDoctor   VaccinationBookingForDoctor[]     @relation("PetOwnerVaccinationBookings")
+  vaccinationHistoriesForDoctor  VaccinationBookingHistoryForDoctor[] @relation("PetOwnerVaccinationBookingHistories")
+// ----------------------------------------------------------------
+  vaccinationBookingsForNurse   VaccinationBookingForNurse[]     @relation("PetOwnerVaccinationBookings")
+  vaccinationHistoriesForNurse  VaccinationBookingHistoryForNurse[] @relation("PetOwnerVaccinationBookingHistories")
+
   doctorRating          DoctorRating[]       @relation("PetOwnerDoctorRatings")
-  invoices              Invoice[]               @relation("PetOwnerInvoices")
   clinicServiceRate     ClinicServiceRate[]   @relation("PetOwnerClinicServiceRates")
+  invoices              Invoice[]               @relation("PetOwnerInvoices")
+
     
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
