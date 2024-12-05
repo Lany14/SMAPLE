@@ -11,7 +11,7 @@ import { LayoutDashboard } from "lucide-react";
 
 const Header = () => {
   // const pathname = usePathname();
-  // if (pathname === "/signin") return null;
+  // if (pathname === "/sign-in") return null;
 
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [dropdownToggler, setDropdownToggler] = useState(false);
@@ -44,7 +44,7 @@ const Header = () => {
     >
       <div className="relative mx-auto max-w-c-1390 items-center justify-between px-4 md:px-8 xl:flex 2xl:px-0">
         <div className="flex w-full items-center justify-between xl:w-1/4">
-          <a href="/">
+          <Link href="/">
             <Image
               src="/images/logo/logo-dark.svg"
               alt="logo"
@@ -59,7 +59,7 @@ const Header = () => {
               height={21}
               className="w-full dark:hidden"
             />
-          </a>
+          </Link>
 
           {/* <!-- Hamburger Toggle BTN --> */}
           <button
@@ -170,14 +170,14 @@ const Header = () => {
             ) : (
               <div className="mt-7 flex items-center gap-6 xl:mt-0">
                 <Link
-                  href="/signup"
+                  href="/sign-up"
                   className="text-regular font-medium text-waterloo hover:text-primary"
                 >
                   Sign Up
                 </Link>
 
                 <Link
-                  href="/signin"
+                  href="/sign-in"
                   className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
                 >
                   Sign In 🐾

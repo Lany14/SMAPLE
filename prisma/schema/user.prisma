@@ -1,0 +1,51 @@
+model User {
+  id                      String                 @id @default(auto()) @map("_id") @db.ObjectId
+  userId                  Int                   @unique
+  firstName               String
+  lastName                String
+  phoneNumber             String?                
+  sex                     String?
+  address                 String?
+  birthDate               DateTime?
+  age                     Int?
+  email                   String                  @unique 
+  password                String?
+  emailVerified           DateTime?
+  image                   String?
+  role                    UserRole                @default(PET_OWNER)
+  status                  UserStatus              @default(PENDING)
+  
+  failedAttempts          Int?      @default(0)
+  lockedUntil             DateTime?
+  
+  isEmailVerified              Boolean                 @default(false) 
+  emailVerificationToken                   Int?
+  emailVerificationTokenExpiry             DateTime?
+
+  pwResetToken            String?
+  pwResetTokenExpiry      DateTime?
+
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+
+  account                 Account[]             @relation("UserAccount")
+  session                 Session[]              @relation("UserSession")
+
+  sMSNotification         SMSNotification[]    @relation("UserSMSNotification")
+  emailNotification       EmailNotification[] @relation("UserEmailNotification")
+  auditLog                AuditLog[]              @relation("UserAuditLog")
+
+  doctorProfile           DoctorProfile?    @relation("DoctorProfile")
+  nurseProfile            NurseProfile? @relation("NurseProfile")
+  petOwnerProfile         PetOwnerProfile?        @relation("PetOwnerProfile")
+  adminProfile            AdminProfile?           @relation("AdminProfile")
+  receptionistProfile     ReceptionistProfile?   @relation("ReceptionistProfile")
+
+
+  @@unique([id, firstName, lastName])
+  @@unique([id, email, phoneNumber])
+  @@unique([id, email])
+  // twoFactorSecret String?
+  // twoFactorEnabled Boolean @default(false)
+}
+

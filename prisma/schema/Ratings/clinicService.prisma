@@ -1,0 +1,20 @@
+model ClinicServiceRate {
+    id                    String            @id @default(auto()) @map("_id") @db.ObjectId 
+    petOwner            PetOwnerProfile @relation(name: "PetOwnerClinicServiceRates", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+    petOwnerId          String      @db.ObjectId
+    petOwnerFirstName   String
+    petOwnerLastName    String
+
+    clinicService       ClinicServices
+    rating              Float
+    review              String?
+    
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+}
+
+enum ClinicServices {
+    ONLINE_CONSULTATION
+    CLINIC_VISIT
+    VACCINATION_BOOKING
+}

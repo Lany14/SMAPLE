@@ -1,23 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarItem from "../Sidebar/SidebarItem";
 import ClickOutside from "@/components/BackOffice/ClickOutside";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useRouter } from "next/navigation";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-} from "@nextui-org/react";
-import AddPetForm from "../AddPetForm";
+
+import { Button } from "@nextui-org/react";
+
 import {
   AlarmClock,
   Briefcase,
@@ -36,16 +28,12 @@ import {
   UserRoundPlus,
   Users,
 } from "lucide-react";
-import AddClinicStaff from "../AddClinicStaff";
-import { signIn, signOut, useSession } from "next-auth/react";
-import Loader from "../common/Loader";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import AddPetForm2 from "../AddPetForm2";
-// Removed import for Router
+import { signOut, useSession } from "next-auth/react";
 
 interface SidebarProps {
   sidebarOpen: boolean;
-  setSidebarOpen: (arg: boolean) => void;
+  setSidebarOpen: (open: boolean) => void;
+  // openModal: (content: React.ReactNode) => void; // Make sure this is defined
 }
 
 type ModalId = "addPetPatient" | "addClinicStaff" | null;
@@ -61,19 +49,21 @@ interface MenuGroup {
   menuItems: MenuItem[];
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession(); // Moved inside component
+  console.log("Session data:", session);
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
-  const [visibleModal, setVisibleModal] = useState<ModalId>(null);
 
-  const openModal = (modalId: ModalId) => {
-    setVisibleModal(modalId);
-  };
+  // const [visibleModal, setVisibleModal] = useState<ModalId>(null);
 
-  const closeModal = () => {
-    setVisibleModal(null);
-  };
+  // const openModal = (modalId: ModalId) => {
+  //   setVisibleModal(modalId);
+  // };
+
+  // const closeModal = () => {
+  //   setVisibleModal(null);
+  // };
 
   // Role-based menu logic
   const getMenuGroups = (): MenuGroup[] => {
@@ -82,14 +72,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         name: "ACCOUNT",
         menuItems: [
           {
-            icon: <UserRoundPen />,
-            label: "Profile",
-            route: "/dashboard/profile",
+            icon: <Settings />,
+            label: "Setting",
+            route: "/dashboard/setting",
           },
         ],
       },
     ];
 
+    console.log("User role:", session?.user?.role);
     if (session?.user?.role === "ADMIN") {
       return [
         {
@@ -101,18 +92,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               label: "Pet Patients",
               route: "/dashboard/patient",
             },
-            { icon: <Users />, label: "Fur Parents", route: "/dashboard/user" },
             {
-              icon: <Hospital />,
-              label: "Clinic Staff",
-              route: "/dashboard/staff",
+              icon: <Users />,
+              label: "User Accounts",
+              route: "/dashboard/user",
             },
             { icon: <Inbox />, label: "Inbox", route: "/dashboard/inbox" },
-            {
-              icon: <BriefcaseMedical />,
-              label: "Vet Doctors",
-              route: "/dashboard/doctor",
-            },
             {
               icon: <Calendar />,
               label: "Calendar",
@@ -144,6 +129,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               route: "/dashboard/patient",
             },
             {
+              icon: <Users />,
+              label: "Fur Parents",
+              route: "/dashboard/user",
+            },
+            {
               icon: <AlarmClock />,
               label: "My Appointments",
               route: "/dashboard/appointment",
@@ -156,43 +146,23 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             },
           ],
         },
-        ...baseMenu,
-      ];
-    } else if (session?.user?.role === "VET_NURSE") {
-      return [
         {
-          name: "DASHBOARD",
+          name: "ACCOUNT",
           menuItems: [
             {
-              icon: <House />,
-              label: "Overview",
-              route: "/dashboard",
+              icon: <UserRoundPen />,
+              label: "Profile",
+              route: "/dashboard/profile",
             },
             {
-              icon: <PawPrint />,
-              label: "Pet Patients",
-              route: "/dashboard/patient",
-            },
-            {
-              icon: <AlarmClock />,
-              label: "My Appointments",
-              route: "/dashboard/appointment",
-            },
-            {
-              icon: <Inbox />,
-              label: "Inbox",
-              route: "/dashboard/inbox",
-            },
-            {
-              icon: <Calendar />,
-              label: "Calendar",
-              route: "/dashboard/calendar",
+              icon: <Settings />,
+              label: "Setting",
+              route: "/dashboard/setting",
             },
           ],
         },
-        ...baseMenu,
       ];
-    } else if (session?.user?.role === "VET_RECEPTIONIST") {
+    } else if (session?.user?.role === "VET_NURSE") {
       return [
         {
           name: "DASHBOARD",
@@ -213,9 +183,57 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               route: "/dashboard/user",
             },
             {
-              icon: <BriefcaseMedical />,
-              label: "Vet Doctors",
-              route: "/dashboard/doctor",
+              icon: <AlarmClock />,
+              label: "My Appointments",
+              route: "/dashboard/appointment",
+            },
+            {
+              icon: <Inbox />,
+              label: "Inbox",
+              route: "/dashboard/inbox",
+            },
+            {
+              icon: <Calendar />,
+              label: "Calendar",
+              route: "/dashboard/calendar",
+            },
+          ],
+        },
+        {
+          name: "ACCOUNT",
+          menuItems: [
+            {
+              icon: <UserRoundPen />,
+              label: "Profile",
+              route: "/dashboard/profile",
+            },
+            {
+              icon: <Settings />,
+              label: "Setting",
+              route: "/dashboard/setting",
+            },
+          ],
+        },
+      ];
+    } else if (session?.user?.role === "VET_RECEPTIONIST") {
+      return [
+        {
+          name: "DASHBOARD",
+          menuItems: [
+            {
+              icon: <House />,
+              label: "Overview",
+              route: "/dashboard",
+            },
+            {
+              icon: <PawPrint />,
+              label: "Pet Patients",
+              route: "/dashboard/patient",
+            },
+            {
+              icon: <Users />,
+              label: "User Accounts",
+              route: "/dashboard/user",
             },
             {
               icon: <AlarmClock />,
@@ -280,6 +298,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   };
 
   const menuGroups = getMenuGroups();
+
+  // const setModalContent = useContext(ModalContext);
+
+  // const openAddClinicStaff = () =>
+  //   setModalContent(<AddClinicStaff onClose={closeModal} />);
+  // const openAddPetPatient = () => setModalContent(<AddPetForm />);
 
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
@@ -362,14 +386,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               <div className="pb-2">
                 <Button
+                  as={Link}
                   className="w-full bg-blue-600 text-white hover:bg-blue-dark"
-                  onPress={() => openModal("addPetPatient")}
                   startContent={<Plus />}
+                  href={
+                    session?.user?.role === "VET_DOCTOR"
+                      ? "/dashboard/diagnose-patient"
+                      : "/dashboard/add-patient"
+                  }
                 >
-                  Add Pet Patient
+                  {session?.user?.role === "VET_DOCTOR"
+                    ? "Diagnose Pet"
+                    : "Add Pet"}
                 </Button>
               </div>
-              <Modal
+              {/* <Modal
                 size="2xl"
                 isOpen={visibleModal === "addPetPatient"}
                 onClose={closeModal}
@@ -377,21 +408,25 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 backdrop="blur"
               >
                 <AddPetForm />
-              </Modal>
+              </Modal> */}
             </div>
 
-            {session?.user?.role === "ADMIN" && (
+            {(session?.user?.role === "ADMIN" ||
+              session?.user?.role === "VET_RECEPTIONIST") && (
               <div>
                 <div className="pb-2">
                   <Button
+                    as={Link}
                     className="w-full bg-primary text-white hover:bg-primaryho"
-                    onPress={() => openModal("addClinicStaff")}
+                    // onPress={() => openModal("addClinicStaff")}
+                    // onClick={handleOpenAddClinicStaff}
                     startContent={<UserRoundPlus />}
+                    href="/dashboard/add-account"
                   >
-                    Add Staff or User
+                    Add User Account
                   </Button>
                 </div>
-                <Modal
+                {/* <Modal
                   size="xl"
                   isOpen={visibleModal === "addClinicStaff"}
                   onClose={closeModal}
@@ -399,8 +434,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   scrollBehavior="inside"
                   backdrop="blur"
                 >
-                  <AddClinicStaff />
-                </Modal>
+                  <AddClinicStaff onClose={closeModal} />
+                </Modal> */}
               </div>
             )}
 

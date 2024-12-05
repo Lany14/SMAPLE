@@ -1,0 +1,38 @@
+// -------------------- ONLINE CONSULTATION MODEL --------------------
+model OnlineConsultationBooking {
+  id                       String                 @id @default(auto()) @map("_id") @db.ObjectId
+  bookingId                String                 @unique
+  petPatient               Pet                    @relation(name: "PetOnlineConsultations", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId                    Int                    @unique
+  petName                  String 
+
+  petOwner                 PetOwnerProfile        @relation(name: "PetOwnerOnlineConsultations", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId               String                 @db.ObjectId
+  petOwnerFirstName        String
+  petOwnerLastName         String
+
+  veterinarian             DoctorProfile?     @relation(name: "DoctorOnlineConsultations", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId                 String?                 @db.ObjectId
+  doctorFirstName          String?
+  doctorLastName           String?
+
+  googleMeetLink           String?
+  googleCalendarEventId    String?
+  status                   BookingStatus          @default(PENDING)
+  date                     DateTime
+  startTime                DateTime
+  endTime                  DateTime
+  note                     String?
+  file                     String?
+  
+  // Audit Fields
+  createdBy       String?          @map("createdBy")
+  updatedBy       String?          @map("updatedBy")
+
+  // Audit Timestamps
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+}
+
+
+

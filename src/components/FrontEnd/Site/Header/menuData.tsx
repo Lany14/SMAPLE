@@ -40,13 +40,13 @@ const menuData: Menu[] = [
   //       id: 34,
   //       title: "Sign In",
   //       newTab: false,
-  //       path: "/auth/signin",
+  //       path: "/auth/sign-in",
   //     },
   //     {
   //       id: 35,
   //       title: "Sign Up",
   //       newTab: false,
-  //       path: "/auth/signup",
+  //       path: "/auth/sign-up",
   //     },
   //     {
   //       id: 35,

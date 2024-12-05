@@ -1,9 +1,9 @@
 import React from "react";
-import Image from "next/image";
-import { PetDocumentTable } from "./PetDocumentTable";
-import { Divider } from "@nextui-org/react";
-import { VaccineChip } from "./VaccineChip";
-import { Card, CardContent } from "@/components/ui/card";
+// import Image from "next/image";
+// import { PetDocumentTable } from "./PetDocumentTable";
+// import { Divider } from "@nextui-org/react";
+// import { VaccineChip } from "./VaccineChip";
+import { CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const PatientInfoCard = () => {

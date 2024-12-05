@@ -1,0 +1,33 @@
+model VaccinationBookingForNurse {
+  id                            String            @id @default(auto()) @map("_id") @db.ObjectId
+  bookingId                     String            @unique
+
+  nurse                        NurseProfile     @relation(name: "NurseVaccinationBookings", fields: [nurseId, nurseFirstName, nurseLastName], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
+  nurseId          String            @db.ObjectId
+  nurseFirstName   String
+  nurseLastName    String
+
+  pet               Pet               @relation(name: "PetVaccinations", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId             Int               @unique
+  petName           String
+
+  petOwner          PetOwnerProfile   @relation(name: "PetOwnerVaccinationBookings", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId        String            @db.ObjectId
+  petOwnerFirstName String
+  petOwnerLastName  String
+  status            BookingStatus      @default(PENDING)   // Start with 'PENDING' status
+
+  date              DateTime
+  time              String
+  vaccineNeeded     String
+  note              String?
+  vaccineBooklet    String        // File Attachment (URL or Path)
+
+  // Audit Fields
+  createdBy       String?          @map("createdBy")
+  updatedBy       String?          @map("updatedBy")
+
+  // Audit Timestamps
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}

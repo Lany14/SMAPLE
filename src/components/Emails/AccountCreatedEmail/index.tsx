@@ -37,11 +37,11 @@ export const AccountCreatedEmail: React.FC<WelcomeEmailProps> = ({
         <Text style={paragraph}>
           Please log in and change your password as soon as possible.
         </Text>
-        <Button style={button} href="https://yourdomain.com/login">
+        <Button style={button} href="https://abysagrivet.online/sign-in">
           Log In
         </Button>
         <Text style={paragraph}>
-          If you have any questions, please don't hesitate to contact us.
+          If you have any questions, please don&apos;t hesitate to contact us.
         </Text>
         <Text style={paragraph}>Best regards,</Text>
         <Text style={paragraph}>The Clinic Management Team</Text>

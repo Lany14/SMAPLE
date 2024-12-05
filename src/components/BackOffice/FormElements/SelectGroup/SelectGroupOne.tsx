@@ -17,6 +17,7 @@ const SelectGroupOne: React.FC = () => {
 
       <div className="relative z-20 bg-transparent dark:bg-dark-2">
         <select
+          title="Select subject"
           value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);

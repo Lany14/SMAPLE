@@ -1,0 +1,33 @@
+// -------------------- MEDICINE --------------------
+model Medicine {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdByDoctor DoctorProfile?  @relation(name: "DoctorMedicinesAdministered", fields: [createdByDoctorId, createdByDoctorFirstName, createdByDoctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByDoctorId         String?      @db.ObjectId
+  createdByDoctorFirstName String?
+  createdByDoctorLastName String?
+
+  createdByNurse NurseProfile? @relation(name: "NurseMedicinesAdministered",fields: [createdByNurseId, createdByNurseFirstName, createdByNurseLastName], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByNurseId         String?      @db.ObjectId
+  createdByNurseFirstName String?
+  createdByNurseLastName  String?
+
+  createdByPetOwner PetOwnerProfile?  @relation(name: "PetMedicineCreated", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId      String?            @db.ObjectId
+  petOwnerFirstName String?
+  petOwnerLastName String?
+  
+  petPatient        Pet               @relation(name: "PetMedicine", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
+  petId             Int               @unique
+  petName           String
+  
+  name              String
+  startDate         DateTime
+  endDate           DateTime?
+  interval          String          // e.g., twice daily, every 4 hours
+  dosage            String
+  note              String?
+  file              String?        // File Attachment (URL or Path)
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}

@@ -1,9 +1,9 @@
-import { ObjectId } from "mongodb";
-
 export function generateId(): string {
-  const timestamp = Date.now();
-  const randomComponent = Math.floor(Math.random() * 1000);
-  return new ObjectId(`${timestamp}${randomComponent}`).toString();
+  const timestamp = Date.now().toString();
+  const random = Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, "0");
+  return `${timestamp}${random}`;
 }
 
 // Example usage:

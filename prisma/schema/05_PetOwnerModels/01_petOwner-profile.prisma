@@ -1,0 +1,43 @@
+// -------------------- PET OWNER PROFILE MODELS --------------------
+model PetOwnerProfile {
+  id                    String          @id @default(auto()) @map("_id") @db.ObjectId
+  petOwnerUser          User            @relation(name: "PetOwnerProfile", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerId            String      @db.ObjectId
+  petOwnerFirstName     String
+  petOwnerLastName      String
+
+  petWeightsCreated           PetWeight[]                 @relation("PetWeightsCreated")
+  
+  antiparasiticsCreated      Antiparasitic[]             @relation("PetAntiparasiticCreated")
+  medicalHistoriesCreated    MedicalHistory[]            @relation("PetMedicalHistoriesCreated")
+  prescriptionsCreated        Prescription[]              @relation("PetPrescriptionCreated")
+  labResultsCreated           LabResult[]                 @relation("PetLabResultCreated")
+  vaccinationsCreated         Vaccination[]               @relation("PetVaccinationsCreated")
+  medicinesCreated            Medicine[]                  @relation("PetMedicineCreated")
+
+  pets                  Pet[]                      @relation("PetOwnerPets")
+
+// Online Consultation Model
+  onlineConsultations   OnlineConsultationBooking[]  @relation("PetOwnerOnlineConsultations")
+  onlineConsultationHistories OnlineConsultationBookingHistory[] @relation("PetOwnerOnlineConsultationBookingHistries")
+
+// Clinic Visits Model
+  clinicVisits          ClinicVisitBooking[]         @relation("PetOwnerClinicVisits")      
+  clinicVisitHistories  ClinicVisitBookingHistory[]  @relation("PetOwnerClinicVisitHistories")
+
+// Vaccination Booking and Histories Model
+  vaccinationBookingsForDoctor   VaccinationBookingForDoctor[]     @relation("PetOwnerVaccinationBookings")
+  vaccinationHistoriesForDoctor  VaccinationBookingHistoryForDoctor[] @relation("PetOwnerVaccinationBookingHistories")
+// ----------------------------------------------------------------
+  vaccinationBookingsForNurse   VaccinationBookingForNurse[]     @relation("PetOwnerVaccinationBookings")
+  vaccinationHistoriesForNurse  VaccinationBookingHistoryForNurse[] @relation("PetOwnerVaccinationBookingHistories")
+
+  doctorRating          DoctorRating[]       @relation("PetOwnerDoctorRatings")
+  clinicServiceRate     ClinicServiceRate[]   @relation("PetOwnerClinicServiceRates")
+  invoices              Invoice[]               @relation("PetOwnerInvoices")
+
+    
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@unique([petOwnerId, petOwnerFirstName, petOwnerLastName])
+}

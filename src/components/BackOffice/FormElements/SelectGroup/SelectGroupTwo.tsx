@@ -39,6 +39,7 @@ const SelectGroupTwo: React.FC = () => {
         </span>
 
         <select
+          title="Select country"
           value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);

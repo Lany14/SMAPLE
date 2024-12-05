@@ -138,7 +138,7 @@ const Footer = () => {
                   <ul>
                     <li>
                       <a
-                        href="/"
+                        href="/sign-in"
                         className="mb-3 inline-block hover:text-primary"
                       >
                         Login as Vet
@@ -273,7 +273,7 @@ const Footer = () => {
             >
               <ul className="flex items-center gap-5">
                 <li>
-                  <a
+                  <Link
                     target="_blank"
                     href="https://www.facebook.com/abysanimalcliniccalamba"
                     aria-label="social icon"
@@ -298,7 +298,7 @@ const Footer = () => {
                         </clipPath>
                       </defs>
                     </svg>
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </motion.div>

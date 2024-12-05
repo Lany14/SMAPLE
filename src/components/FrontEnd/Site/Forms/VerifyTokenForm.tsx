@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Loader } from "lucide-react";
+// import { Loader } from "lucide-react";
 // import updateUserById from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,6 @@ import {
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { updateUserById } from "../../../../../actions/user";
@@ -41,7 +40,7 @@ export default function VerifyTokenForm({
   userToken: number | undefined;
   id: string;
 }) {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -52,24 +51,24 @@ export default function VerifyTokenForm({
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setLoading(true);
+    // setLoading(true);
     const userInputToken = parseInt(data.token);
     if (userInputToken === userToken) {
       setShowNotification(false);
       //Update User
       try {
         await updateUserById(id);
-        setLoading(false);
+        // setLoading(false);
         // reset();
         toast.success("Account Verified");
-        router.push("/signin");
+        router.push("/sign-in");
       } catch (error) {
-        setLoading(false);
+        // setLoading(false);
         console.log(error);
       }
     } else {
       setShowNotification(true);
-      setLoading(false);
+      // setLoading(false);
     }
     console.log(userInputToken);
   }

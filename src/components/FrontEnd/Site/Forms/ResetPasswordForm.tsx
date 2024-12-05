@@ -1,77 +1,163 @@
 "use client";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import Link from "next/link";
-import { FaGoogle } from "react-icons/fa";
-import { FaGithub } from "react-icons/fa";
+import { useRouter, useSearchParams } from "next/navigation";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ShowPassStrength from "./ShowPassStrength";
+import { passwordStrength } from "check-password-strength";
+import { EyeFilledIcon } from "../../../../../public/images/icon/EyeFilledIcon";
+import { EyeSlashFilledIcon } from "../../../../../public/images/icon/EyeSlashFilledIcon";
+import { ResetPasswordInputProps } from "@/types/credInputs";
+
+const FormSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(50, "Password must be less than 50 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+type Strength = 0 | 1 | 2 | 3;
+
+const calculateStrength = (password: string): number => {
+  return passwordStrength(password).id;
+};
+
 export default function ResetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pwResetToken = searchParams.get("token");
+  const [loading, setLoading] = useState(false);
+  // const [strength, setStrength] = useState(0);
+  const [pass, setPass] = useState<string>("");
+  const [passwordIsVisible, setPasswordIsVisible] = useState(false);
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
-  const [loading, setLoading] = useState(false);
+  } = useForm<ResetPasswordInputProps>({
+    resolver: zodResolver(FormSchema),
+  });
 
-  async function onSubmit(data) {
-    console.log(data);
+  const passwordToggleVisibility = () =>
+    setPasswordIsVisible(!passwordIsVisible);
+
+  async function onSubmit(data: ResetPasswordInputProps) {
+    console.log("URL Params:", Object.fromEntries(searchParams.entries()));
+    console.log("Reset Token:", pwResetToken);
+
+    if (!pwResetToken) {
+      toast.error("Invalid or missing reset token");
+      return;
+    }
+
+    const payload = {
+      password: data.password,
+      pwResetToken: pwResetToken,
+    };
+
+    console.log("Sending payload:", payload);
+
     try {
       setLoading(true);
-      console.log("Attempting to sign in with credentials:", data);
-      const loginData = await signIn("credentials", {
-        ...data,
-        redirect: false,
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
-      console.log("SignIn response:", loginData);
-      if (loginData?.error) {
-        setLoading(false);
-        toast.error("Sign-in error: Check your credentials");
-      } else {
-        // Sign-in was successful
-        toast.success("Login Successful");
+
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      if (response.ok) {
+        toast.success("Password reset successful");
         reset();
-        router.push("/");
+        router.push("/sign-in");
+      } else {
+        toast.error(result.error || "Failed to reset password");
       }
     } catch (error) {
+      console.error("Reset password error:", error);
+      toast.error("Something went wrong while resetting your password");
+    } finally {
       setLoading(false);
-      console.error("Network Error:", error);
-      toast.error("Its seems something is wrong with your Network");
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 " action="#">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label
-          htmlFor="email"
-          className="text-gray-900 mb-2 block text-sm font-medium dark:text-white"
+          htmlFor="password"
+          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
         >
           New Password
         </label>
-        <input
-          {...register("password", { required: true })}
-          type="password"
-          name="password"
-          id="password"
-          className="bg-gray-50 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 block w-full rounded-lg border p-2.5 focus:border-blue-600 focus:ring-blue-600 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-          placeholder="New Password"
-          required=""
-        />
+        <div className="relative">
+          <span
+            className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+            onClick={passwordToggleVisibility}
+            role="button"
+            aria-label="toggle password visibility"
+          >
+            {passwordIsVisible ? (
+              <EyeSlashFilledIcon className="pointer-events-none text-2xl text-default-400" />
+            ) : (
+              <EyeFilledIcon className="pointer-events-none text-2xl text-default-400" />
+            )}
+          </span>
+          <input
+            {...register("password")}
+            type={passwordIsVisible ? "text" : "password"}
+            onChange={(e) => setPass(e.target.value)}
+            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+            placeholder="••••••••"
+          />
+        </div>
         {errors.password && (
-          <small className="text-red-600 text-sm ">
-            This field is required
+          <small className="text-sm text-red-600">
+            {errors.password.message}
+          </small>
+        )}
+        <ShowPassStrength strength={calculateStrength(pass) as Strength} />
+      </div>
+
+      <div>
+        <label
+          htmlFor="confirmPassword"
+          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+        >
+          Confirm Password
+        </label>
+        <input
+          {...register("confirmPassword")}
+          type="password"
+          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+          placeholder="••••••••"
+        />
+        {errors.confirmPassword && (
+          <small className="text-sm text-red-600">
+            {errors.confirmPassword.message}
           </small>
         )}
       </div>
+
       {loading ? (
         <button
           disabled
           type="button"
-          className="mr-2 inline-flex w-full items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white"
         >
           <svg
             aria-hidden="true"
@@ -90,12 +176,12 @@ export default function ResetPasswordForm() {
               fill="currentColor"
             />
           </svg>
-          Changing you in please wait...
+          Resetting password...
         </button>
       ) : (
         <button
           type="submit"
-          className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
         >
           Reset Password
         </button>

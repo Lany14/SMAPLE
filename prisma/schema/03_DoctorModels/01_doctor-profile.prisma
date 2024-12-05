@@ -1,0 +1,52 @@
+// -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
+model DoctorProfile {
+  id                          String    @id @default(auto()) @map("_id") @db.ObjectId
+  doctorUser             User      @relation(name: "DoctorProfile", fields: [doctorId, doctorFirstName, doctorLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorId               String      @db.ObjectId
+  doctorFirstName        String 
+  doctorLastName         String
+
+  title                       String?
+  specializations             String[]
+  yearsOfExperience           Int?
+  qualifications              String[]
+  licenseNumber               String?
+  bio                         String?
+  competencies                String[]
+  appointmentTypes            String[]
+  testimonials                Json[]
+  services                    String[]
+  achievements                String[]
+
+  doctorRating                      DoctorRating[] @relation("DoctorDoctorRatings")
+  
+  // Online Consultation Models
+  onlineConsultations               OnlineConsultationBooking[] @relation("DoctorOnlineConsultations")
+  onlineConsultationSchedules       DoctorAvailabilityForOnlineConsultation[] @relation("DoctorOnlineConsultationSchedules")
+  onlineConsultationHistories       OnlineConsultationBookingHistory[] @relation("DoctorOnlineConsultationBookingHistries")
+  
+  // Clinic Visit Models
+  clinicVisits                      ClinicVisitBooking[] @relation("DoctorClinicVisits")
+  clinicVisitSchedules              DoctorAvailabilityForClinicVisit[] @relation("DoctorClinicVisitSchedules")
+  clinicVisitHistories       ClinicVisitBookingHistory[] @relation("DoctorClinicVisitHistories")
+  
+  // Vaccination Models
+  vaccinationBookingsForDoctor               VaccinationBookingForDoctor[] @relation("DoctorVaccinationBookings")
+  vaccinationBookingHistoriesForDoctor       VaccinationBookingHistoryForDoctor[] @relation("DoctorVaccinationBookingHistories")
+
+  petWeightAdministered                    PetWeight[]  @relation("DoctorPetWeightCreated")
+  soapsAdministered                        SOAP[] @relation("DoctorSOAPsAdministered")
+  vaccinationsAdministered                     Vaccination[]  @relation("DoctorVaccinationsAdministered")
+  @@unique([doctorId, doctorFirstName, doctorLastName, licenseNumber])
+  antiparasiticAdministered                    Antiparasitic[] @relation("DoctorAntiparasiticAdministered")   
+  prescriptionsAdministered                    Prescription[]   @relation("DoctorPrescriptionsAdministered")
+  labResultsAdministered                       LabResult[]  @relation("DoctorLabResultsAdministered")
+  medicinesAdministered                        Medicine[]   @relation("DoctorMedicinesAdministered")
+  medicalHistoriesAdministered                MedicalHistory[] @relation("DoctorMedicalHistoriesAdministered")
+
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  @@unique([doctorId, doctorFirstName, doctorLastName])
+}

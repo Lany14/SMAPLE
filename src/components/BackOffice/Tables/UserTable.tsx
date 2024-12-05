@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -14,31 +14,60 @@ import {
   DropdownMenu,
   DropdownItem,
   Chip,
-  User,
+  User as NextUIUser,
   Pagination,
   Selection,
   ChipProps,
   SortDescriptor,
+  Tooltip,
 } from "@nextui-org/react";
 import { PlusIcon } from "../../../../public/images/icon/PlusIcon";
 import { VerticalDotsIcon } from "../../../../public/images/icon/VerticalDotsIcon";
 import { ChevronDownIcon } from "../../../../public/images/icon/ChevronDownIcon";
 import { SearchIcon } from "../../../../public/images/icon/SearchIcon";
-import { columns, users, statusOptions } from "./UserData";
+import { columns, statusOptions } from "./UserData";
 import { capitalize } from "./utils";
+import { useSession } from "next-auth/react";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+  ACTIVE: "success",
+  PENDING: "warning",
+  ONLINE: "success",
+  OFFLINE: "danger",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "email", "phone", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "userId",
+  "name",
+  "email",
+  "role",
+  "status",
+  "actions",
+];
 
-type User = (typeof users)[0];
+const roleOptions = [
+  { name: "ADMIN", uid: "ADMIN" },
+  { name: "VET_DOCTOR", uid: "VET_DOCTOR" },
+  { name: "VET_NURSE", uid: "VET_NURSE" },
+  { name: "VET_RECEPTIONIST", uid: "VET_RECEPTIONIST" },
+  { name: "PET_OWNER", uid: "PET_OWNER" },
+];
 
-export default function App() {
+interface UserData {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  status: string;
+  role: string;
+  avatar?: string;
+}
+
+export default function UserTable() {
+  // Renamed from App to UserTable for clarity
+  const [users, setUsers] = React.useState<UserData[]>([]);
   const [filterValue, setFilterValue] = React.useState("");
+  const [userIdFilter, setUserIdFilter] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([]),
   );
@@ -46,15 +75,37 @@ export default function App() {
     new Set(INITIAL_VISIBLE_COLUMNS),
   );
   const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
+  const [roleFilter, setRoleFilter] = React.useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-    column: "age",
+    column: "name", // Changed from age to name since age isn't in UserData
     direction: "ascending",
   });
 
   const [page, setPage] = React.useState(1);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  const hasSearchFilter = Boolean(filterValue);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch("/api/users");
+        if (!response.ok) {
+          throw new Error("Failed to fetch users");
+        }
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
@@ -67,11 +118,18 @@ export default function App() {
   const filteredItems = React.useMemo(() => {
     let filteredUsers = [...users];
 
-    if (hasSearchFilter) {
+    if (filterValue) {
       filteredUsers = filteredUsers.filter((user) =>
         user.name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
+
+    if (userIdFilter) {
+      filteredUsers = filteredUsers.filter((user) =>
+        user.userId.toString().includes(userIdFilter),
+      );
+    }
+
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
@@ -81,8 +139,17 @@ export default function App() {
       );
     }
 
+    if (
+      roleFilter !== "all" &&
+      Array.from(roleFilter).length !== roleOptions.length
+    ) {
+      filteredUsers = filteredUsers.filter((user) =>
+        Array.from(roleFilter).includes(user.role),
+      );
+    }
+
     return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+  }, [users, filterValue, userIdFilter, statusFilter, roleFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -94,79 +161,99 @@ export default function App() {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: User, b: User) => {
-      const first = a[sortDescriptor.column as keyof User] as number;
-      const second = b[sortDescriptor.column as keyof User] as number;
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
+    return [...items].sort((a: UserData, b: UserData) => {
+      const first = a[sortDescriptor.column as keyof UserData];
+      const second = b[sortDescriptor.column as keyof UserData];
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      if (typeof first === "string" && typeof second === "string") {
+        return sortDescriptor.direction === "descending"
+          ? second.localeCompare(first)
+          : first.localeCompare(second);
+      }
+
+      return 0;
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof User];
-
-    switch (columnKey) {
-      case "name":
-        return (
-          <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
-      case "age":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-          </div>
-        );
-      case "phone":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small">{cellValue}</p>
-          </div>
-        );
-      case "email":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small">{cellValue}</p>
-          </div>
-        );
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center justify-end gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
+  const copyUserData = async (user: UserData) => {
+    const dataToCopy = `DB ID: ${user.id}\nUSER ID: ${user.userId}\nNAME: ${user.name}\nEMAIL: ${user.email}`;
+    try {
+      await navigator.clipboard.writeText(dataToCopy);
+    } catch (err) {
+      console.error("Failed to copy:", err);
     }
-  }, []);
+  };
+
+  const renderCell = React.useCallback(
+    (user: UserData, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof UserData];
+
+      switch (columnKey) {
+        case "name":
+          return (
+            <NextUIUser
+              avatarProps={{ radius: "lg", src: user.avatar }}
+              name={cellValue as string}
+            />
+          );
+        case "role":
+          return (
+            <div className="flex flex-col">
+              <Chip
+                className="capitalize"
+                color="primary"
+                size="sm"
+                variant="flat"
+              >
+                {cellValue as string}
+              </Chip>
+            </div>
+          );
+        case "status":
+          return (
+            <div className="flex flex-col">
+              <Chip
+                className="capitalize"
+                color={statusColorMap[cellValue as string]}
+                size="sm"
+                variant="flat"
+              >
+                {cellValue as string}
+              </Chip>
+            </div>
+          );
+        case "actions":
+          return (
+            <div className="relative flex items-center justify-end gap-2">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly size="sm" variant="light">
+                    <VerticalDotsIcon width={4} height={4} />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownItem href={`/dashboard/user-info/${user.id}`}>
+                    View
+                  </DropdownItem>
+                  <DropdownItem href={`/dashboard/user-edit/${user.id}`}>
+                    Edit
+                  </DropdownItem>
+                  <DropdownItem onPress={() => copyUserData(user)}>
+                    Copy
+                  </DropdownItem>
+                  <DropdownItem className="text-danger" color="danger">
+                    Delete
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    [],
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -197,8 +284,18 @@ export default function App() {
     }
   }, []);
 
+  const onUserIdSearchChange = React.useCallback((value?: string) => {
+    if (value) {
+      setUserIdFilter(value);
+      setPage(1);
+    } else {
+      setUserIdFilter("");
+    }
+  }, []);
+
   const onClear = React.useCallback(() => {
     setFilterValue("");
+    setUserIdFilter("");
     setPage(1);
   }, []);
 
@@ -206,15 +303,26 @@ export default function App() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between gap-3">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
+          <div className="flex w-full gap-3 sm:max-w-[70%]">
+            <Input
+              isClearable
+              className="w-full sm:max-w-[44%]"
+              placeholder="Search by name..."
+              startContent={<SearchIcon />}
+              value={filterValue}
+              onClear={() => setFilterValue("")}
+              onValueChange={onSearchChange}
+            />
+            <Input
+              isClearable
+              className="w-full sm:max-w-[44%]"
+              placeholder="Search by User ID..."
+              startContent={<SearchIcon />}
+              value={userIdFilter}
+              onClear={() => setUserIdFilter("")}
+              onValueChange={onUserIdSearchChange}
+            />
+          </div>
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -246,6 +354,30 @@ export default function App() {
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
                 >
+                  Role
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={roleFilter}
+                selectionMode="multiple"
+                onSelectionChange={setRoleFilter}
+              >
+                {roleOptions.map((role) => (
+                  <DropdownItem key={role.uid} className="capitalize">
+                    {capitalize(role.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  variant="flat"
+                >
                   Columns
                 </Button>
               </DropdownTrigger>
@@ -264,19 +396,16 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {/* <Button color="primary" endContent={<PlusIcon />}>
-              Add New
-            </Button> */}
           </div>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-small text-default-400">
-            Total {users.length} Fur Parents
+            Total {users.length} Users
           </span>
           <label className="flex items-center text-small text-default-400">
             Rows per page:
             <select
-              className="bg-transparent text-small text-default-400 outline-none"
+              className="ml-2 bg-transparent text-small text-default-400 outline-none"
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
@@ -289,12 +418,14 @@ export default function App() {
     );
   }, [
     filterValue,
+    userIdFilter,
     statusFilter,
+    roleFilter,
     visibleColumns,
     onSearchChange,
+    onUserIdSearchChange,
     onRowsPerPageChange,
     users.length,
-    hasSearchFilter,
   ]);
 
   const bottomContent = React.useMemo(() => {
@@ -316,7 +447,7 @@ export default function App() {
         />
         <div className="hidden w-[30%] justify-end gap-2 sm:flex">
           <Button
-            isDisabled={pages === 1}
+            isDisabled={pages === 1 || page === 1}
             size="sm"
             variant="flat"
             onPress={onPreviousPage}
@@ -324,7 +455,7 @@ export default function App() {
             Previous
           </Button>
           <Button
-            isDisabled={pages === 1}
+            isDisabled={pages === 1 || page === pages}
             size="sm"
             variant="flat"
             onPress={onNextPage}
@@ -334,11 +465,18 @@ export default function App() {
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [
+    selectedKeys,
+    filteredItems.length,
+    page,
+    pages,
+    onPreviousPage,
+    onNextPage,
+  ]);
 
   return (
     <Table
-      aria-label="Example table with custom cells, pagination and sorting"
+      aria-label="User management table with custom cells, pagination and sorting"
       isHeaderSticky
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
@@ -364,7 +502,7 @@ export default function App() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No Fur Parents found"} items={sortedItems}>
+      <TableBody emptyContent={"No users found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

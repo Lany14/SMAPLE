@@ -2,24 +2,31 @@
 
 import {
   Button,
+  Card,
+  CardBody,
+  CardFooter,
   Divider,
   Input,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
   Select,
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { ModalContext } from "./Layouts/DefaultLayout";
+import { useSession } from "next-auth/react";
 
 export const SexProp = [
   { key: "Male", label: "Male" },
   { key: "Female", label: "Female" },
-];
+] as const;
 
 export const RoleProp = [
   { key: "ADMIN", label: "ADMIN" },
@@ -27,27 +34,33 @@ export const RoleProp = [
   { key: "VET_DOCTOR", label: "VETERINARY DOCTOR" },
   { key: "VET_RECEPTIONIST", label: "VETERINARY RECEPTIONIST" },
   { key: "PET_OWNER", label: "PET OWNER" },
-];
+] as const;
+
+const INITIAL_FORM_DATA = {
+  firstName: "",
+  lastName: "",
+  sex: "",
+  phoneNumber: "",
+  birthDate: "",
+  age: "",
+  email: "",
+  role: "",
+  licenseNumber: "",
+  specialization: "",
+};
 
 const AddClinicStaff: React.FC = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    sex: "",
-    phoneNumber: "",
-    birthDate: "",
-    age: "",
-    email: "",
-    role: "",
-    licenseNumber: "",
-    specialization: "",
-  });
-
+  const { data: session } = useSession();
   const router = useRouter();
+  const setModalContent = useContext(ModalContext);
 
-  const [errors, setErrors] = useState<any>({});
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  const calculateAge = (birthdate: string): number => {
+  const isValid = useMemo(() => phoneNumber.length === 10, [phoneNumber]);
+
+  const calculateAge = useCallback((birthdate: string): number => {
     const today = new Date();
     const birthDate = new Date(birthdate);
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -61,323 +74,308 @@ const AddClinicStaff: React.FC = () => {
     }
 
     return age;
-  };
+  }, []);
 
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [isValid, setIsValid] = useState(true);
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const input = e.target.value.replace(/[^0-9]/g, "");
+      if (input.length <= 10 && (!input.length || input[0] === "9")) {
+        setPhoneNumber(input);
+      }
+    },
+    [],
+  );
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value.replace(/[^0-9]/g, ""); // Remove non-digit characters
-    if (input.length <= 10 && (input.length === 0 || input[0] === "9")) {
-      setPhoneNumber(input);
-      setIsValid(input.length === 10);
-    }
-  };
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
 
-  useEffect(() => {
-    if (formData.birthDate) {
-      const calculatedAge = calculateAge(formData.birthDate);
-      setFormData((prevData) => ({
-        ...prevData,
-        age: calculatedAge.toString(),
-      }));
-    }
-  }, [formData.birthDate]);
+  const handleSelectChange = useCallback((name: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "role" &&
+        value === "PET_OWNER" && {
+          licenseNumber: "",
+          specialization: "",
+        }),
+    }));
+  }, []);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const validateForm = useCallback(() => {
+    const tempErrors: Record<string, string> = {};
+    const requiredFields = {
+      firstName: "First name",
+      lastName: "Last name",
+      sex: "Sex",
+      birthDate: "Birthdate",
+      email: "Email",
+      role: "Role",
+    };
 
-  const handleSelectChange = (name: string, value: string) => {
-    if (name === "role" && value === "PET_OWNER") {
-      // Clear Vet License Number and Specialization when role is PET_OWNER
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-        licenseNumber: "", // Reset license number
-        specialization: "", // Reset specialization
-      }));
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (!formData[field as keyof typeof formData]?.trim()) {
+        tempErrors[field] = `${label} is required`;
+      }
+    });
 
-  const validateForm = () => {
-    let tempErrors: any = {};
-    if (!formData.firstName) tempErrors.firstName = "First name is required";
-    if (!formData.lastName) tempErrors.lastName = "Last name is required";
-    if (!formData.sex) tempErrors.sex = "Sex is required";
-    if (!formData.birthDate) tempErrors.birthDate = "Birthdate is required";
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       tempErrors.email = "Valid email is required";
-    if (!formData.role) tempErrors.role = "Role is required";
+    }
+
     if (
       formData.role !== "PET_OWNER" &&
       formData.role !== "VET_RECEPTIONIST" &&
       formData.role !== "ADMIN" &&
       !formData.licenseNumber
-    )
+    ) {
       tempErrors.licenseNumber = "License number is required for this role";
+    }
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
-  };
+  }, [formData]);
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (formData.birthDate) {
+      const calculatedAge = calculateAge(formData.birthDate);
+      setFormData((prev) => ({
+        ...prev,
+        age: calculatedAge.toString(),
+      }));
+    }
+  }, [formData.birthDate, calculateAge]);
+
+  useEffect(() => {
+    if (session?.user?.role === "VET_RECEPTIONIST") {
+      handleSelectChange("role", "PET_OWNER");
+    }
+  }, [session?.user?.role, handleSelectChange]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validateForm()) {
-      const fullPhoneNumber = `+63${phoneNumber}`;
-      const userData = {
-        ...formData,
-        phoneNumber: fullPhoneNumber,
-      };
-  
-      try {
-        const response = await fetch("/api/admin/create-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        });
-  
-        if (response.ok) {
-          toast.success("User account created successfully");
-          router.push("/dashboard/staff"); // Redirect to staff list page
-        } else {
-          // Log the full response for debugging
-          console.error("Error response:", await response.text());
-          toast.error("Failed to create user account. Check console for details.");
-        }
-      } catch (error) {
-        console.error("Error creating user account:", error);
-        toast.error("An unexpected error occurred. Check console for details.");
+    if (!validateForm()) {
+      return;
+    }
+
+    const fullPhoneNumber = `+63${phoneNumber}`;
+    const userData = {
+      ...formData,
+      phoneNumber: fullPhoneNumber,
+    };
+
+    try {
+      const loadingToast = toast.loading("Creating user account...");
+      const response = await fetch("/api/admin/create-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("User account created successfully");
+        setFormData(INITIAL_FORM_DATA);
+        setPhoneNumber("");
+      } else if (response.status === 409) {
+        toast.error("This email address is already registered in the system.");
+      } else if (response.status === 410) {
+        toast.error("This phone number is already registered in the system.");
+      } else {
+        console.error("Error response:", data.error);
+        toast.error("Failed to create user account.");
       }
-    } else {
-      console.log("Validation failed");
+      toast.dismiss(loadingToast);
+    } catch (error) {
+      console.error("Error creating user account:", error);
+      toast.error("An unexpected error occurred.");
     }
   };
 
   return (
-    <ModalContent>
-      {(onClose) => (
-        <form onSubmit={handleSubmit}>
-          <ModalHeader className="justify-center text-center text-xl">
-            Add Staff or User
-          </ModalHeader>
-          <ModalBody>
-            <div className="gap-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Input
-                    isRequired
-                    className=""
-                    type="text"
-                    label="First Name"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    isInvalid={!!errors.firstName}
-                  />
-                  {errors.firstName && (
-                    <span className="text-xs text-red-500">
-                      {errors.firstName}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <Input
-                    isRequired
-                    className=""
-                    type="text"
-                    label="Last Name"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    isInvalid={!!errors.lastName}
-                  />
-                  {errors.lastName && (
-                    <span className="text-xs text-red-500">
-                      {errors.lastName}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <Select
-                    isRequired
-                    label="Sex"
-                    placeholder="Choose Sex"
-                    value={formData.sex}
-                    onChange={(e) => handleSelectChange("sex", e.target.value)}
-                    isInvalid={!!errors.sex}
-                  >
-                    {SexProp.map((sex) => (
-                      <SelectItem value={sex.key} key={sex.key}>
-                        {sex.label}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  {errors.sex && (
-                    <span className="text-xs text-red-500">{errors.sex}</span>
-                  )}
-                </div>
-                <div className="flex grid-cols-2 gap-4 ">
-                  <div>
-                    <Input
-                      isRequired
-                      className=""
-                      type="date"
-                      label="Birthdate"
-                      id="birthDate"
-                      name="birthDate"
-                      value={formData.birthDate}
-                      onChange={handleInputChange}
-                      max={new Date().toISOString().split("T")[0]}
-                      isInvalid={!!errors.birthDate}
-                    />
-                    {errors.birthDate && (
-                      <span className="text-xs text-red-500">
-                        {errors.birthDate}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <Input
-                      isRequired
-                      isReadOnly
-                      type="number"
-                      label="Age"
-                      id="age"
-                      name="age"
-                      value={formData.age}
-                    />
-                  </div>
-                </div>
-
-                <div className="col-span-2 space-y-4">
-                  <div>
-                    <Input
-                      isRequired
-                      type="email"
-                      label="Email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      isInvalid={!!errors.email}
-                    />
-                    {errors.email && (
-                      <span className="text-xs text-red-500">
-                        {errors.email}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <Input
-                      label="Phone Number"
-                      placeholder="ex. 9XXXXXXXXX"
-                      value={phoneNumber}
-                      onChange={handlePhoneChange}
-                      startContent={<span className="text-small">+63</span>}
-                      endContent={
-                        <div className="pointer-events-none flex items-center">
-                          <span
-                            className={`text-small ${isValid ? "text-success" : "text-danger"}`}
-                          >
-                            {phoneNumber.length}/10
-                          </span>
-                        </div>
-                      }
-                      type="tel"
-                      isInvalid={!isValid && phoneNumber.length > 0}
-                      errorMessage={
-                        !isValid && phoneNumber.length > 0
-                          ? "Phone number must be 10 digits"
-                          : ""
-                      }
-                      classNames={{
-                        input: "pl-1", // Add left padding to input to prevent overlap with country code
-                        innerWrapper: "bg-transparent",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Select
-                      isRequired
-                      label="Clinic Role"
-                      placeholder="Choose Clinic Role"
-                      value={formData.role}
-                      onChange={(e) =>
-                        handleSelectChange("role", e.target.value)
-                      }
-                      className="col-span-2"
-                      isInvalid={!!errors.role}
-                    >
-                      {RoleProp.map((role) => (
-                        <SelectItem value={role.key} key={role.key}>
-                          {role.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                    {errors.role && (
-                      <span className="text-xs text-red-500">
-                        {errors.role}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {formData.role !== "PET_OWNER" &&
-                  formData.role !== "VET_RECEPTIONIST" &&
-                  formData.role !== "ADMIN" && (
-                    <>
-                      <Divider className="col-span-2" />
-                      <Input
-                        isRequired
-                        className="col-span-2"
-                        type="text"
-                        label="Vet License Number"
-                        id="licenseNumber"
-                        name="licenseNumber"
-                        value={formData.licenseNumber}
-                        onChange={handleInputChange}
-                        isInvalid={!!errors.licenseNumber}
-                      />
-                      {errors.licenseNumber && (
-                        <span className="text-xs text-red-500">
-                          {errors.licenseNumber}
-                        </span>
-                      )}
-
-                      <Textarea
-                        className="col-span-2"
-                        type="text"
-                        label="Specialization"
-                        id="specialization"
-                        name="specialization"
-                        value={formData.specialization}
-                        onChange={handleInputChange}
-                      />
-                    </>
-                  )}
+    <Card className="p-8">
+      <form onSubmit={handleSubmit}>
+        <CardBody>
+          <div className="gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Input
+                  isRequired
+                  type="text"
+                  label="First Name"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  isInvalid={!!errors.firstName}
+                  errorMessage={errors.firstName}
+                />
               </div>
+              <div>
+                <Input
+                  isRequired
+                  type="text"
+                  label="Last Name"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  isInvalid={!!errors.lastName}
+                  errorMessage={errors.lastName}
+                />
+              </div>
+              <div>
+                <Select
+                  isRequired
+                  label="Sex"
+                  placeholder="Choose Sex"
+                  value={formData.sex}
+                  onChange={(e) => handleSelectChange("sex", e.target.value)}
+                  isInvalid={!!errors.sex}
+                  errorMessage={errors.sex}
+                >
+                  {SexProp.map((sex) => (
+                    <SelectItem value={sex.key} key={sex.key}>
+                      {sex.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-full">
+                  <Input
+                    isRequired
+                    type="date"
+                    label="Birthdate"
+                    id="birthDate"
+                    name="birthDate"
+                    value={formData.birthDate}
+                    onChange={handleInputChange}
+                    max={new Date().toISOString().split("T")[0]}
+                    isInvalid={!!errors.birthDate}
+                    errorMessage={errors.birthDate}
+                  />
+                </div>
+                <div className="w-full">
+                  <Input
+                    isRequired
+                    isReadOnly
+                    type="number"
+                    label="Age"
+                    id="age"
+                    name="age"
+                    value={formData.age}
+                  />
+                </div>
+              </div>
+
+              <div className="col-span-2 space-y-4">
+                <Input
+                  isRequired
+                  type="email"
+                  label="Email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  isInvalid={!!errors.email}
+                  errorMessage={errors.email}
+                />
+                <Input
+                  isRequired
+                  label="Phone Number"
+                  placeholder="ex. 9XXXXXXXXX"
+                  value={phoneNumber}
+                  onChange={handlePhoneChange}
+                  startContent={<span className="text-small">+63</span>}
+                  endContent={
+                    <span
+                      className={`text-small ${isValid ? "text-success" : "text-danger"}`}
+                    >
+                      {phoneNumber.length}/10
+                    </span>
+                  }
+                  type="tel"
+                  isInvalid={!isValid && phoneNumber.length > 0}
+                  errorMessage={
+                    phoneNumber.length === 0
+                      ? "Phone number is required"
+                      : !isValid && phoneNumber.length > 0
+                        ? "Phone number must be 10 digits"
+                        : ""
+                  }
+                  classNames={{
+                    input: "pl-1",
+                    innerWrapper: "bg-transparent",
+                  }}
+                />
+                <Select
+                  isRequired
+                  label="User Role"
+                  placeholder="Choose User Role"
+                  value={formData.role}
+                  onChange={(e) => handleSelectChange("role", e.target.value)}
+                  isDisabled={session?.user?.role === "VET_RECEPTIONIST"}
+                  defaultSelectedKeys={
+                    session?.user?.role === "VET_RECEPTIONIST"
+                      ? ["PET_OWNER"]
+                      : undefined
+                  }
+                  className="col-span-2"
+                  isInvalid={!!errors.role}
+                  errorMessage={errors.role}
+                >
+                  {RoleProp.map((role) => (
+                    <SelectItem value={role.key} key={role.key}>
+                      {role.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+
+              {formData.role !== "PET_OWNER" &&
+                formData.role !== "VET_RECEPTIONIST" &&
+                formData.role !== "ADMIN" && (
+                  <>
+                    <Divider className="col-span-2" />
+                    <Input
+                      isRequired
+                      className="col-span-2"
+                      type="text"
+                      label="Vet License Number"
+                      id="licenseNumber"
+                      name="licenseNumber"
+                      value={formData.licenseNumber}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.licenseNumber}
+                      errorMessage={errors.licenseNumber}
+                    />
+                    <Textarea
+                      className="col-span-2"
+                      type="text"
+                      label="Specialization"
+                      id="specialization"
+                      name="specialization"
+                      value={formData.specialization}
+                      onChange={handleInputChange}
+                    />
+                  </>
+                )}
             </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="light" onPress={onClose}>
-              Close
-            </Button>
-            <Button color="primary" type="submit">
-              Done
-            </Button>
-          </ModalFooter>
-        </form>
-      )}
-    </ModalContent>
+          </div>
+        </CardBody>
+        <CardFooter>
+          <Button color="primary" type="submit">
+            Done
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 };
 

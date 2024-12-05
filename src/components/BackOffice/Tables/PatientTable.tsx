@@ -19,41 +19,52 @@ import {
   Selection,
   ChipProps,
   SortDescriptor,
+  Tooltip,
 } from "@nextui-org/react";
 import { PlusIcon } from "../../../../public/images/icon/PlusIcon";
 import { VerticalDotsIcon } from "../../../../public/images/icon/VerticalDotsIcon";
 import { ChevronDownIcon } from "../../../../public/images/icon/ChevronDownIcon";
 import { SearchIcon } from "../../../../public/images/icon/SearchIcon";
-import { columns, users, statusOptions } from "./PatientData";
+import { columns } from "./PatientData";
 import { capitalize } from "./utils";
 
-const statusColorMap: Record<string, ChipProps["color"]> = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
-};
+interface PetData {
+  id: string;
+  petId: string;
+  petName: string;
+  petSpecies: string;
+  petSex: string;
+  petBreed: string;
+  petAge: number;
+  petWeight: number;
+  petAvatar?: string;
+  owner?: {
+    user?: {
+      name?: string;
+      image?: string;
+    };
+  };
+}
 
 const INITIAL_VISIBLE_COLUMNS = [
   "petName",
-  "species",
-  "gender",
-  "breed",
-  "age",
-  "weight",
+  "petSpecies",
+  "petSex",
+  "petBreed",
   "actions",
 ];
 
-type User = (typeof users)[0];
-
 export default function App() {
+  const [users, setUsers] = React.useState<PetData[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [filterValue, setFilterValue] = React.useState("");
+  const [petIdFilter, setPetIdFilter] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([]),
   );
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );
-  const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "age",
@@ -62,7 +73,44 @@ export default function App() {
 
   const [page, setPage] = React.useState(1);
 
-  const hasSearchFilter = Boolean(filterValue);
+  const copyPetData = (user: PetData) => {
+    const dataToCopy = `
+DB ID: ${user.id}
+PET ID: ${user.petId}
+NAME: ${user.petName}
+SPECIES: ${user.petSpecies}
+BREED: ${user.petBreed}
+GENDER: ${user.petSex}
+AGE: ${user.petAge}
+WEIGHT: ${user.petWeight || "N/A"}
+OWNER: ${user.owner?.user?.name || "N/A"}
+    `.trim();
+
+    navigator.clipboard.writeText(dataToCopy);
+  };
+
+  React.useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/pets");
+        const data = await response.json();
+        // Ensure data is an array, or default to an empty array
+        setUsers(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching pets:", error);
+        setUsers([]); // Set users to an empty array on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const hasSearchFilter = React.useMemo(() => {
+    return filterValue !== "" || petIdFilter !== "";
+  }, [filterValue, petIdFilter]);
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
@@ -73,24 +121,22 @@ export default function App() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredUsers = Array.isArray(users) ? [...users] : [];
 
-    if (hasSearchFilter) {
+    if (filterValue) {
       filteredUsers = filteredUsers.filter((user) =>
         user.petName.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
+
+    if (petIdFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+        user.petId.toString().includes(petIdFilter),
       );
     }
 
     return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+  }, [users, filterValue, petIdFilter, hasSearchFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -102,61 +148,62 @@ export default function App() {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: User, b: User) => {
-      const first = a[sortDescriptor.column as keyof User] as number;
-      const second = b[sortDescriptor.column as keyof User] as number;
+    return [...items].sort((a: PetData, b: PetData) => {
+      const first = a[sortDescriptor.column as keyof PetData] as number;
+      const second = b[sortDescriptor.column as keyof PetData] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof User];
+  const renderCell = React.useCallback((pet: PetData, columnKey: string) => {
+    const cellValue = pet[columnKey as keyof PetData];
 
     switch (columnKey) {
       case "petName":
         return (
           <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
-            name={cellValue}
+            avatarProps={{ radius: "lg", src: pet.petAvatar }}
+            name={cellValue as string}
           ></User>
         );
       case "species":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-small capitalize">{pet.petSpecies}</p>
           </div>
         );
       case "gender":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-small capitalize">{pet.petSex}</p>
           </div>
         );
       case "breed":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-small capitalize">{pet.petBreed}</p>
           </div>
         );
       case "age":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-          </div>
-        );
-      case "species":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-small capitalize">{pet.petAge}</p>
           </div>
         );
       case "weight":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-small capitalize">{pet.petWeight}</p>
           </div>
+        );
+      case "ownerName":
+        return (
+          <User
+            avatarProps={{ radius: "lg", src: pet.owner?.user?.image }}
+            name={pet.owner?.user?.name || "N/A"}
+          ></User>
         );
       case "actions":
         return (
@@ -164,19 +211,28 @@ export default function App() {
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
+                  <VerticalDotsIcon width={4} height={4} />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem href="dashboard/pet-info/[id]">View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
+                <DropdownItem href={`dashboard/pet-info/${pet.id}`}>
+                  View
+                </DropdownItem>
+                <DropdownItem href={`dashboard/pet-edit/${pet.id}`}>
+                  Edit
+                </DropdownItem>
+                <DropdownItem onPress={() => copyPetData(pet)}>
+                  Copy
+                </DropdownItem>
+                <DropdownItem className="text-danger" color="danger">
+                  Delete
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
         );
       default:
-        return cellValue;
+        return String(cellValue);
     }
   }, []);
 
@@ -209,8 +265,18 @@ export default function App() {
     }
   }, []);
 
+  const onPetIdSearchChange = React.useCallback((value?: string) => {
+    if (value) {
+      setPetIdFilter(value);
+      setPage(1);
+    } else {
+      setPetIdFilter("");
+    }
+  }, []);
+
   const onClear = React.useCallback(() => {
     setFilterValue("");
+    setPetIdFilter("");
     setPage(1);
   }, []);
 
@@ -218,40 +284,27 @@ export default function App() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between gap-3">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
+          <div className="flex w-full gap-3 sm:max-w-[70%]">
+            <Input
+              isClearable
+              className="w-full sm:max-w-[44%]"
+              placeholder="Search by name..."
+              startContent={<SearchIcon />}
+              value={filterValue}
+              onClear={() => onClear()}
+              onValueChange={onSearchChange}
+            />
+            <Input
+              isClearable
+              className="w-full sm:max-w-[44%]"
+              placeholder="Search by Pet ID..."
+              startContent={<SearchIcon />}
+              value={petIdFilter}
+              onClear={() => onClear()}
+              onValueChange={onPetIdSearchChange}
+            />
+          </div>
           <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  variant="flat"
-                >
-                  Status
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -276,9 +329,6 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {/* <Button color="primary" endContent={<PlusIcon />}>
-              Add New
-            </Button> */}
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -301,12 +351,13 @@ export default function App() {
     );
   }, [
     filterValue,
-    statusFilter,
+    petIdFilter,
     visibleColumns,
     onSearchChange,
+    onPetIdSearchChange,
     onRowsPerPageChange,
     users.length,
-    hasSearchFilter,
+    onClear,
   ]);
 
   const bottomContent = React.useMemo(() => {
@@ -346,7 +397,14 @@ export default function App() {
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [
+    selectedKeys,
+    filteredItems.length,
+    page,
+    pages,
+    onPreviousPage,
+    onNextPage,
+  ]);
 
   return (
     <Table
@@ -380,7 +438,7 @@ export default function App() {
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+              <TableCell>{renderCell(item, String(columnKey))}</TableCell>
             )}
           </TableRow>
         )}

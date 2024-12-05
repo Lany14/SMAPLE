@@ -3,9 +3,12 @@ import Link from "next/link";
 import SidebarDropdown from "@/components/BackOffice/Sidebar/SidebarDropdown";
 
 const SidebarItem = ({ item, pageName, setPageName }: any) => {
+  console.log("SidebarItem - item:", item);
+  console.log("SidebarItem - pageName:", pageName);
   const handleClick = () => {
     const updatedPageName =
       pageName !== item.label.toLowerCase() ? item.label.toLowerCase() : "";
+    console.log("Setting pageName to:", updatedPageName);
     return setPageName(updatedPageName);
   };
 

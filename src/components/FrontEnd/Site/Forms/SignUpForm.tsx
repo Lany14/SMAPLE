@@ -14,6 +14,7 @@ import createUser from "../../../../../actions/user";
 import { UserRole } from "@prisma/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import GoogleSigninButton from "@/components/BackOffice/Auth/GoogleSigninButton";
+import { useRouter } from "next/navigation";
 
 type Strength = 0 | 1 | 2 | 3;
 
@@ -23,7 +24,7 @@ const FormSchema = z
       .string()
       .min(2, "First name must be at least 2 characters")
       .max(45, "First name must be less than 45 characters")
-      .regex(new RegExp("^[a-zA-Z ]+$"), "No special character allowed!"),
+      .regex(new RegExp("^[a-zA-Z- ]+$"), "No special character allowed!"),
     lastName: z
       .string()
       .min(2, "Last name must be at least 2 characters")
@@ -32,51 +33,56 @@ const FormSchema = z
     email: z.string().email("Please enter a valid email address"),
     password: z
       .string()
-      .min(6, "Password must be at least 6 characters ")
+      .min(8, "Password must be at least 8 characters")
       .max(50, "Password must be less than 50 characters"),
-    confirmPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters ")
-      .max(50, "Password must be less than 50 characters"),
+    confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password and confirm password doesn't match!",
+    message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
-export default function RegisterForm({
+// Add this function before the component
+const calculateStrength = (password: string): number => {
+  return passwordStrength(password).id;
+};
+
+export default function SignUpForm({
   role = "PET_OWNER",
 }: {
   role?: UserRole;
 }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     reset,
-    control,
+    // control,
     formState: { errors },
   } = useForm<SignUpInputProps>({
     resolver: zodResolver(FormSchema),
   });
   async function onSubmit(data: SignUpInputProps) {
-    const name = `${data.firstName} ${data.lastName}`;
-    data.name = name;
-
     console.log(data);
     setLoading(true);
 
     data.role = role;
     try {
       const user = await createUser(data);
+      console.log(user);
+      console.log(user.status);
       if (user && user.status === 200) {
         console.log("User Created Successfully");
         reset();
         setLoading(false);
         toast.success("User Created Successfully");
         console.log(user.data);
+        router.push(`/verify-account/${user.data?.id}`);
       } else {
         console.log(user.error);
+        setLoading(false);
+        toast.error("User Creation Failed");
       }
     } catch (error) {
       console.log(error);
@@ -91,8 +97,8 @@ export default function RegisterForm({
   const [strength, setStrength] = useState(0);
   const [pass, setPass] = useState<string>("");
   useEffect(() => {
-    setStrength(passwordStrength(pass).id as Strength);
-  });
+    setStrength(calculateStrength(pass));
+  }, [pass]);
 
   return (
     <>
@@ -111,8 +117,8 @@ export default function RegisterForm({
               type="text"
               name="firstName"
               id="firstName"
+              disabled={loading}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-              placeholder="Juan"
             />
             {errors.firstName?.message && (
               <p className="pt-2 text-xs text-red-600">
@@ -133,8 +139,8 @@ export default function RegisterForm({
               type="text"
               name="lastName"
               id="lastName"
+              disabled={loading}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-              placeholder="Dela Cruz"
             />
             {errors.lastName?.message && (
               <p className="pt-2 text-xs text-red-600">
@@ -158,7 +164,7 @@ export default function RegisterForm({
             name="email"
             id="email"
             className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-            placeholder="juandelacruz@email.com"
+            placeholder="name@email.com"
           />
           {errors.email?.message && (
             <p className="pt-2 text-xs text-red-600">{errors.email.message}</p>
@@ -202,6 +208,7 @@ export default function RegisterForm({
           )}
           <ShowPassStrength strength={strength as Strength} />
         </div>
+
         <div>
           <label
             htmlFor="confirmPassword"
@@ -210,6 +217,18 @@ export default function RegisterForm({
             Confirm Password
           </label>
           <div className="relative">
+            <span
+              className="absolute right-4.5 top-1/2 -translate-y-1/2 focus:outline-none"
+              role="button"
+              onClick={passwordToggleVisibility}
+              aria-label="toggle password visibility"
+            >
+              {passwordIsVisible ? (
+                <EyeSlashFilledIcon className="pointer-events-none text-2xl text-default-400" />
+              ) : (
+                <EyeFilledIcon className="pointer-events-none text-2xl text-default-400" />
+              )}
+            </span>
             <input
               {...register("confirmPassword")}
               autoComplete="current-password"
@@ -257,22 +276,22 @@ export default function RegisterForm({
             Create Account
           </button>
         )}
+        <div className="flex items-center">
+          <div className="h-[1px] w-full bg-slate-500"></div>
+          <span className="mx-2">or</span>
+          <div className="h-[1px] w-full bg-slate-500"></div>
+        </div>
+        <GoogleSigninButton text="Continue" />
+        <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+          Already have an account?{" "}
+          <Link
+            href="/sign-in"
+            className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+          >
+            Sign in
+          </Link>
+        </p>
       </form>
-      <div className="flex items-center ">
-        <div className="h-[1px] w-full bg-slate-500"></div>
-        <span className="mx-2">or</span>
-        <div className="h-[1px] w-full bg-slate-500"></div>
-      </div>
-      <GoogleSigninButton text="Sign up" />
-      <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-        Already have an account?{" "}
-        <Link
-          href="/signin"
-          className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-        >
-          Sign in
-        </Link>
-      </p>
     </>
   );
 }

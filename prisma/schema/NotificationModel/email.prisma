@@ -1,0 +1,11 @@
+model EmailNotification {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  user           User         @relation(name: "UserEmailNotification", fields: [userId, recipientEmail], references: [id, email], onDelete: Cascade, onUpdate: Cascade)
+  userId         String       @db.ObjectId
+  recipientEmail String
+  recipientName  String
+  message        String
+  status         String       // "sent", "failed", etc.
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}

@@ -99,7 +99,7 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
         Multiselect Dropdown
       </label>
       <div>
-        <select className="hidden" id={id}>
+        <select className="hidden" id={id} title="Select an option">
           <option value="1">Design</option>
           <option value="2">Development</option>
           <option value="3">Option 4</option>
@@ -160,6 +160,7 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
                     <button
                       type="button"
                       onClick={open}
+                      title="Open dropdown"
                       className="cursor-pointer text-dark-4 outline-none focus:outline-none dark:text-dark-6"
                     >
                       <svg

@@ -1,5 +1,6 @@
 import { Poppins } from "next/font/google";
-import AuthProvider from "./context/AuthProvider";
+import AuthProvider from "@/providers/AuthProvider";
+import "./globals.css";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -8,17 +9,14 @@ const poppins = Poppins({
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <AuthProvider session={null}>
-        <body className={`dark:bg-black ${poppins.className}`}>
-          {/* <Providers>{children}</Providers> */}
-          {children}
-        </body>
-      </AuthProvider>
+      <body className={`dark:bg-black ${poppins.className}`}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

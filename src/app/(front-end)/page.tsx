@@ -12,6 +12,7 @@ import Pricing from "@/components/FrontEnd/Site/Pricing";
 // import Contact from "@/components/Contact";
 // import Blog from "@/components/Blog";
 import Testimonial from "@/components/FrontEnd/Site/Testimonial";
+import FrontEndLayout from "@/src/components/FrontEnd/Site/Layout/FrontEndLayout";
 
 export const metadata: Metadata = {
   title: "Abys Agrivet Animal Health Clinic",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main>
+    <FrontEndLayout>
       <Hero />
       <Pricing />
       {/* <Brands /> */}
@@ -36,6 +37,6 @@ export default function Home() {
 
       {/* <Contact /> */}
       {/* <Blog /> */}
-    </main>
+    </FrontEndLayout>
   );
 }

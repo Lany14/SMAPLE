@@ -1,0 +1,17 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder", "tracing"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  title    = "Abys Agrivet System"
+  output   = "./ERD.md"
+}
