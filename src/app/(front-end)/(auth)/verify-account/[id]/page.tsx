@@ -2,18 +2,17 @@ import VerifyTokenForm from "@/components/FrontEnd/Site/Forms/VerifyTokenForm";
 import { getUserById } from "../../../../../../actions/user";
 import AuthLayout from "@/components/FrontEnd/Site/Layout/AuthLayout";
 
-interface PageProps {
+type VerifyAccountProps = {
   params: {
     id: string;
   };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+};
 
-export default async function VerifyAccount({
-  params,
-  searchParams,
-}: PageProps) {
-  const { id } = params;
+export default async function VerifyAccount(props: VerifyAccountProps) {
+  // Await params before destructuring
+  const { id } = await props.params;
+
+  //Get a User
   const user = await getUserById(id);
   const userToken = user?.emailVerificationToken ?? undefined;
 
@@ -29,6 +28,7 @@ export default async function VerifyAccount({
             have sent you a verification code. Please enter the code here to
             verify your Account. Thank you!
           </p>
+
           <VerifyTokenForm userToken={userToken} id={id} />
         </div>
       </div>

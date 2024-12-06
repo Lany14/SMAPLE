@@ -299,12 +299,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   const menuGroups = getMenuGroups();
 
-  // const setModalContent = useContext(ModalContext);
-
-  // const openAddClinicStaff = () =>
-  //   setModalContent(<AddClinicStaff onClose={closeModal} />);
-  // const openAddPetPatient = () => setModalContent(<AddPetForm />);
-
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
@@ -400,15 +394,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     : "Add Pet"}
                 </Button>
               </div>
-              {/* <Modal
-                size="2xl"
-                isOpen={visibleModal === "addPetPatient"}
-                onClose={closeModal}
-                scrollBehavior="inside"
-                backdrop="blur"
-              >
-                <AddPetForm />
-              </Modal> */}
             </div>
 
             {(session?.user?.role === "ADMIN" ||
@@ -418,24 +403,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   <Button
                     as={Link}
                     className="w-full bg-primary text-white hover:bg-primaryho"
-                    // onPress={() => openModal("addClinicStaff")}
-                    // onClick={handleOpenAddClinicStaff}
                     startContent={<UserRoundPlus />}
                     href="/dashboard/add-account"
                   >
                     Add User Account
                   </Button>
                 </div>
-                {/* <Modal
-                  size="xl"
-                  isOpen={visibleModal === "addClinicStaff"}
-                  onClose={closeModal}
-                  // className="ModalOverlay"
-                  scrollBehavior="inside"
-                  backdrop="blur"
-                >
-                  <AddClinicStaff onClose={closeModal} />
-                </Modal> */}
               </div>
             )}
 

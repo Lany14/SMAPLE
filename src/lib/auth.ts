@@ -4,9 +4,9 @@ import { db } from "@/lib/db";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios"; // Ensure axios is installed
-import { compare } from "bcrypt";
 import { generateId } from "@/utils/generateId";
 import { UserRole } from "@prisma/client";
+import { comparePassword } from "../utils/password";
 
 interface GoogleProfile {
   email?: string;
@@ -39,7 +39,7 @@ async function refreshAccessToken(refreshToken: string) {
       grant_type: "refresh_token",
     });
 
-    console.log("Token refreshed successfully:", response.data);
+    // console.log("Token refreshed successfully:", response.data);
 
     return {
       accessToken: response.data.access_token,
@@ -113,7 +113,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("User password is null");
           }
 
-          const passwordMatch = await compare(
+          const passwordMatch = await comparePassword(
             credentials.password,
             existingUser.password,
           );
@@ -145,6 +145,10 @@ export const authOptions: NextAuthOptions = {
         // Check if the user already exists
         let existingUser = await db.user.findUnique({
           where: { email: profile.email },
+          include: {
+            account: true,
+            petOwnerProfile: true,
+          },
         });
 
         if (!existingUser) {
@@ -161,12 +165,19 @@ export const authOptions: NextAuthOptions = {
                 "",
               image: googleProfile.picture,
               isEmailVerified: true,
-              role: UserRole.PET_OWNER,
               status: "ACTIVE",
             },
             include: {
               account: true,
               petOwnerProfile: true,
+            },
+          });
+          await db.petOwnerProfile.create({
+            data: {
+              petOwnerId: existingUser.id,
+              petOwnerFirstName: existingUser.firstName,
+              petOwnerLastName: existingUser.lastName,
+              petOwnerEmail: existingUser.email,
             },
           });
         }
@@ -223,7 +234,7 @@ export const authOptions: NextAuthOptions = {
         token.lastName = (user as any).lastName;
         token.email = user.email;
         token.image = user.image;
-        token.role = user.role as UserRole;
+        token.role = (user as any).role as UserRole;
       }
 
       console.log("JWT callback - Token after:", token); // Log the token after modification
@@ -239,7 +250,7 @@ export const authOptions: NextAuthOptions = {
       console.log("Session callback - Token data:", token); // Log token details
       console.log("Session callback - Session before:", session); // Log the session before modification
 
-      const now = Math.floor(Date.now() / 1000);
+      const now = Math.floor(Date.now() / 1000); // Get the current time in seconds
 
       if (token && session.user) {
         session.user.id = token.id;

@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import PaymentLog from "@/src/components/BackOffice/PaymentLog";
 
 export const metadata: Metadata = {
-  title: "AbyVet | Admin",
+  title: "AbyVet | Payment",
 };
 
 export default function PaymentPage() {

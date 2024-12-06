@@ -1,17 +1,22 @@
+"use server";
+
 import { EmailVerification } from "@/components/Emails/EmailVerification";
-import { getUserByEmail } from "@/data/user";
-import { generateNumericToken } from "@/lib/auth/token";
 import { db } from "@/lib/db";
+import { generateNumericToken } from "@/src/lib/auth/token";
+import { hashPassword } from "@/src/utils/password";
 import { SignUpInputProps } from "@/types/credInputs";
 import { generateId } from "@/utils/generateId";
-import { hashPassword } from "@/utils/password";
 import { Resend } from "resend";
 
 export default async function signup(formData: SignUpInputProps) {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { firstName, lastName, email, password, role } = formData;
   try {
-    const existingUser = await getUserByEmail(email);
+    const existingUser = await db.user.findUnique({
+      where: {
+        email,
+      },
+    });
     if (existingUser) {
       // throw new Error(`User with this email ( ${email})  already exists in the Database`);
       return {
@@ -20,29 +25,22 @@ export default async function signup(formData: SignUpInputProps) {
         status: 409,
       };
     }
-    // Encrypt the Password
+    // Encrypt the Password =>bcryptjs
     const hashedPassword = await hashPassword(password);
-    // Generate a unique userId
-    const generatedUserId = generateId();
-    // Generate a 6 digit Token
-    const userToken = await generateNumericToken();
-    // Create a new User
+    //Generate Token
+
     const newUser = await db.user.create({
       data: {
-        userId: parseInt(generatedUserId),
+        userId: parseInt(generateId()),
         firstName,
         lastName,
         email,
         password: hashedPassword,
         role,
-        emailVerificationToken: userToken,
-        emailVerificationTokenExpiry: new Date(
-          Date.now() + 1000 * 60 * 60 * 24,
-        ),
+        emailVerificationToken: await generateNumericToken(),
+        emailVerificationTokenExpiry: new Date(Date.now() + 300000), // 5 minutes
       },
     });
-
-    // Create PetOwnerProfile if role is PET_OWNER
     if (role === "PET_OWNER") {
       await db.petOwnerProfile.create({
         data: {
@@ -53,7 +51,6 @@ export default async function signup(formData: SignUpInputProps) {
         },
       });
     }
-
     //Send an Email with the Token on the link as a search param
     const token = newUser.emailVerificationToken;
     // const name = newUser.firstName.split(" ")[0];
@@ -112,7 +109,6 @@ export async function updateUserById(id: string) {
         data: {
           isEmailVerified: true,
           emailVerified: new Date(),
-          status: "ACTIVE",
           emailVerificationToken: null,
           emailVerificationTokenExpiry: null,
         },

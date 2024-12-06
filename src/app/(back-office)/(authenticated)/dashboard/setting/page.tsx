@@ -6,7 +6,7 @@ import SecuritySettingBox from "@/components/BackOffice/AccountSetting/SecurityS
 import PreferenceBox from "@/components/BackOffice/AccountSetting/PreferenceBox";
 
 export const metadata: Metadata = {
-  title: "AbyVet | Admin",
+  title: "AbyVet | Settings",
 };
 
 const Settings = () => {

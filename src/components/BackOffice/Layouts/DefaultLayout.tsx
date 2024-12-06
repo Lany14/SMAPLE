@@ -2,9 +2,6 @@
 import React, { useState, ReactNode, useContext } from "react";
 import Sidebar from "@/components/BackOffice/Sidebar";
 import Header from "@/components/BackOffice/Header";
-import AddClinicStaff from "../AddClinicStaff";
-import { createPortal } from "react-dom";
-import AddPetForm from "../AddPetFormModal";
 
 export const ModalContext = React.createContext<
   (content: ReactNode | null) => void

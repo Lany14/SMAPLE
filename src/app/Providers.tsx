@@ -1,15 +1,13 @@
 "use client";
 
-import { NextUIProvider } from "@nextui-org/react";
+import { ThemeProvider } from "next-themes";
 import React from "react";
-import { useState, useEffect } from "react";
-import { Toaster } from "react-hot-toast";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <NextUIProvider>
+    <ThemeProvider>
       {/* <Toaster position="top-right" reverseOrder={false} /> */}
       {children}
-    </NextUIProvider>
+    </ThemeProvider>
   );
 }

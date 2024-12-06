@@ -12,17 +12,13 @@ import { SignInInputProps } from "@/types/credInputs";
 import { Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import GoogleSigninButton from "@/components/BackOffice/Auth/GoogleSigninButton";
-import { FormError } from "./FormError";
-import { FormSuccess } from "./FormSuccess";
 
-export default function SignInForm() {
+export default function LoginForm() {
   const [loading, setLoading] = useState(false);
-
-  // Notification states
-  const [showCredentialError, setCredentialError] = useState(false);
-  const [showNetworkError, setNetworkError] = useState(false);
-  const [showSuccess, setSuccess] = useState(false);
-
+  const [showNotification, setShowNotification] = useState(false);
+  const [data, setData] = useState({
+    remember: false,
+  });
   const router = useRouter();
   const {
     register,
@@ -32,7 +28,7 @@ export default function SignInForm() {
   } = useForm<SignInInputProps>();
 
   async function onSubmit(data: SignInInputProps) {
-    console.log(data);
+    // console.log(data);
     try {
       setLoading(true);
       console.log("Attempting to sign in with credentials:", data);
@@ -44,26 +40,19 @@ export default function SignInForm() {
       if (loginData?.error) {
         setLoading(false);
         toast.error("Sign-in error: Check your credentials");
-        setCredentialError(true);
-        setLoading(false);
-      }
-      // if (loginData?.error === "User email not verified") {
-      //   setLoading(false);
-      //   toast.error("Please verify your email first");
-
-      // }
-      else {
+        setShowNotification(true);
+      } else {
         // Sign-in was successful
+        setShowNotification(false);
         reset();
         setLoading(false);
-        setSuccess(true);
         toast.success("Login Successful");
         router.push("/dashboard");
       }
     } catch (error) {
       setLoading(false);
       console.error("Network Error:", error);
-      setNetworkError(true);
+      toast.error("Its seems something is wrong with your Network");
     }
   }
 
@@ -74,13 +63,11 @@ export default function SignInForm() {
   return (
     <>
       <form className="space-y-2 " onSubmit={handleSubmit(onSubmit)}>
-        {showSuccess && <FormSuccess message="Login Successful" />}
-
-        {showNetworkError && (
-          <FormError message="Network Error: Please try again" />
-        )}
-        {showCredentialError && (
-          <FormError message="Sign-in error: Check your email and password" />
+        {showNotification && (
+          <Alert color="failure" icon={HiInformationCircle}>
+            <span className="font-medium">Sign-in error!</span> Please Check
+            your credentials
+          </Alert>
         )}
         <div>
           <label
@@ -94,7 +81,6 @@ export default function SignInForm() {
             type="text"
             name="email"
             id="email"
-            disabled={loading}
             className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
             placeholder="name@email.com"
           />
@@ -129,7 +115,6 @@ export default function SignInForm() {
               name="password"
               id="password"
               placeholder="••••••••"
-              disabled={loading}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
             />
           </div>
@@ -218,7 +203,7 @@ export default function SignInForm() {
         <span className="mx-2">or</span>
         <div className="h-[1px] w-full bg-slate-500"></div>
       </div>
-      <GoogleSigninButton text="Continue" />
+      <GoogleSigninButton text="Sign in" />
       <p className="text-sm font-light text-gray-500 dark:text-gray-400">
         Already have an account?{" "}
         <Link

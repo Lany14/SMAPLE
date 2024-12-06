@@ -1,94 +1,112 @@
 "use client";
 
-import Link from "next/link";
-import DarkModeSwitcher from "./DarkModeSwitcher";
-import DropdownNotification from "./DropdownNotification";
-import SearchForm from "@/components/BackOffice/Header/SearchForm";
-import { useEffect, useState, useCallback } from "react";
+// import Link from "next/link";
+// import DarkModeSwitcher from "./DarkModeSwitcher";
+// import DropdownNotification from "./DropdownNotification";
+// import DropdownUser from "./DropdownUser";
+// import Image from "next/image";
+// import SearchForm from "@/components/BackOffice/Header/SearchForm";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import "next-auth";
-import { MenuIcon } from "lucide-react";
+import { authOptions } from "@/src/lib/auth";
+import Link from "next/link";
+import Image from "next/image";
 
-declare module "next-auth" {
-  interface User {
-    role?: string;
-  }
-  interface session {
-    adminProfile?: {
-      firstName: string;
-    };
-  }
-
-  interface PetOwnerProfile {
-    petOwnerProfile?: {
-      firstName: string;
-    };
-  }
-  interface ReceptionistProfile {
-    receptionistProfile?: {
-      firstName: string;
-    };
-  }
-  interface DoctorProfile {
-    doctorProfile?: {
-      firstName: string;
-    };
-  }
-}
-
-interface HeaderProps {
-  sidebarOpen: boolean;
-  setSidebarOpen: (isOpen: boolean) => void;
-}
-
-const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
+const Header = (props: {
+  sidebarOpen: string | boolean | undefined;
+  setSidebarOpen: (arg0: boolean) => void;
+}) => {
   const [greeting, setGreeting] = useState<string>("");
-  const { data: session } = useSession();
 
-  const getGreeting = useCallback(() => {
+  const getGreeting = () => {
     const currentHour = new Date().getHours();
-    if (currentHour < 12) return "Good Morning";
-    if (currentHour < 18) return "Good Afternoon";
-    return "Good Evening";
-  }, []);
+
+    if (currentHour < 12) {
+      return "Good Morning";
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return "Good Afternoon";
+    } else {
+      return "Good Evening";
+    }
+  };
 
   useEffect(() => {
+    // Set greeting initially
     setGreeting(getGreeting());
-    const interval = setInterval(() => setGreeting(getGreeting()), 60000);
+
+    // Update greeting every minute
+    const interval = setInterval(() => {
+      setGreeting(getGreeting());
+    }, 60000);
+
+    // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [getGreeting]);
+  }, []);
 
-  const getUserFirstName = () => {
-    const role = session?.user?.role;
-    if (!role) return null;
-
-    const profileMap = {
-      PET_OWNER: session?.user?.firstName,
-      ADMIN: session?.user?.firstName,
-      RECEPTIONIST: session?.user?.firstName,
-      DOCTOR: session?.user?.firstName,
-      NURSE: session?.user?.firstName,
-    };
-
-    return profileMap[role as keyof typeof profileMap];
-  };
+  const { data: session } = useSession();
+  // console.log(session);
 
   return (
     <header className="sticky top-0 z-999 flex w-full border-b border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark">
       <div className="flex flex-grow items-center justify-between px-4 py-5 shadow-2 md:px-5 2xl:px-10">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
+          {/* <!-- Hamburger Toggle BTN --> */}
           <button
-            className="hover:bg-primary-hover flex items-center gap-2.5 rounded-full bg-primary px-5 py-2.5 text-white"
-            title="Open sidebar"
+            aria-controls="sidebar"
+            onClick={(e) => {
+              e.stopPropagation();
+              props.setSidebarOpen(!props.sidebarOpen);
+            }}
+            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-dark-3 dark:bg-dark-2 lg:hidden"
           >
-            <MenuIcon />
+            <span className="relative block h-5.5 w-5.5 cursor-pointer">
+              <span className="du-block absolute right-0 h-full w-full">
+                <span
+                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-[0] duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && "!w-full delay-300"
+                  }`}
+                ></span>
+                <span
+                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-150 duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && "delay-400 !w-full"
+                  }`}
+                ></span>
+                <span
+                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-200 duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && "!w-full delay-500"
+                  }`}
+                ></span>
+              </span>
+              <span className="absolute right-0 h-full w-full rotate-45">
+                <span
+                  className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-dark delay-300 duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && "!h-0 !delay-[0]"
+                  }`}
+                ></span>
+                <span
+                  className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-dark duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && "!h-0 !delay-200"
+                  }`}
+                ></span>
+              </span>
+            </span>
           </button>
+          {/* <!-- Hamburger Toggle BTN --> */}
+
+          <Link className="block flex-shrink-0 lg:hidden" href="/">
+            <Image
+              width={32}
+              height={32}
+              src={"/images/logo/logo-light.svg"}
+              alt="Logo"
+            />
+          </Link>
         </div>
 
         <div className="hidden xl:block">
           <div>
             <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              {greeting} {getUserFirstName()}!
+              {greeting} {session?.user?.firstName}!
             </h1>
             <p className="font-medium">{session?.user?.role} Dashboard</p>
           </div>
@@ -97,11 +115,11 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
         <div className="flex items-center justify-normal gap-2 2xsm:gap-4 lg:w-full lg:justify-between xl:w-auto xl:justify-normal">
           <ul className="flex items-center gap-2 2xsm:gap-4">
             {/* <!-- Search Form --> */}
-            <SearchForm />
+            {/* <SearchForm /> */}
             {/* <!-- Search Form --> */}
 
             {/* <!-- Dark Mode Toggle --> */}
-            <DarkModeSwitcher />
+            {/* <DarkModeSwitcher /> */}
             {/* <!-- Dark Mode Toggle --> */}
 
             {/* <!-- Notification Menu Area --> */}

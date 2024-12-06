@@ -4,9 +4,7 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
-  Divider,
   Input,
   Select,
   SelectItem,
@@ -14,15 +12,12 @@ import {
 } from "@nextui-org/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-
-const speciesOptions = ["Dog", "Cat", "Bird"];
-const breedOptions = {
-  Dog: ["Shih Tzu", "Pomeranian", "Beagle", "Pug", "Golden Retriever"],
-  Cat: ["Siamese", "British Shorthair", "Maine", "Persian", "Sphynx", "Calico"],
-  Bird: ["Cockatiel", "Parrot", "Parakeet", "Lovebirds", "Dove"],
-};
+import { FormError } from "../FrontEnd/Site/Forms/FormError";
+import { FormSuccess } from "../FrontEnd/Site/Forms/FormSuccess";
 
 const AddPetForm: React.FC = () => {
+  const [showNotificationError, setShowNotificationError] = useState(false);
+  const [showNotificationSuccess, setShowNotificationSuccess] = useState(false);
   const [formData, setFormData] = useState({
     petName: "",
     petSex: "",
@@ -41,6 +36,8 @@ const AddPetForm: React.FC = () => {
     petBreed: "",
     petBirthdate: "",
     petAge: "",
+    petWeight: "",
+    petColorAndMarkings: "",
   });
 
   const validateForm = () => {
@@ -53,65 +50,59 @@ const AddPetForm: React.FC = () => {
     newErrors.petBirthdate = formData.petBirthdate
       ? ""
       : "Birth date is required.";
+    newErrors.petAge = formData.petAge ? "" : "Age is required.";
+    newErrors.petWeight =
+      formData.petWeight && !isNaN(Number(formData.petWeight))
+        ? ""
+        : "Weight must be a number.";
 
     setErrors(newErrors);
+
+    // Return true if there are no errors
     return Object.values(newErrors).every((error) => error === "");
   };
 
-  const calculateAge = useCallback((birthdate: string) => {
-    const today = new Date();
-    const petBirthDate = new Date(birthdate);
+  const calculateAge = useCallback(
+    (birthdate: string, petBirthdate: string) => {
+      const today = new Date();
+      const petBirthDate = new Date(petBirthdate);
 
-    let petAgeYears = today.getFullYear() - petBirthDate.getFullYear();
-    let petAgeMonths = today.getMonth() - petBirthDate.getMonth();
+      let petAgeYears = today.getFullYear() - petBirthDate.getFullYear();
+      let petAgeMonths = today.getMonth() - petBirthDate.getMonth();
 
-    if (petAgeMonths < 0) {
-      petAgeYears--;
-      petAgeMonths += 12;
-    }
+      if (petAgeMonths < 0) {
+        petAgeYears--;
+        petAgeMonths += 12;
+      }
 
-    const petAgeFormatted = `${petAgeYears} yr${petAgeYears !== 1 ? "s" : ""}${
-      petAgeMonths > 0
-        ? ` and ${petAgeMonths} mo${petAgeMonths !== 1 ? "s" : ""}`
-        : ""
-    }`;
+      if (today.getDate() < petBirthDate.getDate()) petAgeMonths--;
 
-    return petAgeFormatted;
-  }, []);
+      const petAgeFormatted = `${petAgeYears} yr${petAgeYears !== 1 ? "s" : ""}${
+        petAgeMonths > 0
+          ? ` and ${petAgeMonths} mo${petAgeMonths !== 1 ? "s" : ""}`
+          : ""
+      }`;
+
+      return { petAge: petAgeFormatted };
+    },
+    [],
+  );
 
   useEffect(() => {
     if (formData.petBirthdate) {
-      const petAge = calculateAge(formData.petBirthdate);
+      const { petAge } = calculateAge(
+        formData.petBirthdate,
+        formData.petBirthdate,
+      );
       setFormData((prev) => ({ ...prev, petAge }));
     }
   }, [formData.petBirthdate, calculateAge]);
 
-  const handleSpeciesChange = (species: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      petSpecies: species,
-      petBreed: "", // Reset breed when species changes
-    }));
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
-    console.log("Current form data:", formData);
-    const isFormValid = validateForm();
-    console.log("Validation result:", isFormValid);
-    console.log("Validation errors:", errors);
     if (validateForm()) {
-      console.log("Form data after passing validation:", formData);
+      console.log(formData);
+
       try {
         const response = await fetch("/api/add-pet", {
           method: "POST",
@@ -122,7 +113,9 @@ const AddPetForm: React.FC = () => {
         });
 
         if (response.ok) {
-          toast.success("Pet added successfully");
+          console.log("Form submitted:", formData);
+          setShowNotificationSuccess(false);
+          // Reset form data
           setFormData({
             petName: "",
             petSex: "",
@@ -134,19 +127,34 @@ const AddPetForm: React.FC = () => {
             petColorAndMarkings: "",
           });
         } else {
-          toast.error("Failed to add pet.");
+          // Log the full response for debugging
+          console.error("Error response:", await response.text());
+          setShowNotificationError(true);
         }
       } catch (error) {
         console.error("Error adding pet:", error);
         toast.error("An unexpected error occurred.");
       }
+    } else {
+      console.log("Validation failed");
     }
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   return (
     <Card className="p-4">
       <form onSubmit={handleSubmit}>
         <CardBody>
+          {showNotificationError && <FormError message="Failed to add pet." />}
+          {showNotificationSuccess && (
+            <FormSuccess message="Pet added successfully." />
+          )}
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">
               <p className="text-md">Add Pet Profile</p>
@@ -178,29 +186,23 @@ const AddPetForm: React.FC = () => {
               isInvalid={!!errors.petSex}
               errorMessage={errors.petSex}
             >
-              <SelectItem key="male" value="male">
+              <SelectItem key="male" value="Male">
                 Male
               </SelectItem>
-              <SelectItem key="female" value="female">
+              <SelectItem key="female" value="Female">
                 Female
               </SelectItem>
             </Select>
-            <Select
+            <Input
               isRequired
               label="Species"
               name="petSpecies"
               value={formData.petSpecies}
-              onChange={(e) => handleSpeciesChange(e.target.value)}
+              onChange={handleInputChange}
               isInvalid={!!errors.petSpecies}
               errorMessage={errors.petSpecies}
-            >
-              {speciesOptions.map((species) => (
-                <SelectItem key={species} value={species}>
-                  {species}
-                </SelectItem>
-              ))}
-            </Select>
-            <Select
+            />
+            <Input
               isRequired
               label="Breed"
               name="petBreed"
@@ -208,43 +210,126 @@ const AddPetForm: React.FC = () => {
               onChange={handleInputChange}
               isInvalid={!!errors.petBreed}
               errorMessage={errors.petBreed}
-            >
-              {(
-                breedOptions[
-                  formData.petSpecies as keyof typeof breedOptions
-                ] || []
-              ).map((breed) => (
-                <SelectItem key={breed} value={breed}>
-                  {breed}
-                </SelectItem>
-              ))}
-            </Select>
+            />
+            <div className="md:flex ">
+              <Input
+                isRequired
+                type="date"
+                label="Birthdate"
+                name="petBirthdate"
+                value={formData.petBirthdate}
+                onChange={handleInputChange}
+                max={new Date().toISOString().split("T")[0]}
+                isInvalid={!!errors.petBirthdate}
+                errorMessage={errors.petBirthdate}
+              />
+              <Input
+                isRequired
+                isReadOnly
+                type="text"
+                label="Age"
+                name="petAge"
+                value={formData.petAge}
+                isInvalid={!!errors.petAge}
+                errorMessage={errors.petAge}
+              />
+            </div>
+
             <Input
               isRequired
-              type="date"
-              label="Birthdate"
-              name="petBirthdate"
-              value={formData.petBirthdate}
+              label="Weight (in kg.)"
+              name="petWeight"
+              value={formData.petWeight}
               onChange={handleInputChange}
-              max={new Date().toISOString().split("T")[0]}
-              isInvalid={!!errors.petBirthdate}
-              errorMessage={errors.petBirthdate}
+              isInvalid={!!errors.petWeight}
+              errorMessage={errors.petWeight}
             />
-            <Input
-              isReadOnly
-              label="Age"
-              name="petAge"
-              value={formData.petAge}
-              isInvalid={!!errors.petAge}
-              errorMessage={errors.petAge}
+            <Textarea
+              placeholder="Describe your Pet"
+              className="max-w col-span-2"
+              label="Color and Markings"
+              name="petColorAndMarkings"
+              value={formData.petColorAndMarkings}
+              onChange={handleInputChange}
+              isInvalid={!!errors.petColorAndMarkings}
+              errorMessage={errors.petColorAndMarkings}
             />
+            {/* <Select
+              items={users}
+              label="Assigned to"
+              className="max-w-xs"
+              variant="bordered"
+              classNames={{
+                label: "group-data-[filled=true]:-translate-y-5",
+                trigger: "min-h-16",
+                listboxWrapper: "max-h-[400px]",
+              }}
+              listboxProps={{
+                itemClasses: {
+                  base: [
+                    "rounded-md",
+                    "text-default-500",
+                    "transition-opacity",
+                    "data-[hover=true]:text-foreground",
+                    "data-[hover=true]:bg-default-100",
+                    "dark:data-[hover=true]:bg-default-50",
+                    "data-[selectable=true]:focus:bg-default-50",
+                    "data-[pressed=true]:opacity-70",
+                    "data-[focus-visible=true]:ring-default-500",
+                  ],
+                },
+              }}
+              popoverProps={{
+                classNames: {
+                  base: "before:bg-default-200",
+                  content: "p-0 border-small border-divider bg-background",
+                },
+              }}
+              renderValue={(items) => {
+                return items.map((item) => (
+                  <div key={item.key} className="flex items-center gap-2">
+                    <Avatar
+                      alt={item.data.name}
+                      className="flex-shrink-0"
+                      size="sm"
+                      src={item.data.avatar}
+                    />
+                    <div className="flex flex-col">
+                      <span>{item.data.name}</span>
+                      <span className="text-tiny text-default-500">
+                        ({item.data.email})
+                      </span>
+                    </div>
+                  </div>
+                ));
+              }}
+            >
+              {(user) => (
+                <SelectItem key={user.id} textValue={user.name}>
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      alt={user.name}
+                      className="flex-shrink-0"
+                      size="sm"
+                      src={user.avatar}
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-small">{user.name}</span>
+                      <span className="text-tiny text-default-400">
+                        {user.email}
+                      </span>
+                    </div>
+                  </div>
+                </SelectItem>
+              )}
+            </Select> */}
           </div>
         </CardBody>
-        <CardFooter className="flex justify-end">
+        <div className="flex justify-end">
           <Button color="primary" type="submit">
-            Submit
+            Done
           </Button>
-        </CardFooter>
+        </div>
       </form>
     </Card>
   );

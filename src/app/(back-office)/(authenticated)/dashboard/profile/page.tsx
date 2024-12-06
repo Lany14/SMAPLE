@@ -3,7 +3,7 @@ import { Metadata } from "next";
 // import ProfileBox from "@/components/BackOffice/ProfileBox";
 
 export const metadata: Metadata = {
-  title: "AbyVet | Admin",
+  title: "AbyVet | Profile",
 };
 
 const Profile = () => {
