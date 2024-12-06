@@ -1,9 +1,12 @@
 model Pet {
   id                      String                  @id @default(auto()) @map("_id") @db.ObjectId
-  petOwner                PetOwnerProfile         @relation(name: "PetOwnerPets", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwner                PetOwnerProfile         @relation(name: "PetOwnerPets", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], references: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], onDelete: Cascade, onUpdate: Cascade)
   petOwnerId              String                  @db.ObjectId
   petOwnerFirstName       String
   petOwnerLastName        String
+  petOwnerEmail           String
+
+
   petId                   Int                     @unique
   petName                 String
   petSex                  String
@@ -29,7 +32,7 @@ model Pet {
   clinicVisitBookingsHistories ClinicVisitBookingHistory[] @relation("PetsClinicVisitHistories")
 
   onlineConsultations     OnlineConsultationBooking[]     @relation("PetOnlineConsultations")   
-  onlineConsultationsHistories OnlineConsultationBookingHistory[] @relation("PetsOnlineConsultationBookingHistries")
+  onlineConsultationsHistories OnlineConsultationBookingHistory[] @relation("PetsOnlineConsultationBookingHistories")
 
   
   // SOAP

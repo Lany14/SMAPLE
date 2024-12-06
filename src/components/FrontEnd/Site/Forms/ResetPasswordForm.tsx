@@ -35,7 +35,6 @@ export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const pwResetToken = searchParams.get("token");
   const [loading, setLoading] = useState(false);
-  // const [strength, setStrength] = useState(0);
   const [pass, setPass] = useState<string>("");
   const [passwordIsVisible, setPasswordIsVisible] = useState(false);
 

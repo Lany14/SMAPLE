@@ -11,6 +11,7 @@ erDiagram
   String adminUserId FK
   String adminFirstName
   String adminLastName
+  String adminEmail
   Boolean sendEmail
   Boolean sendSMS
   DateTime createdAt
@@ -21,6 +22,7 @@ erDiagram
   String receptionistUserId FK
   String receptionistFirstName
   String receptionistLastName
+  String receptionistEmail
   DateTime createdAt
   DateTime updatedAt
 }
@@ -29,6 +31,7 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   String title "nullable"
   String specializations
   Int yearsOfExperience "nullable"
@@ -49,11 +52,13 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   Int petId FK
   String petName
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   BookingStatus status
   DateTime date
   String time
@@ -67,11 +72,13 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   Int petId FK
   String petName
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   String bookingId UK
   String message
 }
@@ -80,6 +87,7 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   Int dayOfWeek
   DateTime startTime
   DateTime endTime
@@ -93,6 +101,7 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   Int dayOfWeek
   DateTime startTime
   DateTime endTime
@@ -109,15 +118,18 @@ erDiagram
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   String doctorId FK "nullable"
   String doctorFirstName "nullable"
   String doctorLastName "nullable"
+  String doctorEmail "nullable"
   String googleMeetLink "nullable"
   String googleCalendarEventId "nullable"
   BookingStatus status
   DateTime date
   DateTime startTime
-  DateTime endTime
+  DateTime endTime "nullable"
+  String durationTime "nullable"
   String note "nullable"
   String file "nullable"
   String createdBy "nullable"
@@ -130,11 +142,13 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   Int petId FK
   String petName
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   String bookingId UK
   String message
 }
@@ -144,11 +158,13 @@ erDiagram
   String doctorIdAdministered FK
   String doctorFirstNameAdministered
   String doctorLastNameAdministered
+  String doctorEmailAdministered
   Int petId FK
   String petName
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   BookingStatus status
   DateTime date
   String time
@@ -165,11 +181,13 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   Int petId FK
   String petName
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   String bookingId UK
   String message
 }
@@ -179,6 +197,7 @@ erDiagram
   String nurseFirstName
   String nurseLastName
   String licenseNumber
+  String nurseEmail
   String title "nullable"
   String specializations
 }
@@ -188,11 +207,13 @@ erDiagram
   String nurseId FK
   String nurseFirstName
   String nurseLastName
+  String nurseEmail
   Int petId FK
   String petName
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   BookingStatus status
   DateTime date
   String time
@@ -209,11 +230,13 @@ erDiagram
   String nurseId FK
   String nurseFirstName
   String nurseLastName
+  String nurseEmail
   Int petId FK
   String petName
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   String bookingId UK
   String message
 }
@@ -222,6 +245,7 @@ erDiagram
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   DateTime createdAt
   DateTime updatedAt
 }
@@ -230,12 +254,15 @@ erDiagram
   String createdByDoctorId FK "nullable"
   String createdByDoctorFirstName "nullable"
   String createdByDoctorLastName "nullable"
+  String createdByDoctorEmail "nullable"
   String createdByNurseId FK "nullable"
   String createdByNurseFirstName "nullable"
   String createdByNurseLastName "nullable"
+  String createdByNurseEmail "nullable"
   String petOwnerId FK "nullable"
   String petOwnerFirstName "nullable"
   String petOwnerLastName "nullable"
+  String petOwnerEmail "nullable"
   Int petId FK
   String petName
   String name
@@ -253,12 +280,15 @@ erDiagram
   String createdByDoctorId FK "nullable"
   String createdByDoctorFirstName "nullable"
   String createdByDoctorLastName "nullable"
+  String createdByDoctorEmail "nullable"
   String createdByNurseId FK "nullable"
   String createdByNurseFirstName "nullable"
   String createdByNurseLastName "nullable"
+  String createdByNurseEmail "nullable"
   String petOwnerId FK "nullable"
   String petOwnerFirstName "nullable"
   String petOwnerLastName "nullable"
+  String petOwnerEmail "nullable"
   Int petId FK
   String petName
   String name
@@ -273,12 +303,15 @@ erDiagram
   String createdByDoctorId FK "nullable"
   String createdByDoctorFirstName "nullable"
   String createdByDoctorLastName "nullable"
+  String createdByDoctorEmail "nullable"
   String createdByNurseId FK "nullable"
   String createdByNurseFirstName "nullable"
   String createdByNurseLastName "nullable"
+  String createdByNurseEmail "nullable"
   String petOwnerId FK "nullable"
   String petOwnerFirstName "nullable"
   String petOwnerLastName "nullable"
+  String petOwnerEmail "nullable"
   Int petId FK
   String petName
   String type
@@ -293,12 +326,15 @@ erDiagram
   String createdByDoctorId FK "nullable"
   String createdByDoctorFirstName "nullable"
   String createdByDoctorLastName "nullable"
+  String createdByDoctorEmail "nullable"
   String createdByNurseId FK "nullable"
   String createdByNurseFirstName "nullable"
   String createdByNurseLastName "nullable"
+  String createdByNurseEmail "nullable"
   String petOwnerId FK "nullable"
   String petOwnerFirstName "nullable"
   String petOwnerLastName "nullable"
+  String petOwnerEmail "nullable"
   Int petId FK
   String petName
   String name
@@ -316,6 +352,7 @@ erDiagram
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   Int petId UK
   String petName
   String petSex
@@ -333,12 +370,15 @@ erDiagram
   String createdByDoctorId FK "nullable"
   String createdByDoctorFirstName "nullable"
   String createdByDoctorLastName "nullable"
+  String createdByDoctorEmail "nullable"
   String createdByNurseId FK "nullable"
   String createdByNurseFirstName "nullable"
   String createdByNurseLastName "nullable"
+  String createdByNurseEmail "nullable"
   String petOwnerId FK "nullable"
   String petOwnerFirstName "nullable"
   String petOwnerLastName "nullable"
+  String petOwnerEmail "nullable"
   Int petId FK
   String petName
   String name
@@ -353,6 +393,7 @@ erDiagram
   String createdByDoctorId FK
   String createdByDoctorFirstName
   String createdByDoctorLastName
+  String createdByDoctorEmail
   Int petId FK
   String petName
   String subjective
@@ -375,6 +416,7 @@ erDiagram
   String petOwnerId FK "nullable"
   String petOwnerFirstName "nullable"
   String petOwnerLastName "nullable"
+  String petOwnerEmail "nullable"
   Int petId FK
   String petName
   DateTime dateAdministered
@@ -395,12 +437,15 @@ erDiagram
   String createdByDoctorId FK "nullable"
   String createdByDoctorFirstName "nullable"
   String createdByDoctorLastName "nullable"
+  String createdByDoctorEmail "nullable"
   String createdByNurseId FK "nullable"
   String createdByNurseFirstName "nullable"
   String createdByNurseLastName "nullable"
+  String createdByNurseEmail "nullable"
   String petOwnerId FK "nullable"
   String petOwnerFirstName "nullable"
   String petOwnerLastName "nullable"
+  String petOwnerEmail "nullable"
   Int petId FK
   String petName
   Float weight
@@ -412,6 +457,7 @@ erDiagram
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   String services
   Float totalAmount
   String paymentStatus
@@ -424,6 +470,7 @@ erDiagram
   String userId FK
   String userFirstName
   String userLastName
+  String userEmail
   String action
   String details
   DateTime createdAt
@@ -458,6 +505,7 @@ erDiagram
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   ClinicServices clinicService
   Float rating
   String review "nullable"
@@ -469,9 +517,11 @@ erDiagram
   String doctorId FK
   String doctorFirstName
   String doctorLastName
+  String doctorEmail
   String petOwnerId FK
   String petOwnerFirstName
   String petOwnerLastName
+  String petOwnerEmail
   Float rating
   String review "nullable"
   DateTime createdAt
@@ -603,6 +653,7 @@ erDiagram
   - `adminUserId`: 
   - `adminFirstName`: 
   - `adminLastName`: 
+  - `adminEmail`: 
   - `sendEmail`: 
   - `sendSMS`: 
   - `createdAt`: 
@@ -615,6 +666,7 @@ erDiagram
   - `receptionistUserId`: 
   - `receptionistFirstName`: 
   - `receptionistLastName`: 
+  - `receptionistEmail`: 
   - `createdAt`: 
   - `updatedAt`: 
 
@@ -625,6 +677,7 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `title`: 
   - `specializations`: 
   - `yearsOfExperience`: 
@@ -647,11 +700,13 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `status`: 
   - `date`: 
   - `time`: 
@@ -667,11 +722,13 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `bookingId`: 
   - `message`: 
 
@@ -682,6 +739,7 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `dayOfWeek`: 
   - `startTime`: 
   - `endTime`: 
@@ -697,6 +755,7 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `dayOfWeek`: 
   - `startTime`: 
   - `endTime`: 
@@ -715,15 +774,18 @@ erDiagram
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `googleMeetLink`: 
   - `googleCalendarEventId`: 
   - `status`: 
   - `date`: 
   - `startTime`: 
   - `endTime`: 
+  - `durationTime`: 
   - `note`: 
   - `file`: 
   - `createdBy`: 
@@ -738,11 +800,13 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `bookingId`: 
   - `message`: 
 
@@ -754,11 +818,13 @@ erDiagram
   - `doctorIdAdministered`: 
   - `doctorFirstNameAdministered`: 
   - `doctorLastNameAdministered`: 
+  - `doctorEmailAdministered`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `status`: 
   - `date`: 
   - `time`: 
@@ -777,11 +843,13 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `bookingId`: 
   - `message`: 
 
@@ -793,6 +861,7 @@ erDiagram
   - `nurseFirstName`: 
   - `nurseLastName`: 
   - `licenseNumber`: 
+  - `nurseEmail`: 
   - `title`: 
   - `specializations`: 
 
@@ -804,11 +873,13 @@ erDiagram
   - `nurseId`: 
   - `nurseFirstName`: 
   - `nurseLastName`: 
+  - `nurseEmail`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `status`: 
   - `date`: 
   - `time`: 
@@ -827,11 +898,13 @@ erDiagram
   - `nurseId`: 
   - `nurseFirstName`: 
   - `nurseLastName`: 
+  - `nurseEmail`: 
   - `petId`: 
   - `petName`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `bookingId`: 
   - `message`: 
 
@@ -842,6 +915,7 @@ erDiagram
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `createdAt`: 
   - `updatedAt`: 
 
@@ -852,12 +926,15 @@ erDiagram
   - `createdByDoctorId`: 
   - `createdByDoctorFirstName`: 
   - `createdByDoctorLastName`: 
+  - `createdByDoctorEmail`: 
   - `createdByNurseId`: 
   - `createdByNurseFirstName`: 
   - `createdByNurseLastName`: 
+  - `createdByNurseEmail`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `name`: 
@@ -877,12 +954,15 @@ erDiagram
   - `createdByDoctorId`: 
   - `createdByDoctorFirstName`: 
   - `createdByDoctorLastName`: 
+  - `createdByDoctorEmail`: 
   - `createdByNurseId`: 
   - `createdByNurseFirstName`: 
   - `createdByNurseLastName`: 
+  - `createdByNurseEmail`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `name`: 
@@ -899,12 +979,15 @@ erDiagram
   - `createdByDoctorId`: 
   - `createdByDoctorFirstName`: 
   - `createdByDoctorLastName`: 
+  - `createdByDoctorEmail`: 
   - `createdByNurseId`: 
   - `createdByNurseFirstName`: 
   - `createdByNurseLastName`: 
+  - `createdByNurseEmail`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `type`: 
@@ -921,12 +1004,15 @@ erDiagram
   - `createdByDoctorId`: 
   - `createdByDoctorFirstName`: 
   - `createdByDoctorLastName`: 
+  - `createdByDoctorEmail`: 
   - `createdByNurseId`: 
   - `createdByNurseFirstName`: 
   - `createdByNurseLastName`: 
+  - `createdByNurseEmail`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `name`: 
@@ -946,6 +1032,7 @@ erDiagram
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `petSex`: 
@@ -965,12 +1052,15 @@ erDiagram
   - `createdByDoctorId`: 
   - `createdByDoctorFirstName`: 
   - `createdByDoctorLastName`: 
+  - `createdByDoctorEmail`: 
   - `createdByNurseId`: 
   - `createdByNurseFirstName`: 
   - `createdByNurseLastName`: 
+  - `createdByNurseEmail`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `name`: 
@@ -987,6 +1077,7 @@ erDiagram
   - `createdByDoctorId`: 
   - `createdByDoctorFirstName`: 
   - `createdByDoctorLastName`: 
+  - `createdByDoctorEmail`: 
   - `petId`: 
   - `petName`: 
   - `subjective`: 
@@ -1011,6 +1102,7 @@ erDiagram
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `dateAdministered`: 
@@ -1033,12 +1125,15 @@ erDiagram
   - `createdByDoctorId`: 
   - `createdByDoctorFirstName`: 
   - `createdByDoctorLastName`: 
+  - `createdByDoctorEmail`: 
   - `createdByNurseId`: 
   - `createdByNurseFirstName`: 
   - `createdByNurseLastName`: 
+  - `createdByNurseEmail`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `petId`: 
   - `petName`: 
   - `weight`: 
@@ -1052,6 +1147,7 @@ erDiagram
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `services`: 
   - `totalAmount`: 
   - `paymentStatus`: 
@@ -1066,6 +1162,7 @@ erDiagram
   - `userId`: 
   - `userFirstName`: 
   - `userLastName`: 
+  - `userEmail`: 
   - `action`: 
   - `details`: 
   - `createdAt`: 
@@ -1106,6 +1203,7 @@ erDiagram
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `clinicService`: 
   - `rating`: 
   - `review`: 
@@ -1119,9 +1217,11 @@ erDiagram
   - `doctorId`: 
   - `doctorFirstName`: 
   - `doctorLastName`: 
+  - `doctorEmail`: 
   - `petOwnerId`: 
   - `petOwnerFirstName`: 
   - `petOwnerLastName`: 
+  - `petOwnerEmail`: 
   - `rating`: 
   - `review`: 
   - `createdAt`: 

@@ -1,8 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { prismaClient } from "@/src/lib/db";
+import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 
@@ -29,7 +27,8 @@ export async function GET() {
     let users: {
       id: string;
       userId: number;
-      name: string;
+      firstName: string;
+      lastName: string;
       email: string;
       status: string;
       role: string;
@@ -37,11 +36,12 @@ export async function GET() {
 
     // If user is ADMIN or VET_RECEPTIONIST, show all users
     if (["ADMIN", "VET_RECEPTIONIST"].includes(currentUser.role)) {
-      users = await prisma.user.findMany({
+      users = await db.user.findMany({
         select: {
           id: true,
           userId: true,
-          name: true,
+          firstName: true,
+          lastName: true,
           email: true,
           status: true,
           role: true,
@@ -52,12 +52,13 @@ export async function GET() {
     else if (["VET_DOCTOR", "VET_NURSE"].includes(currentUser.role)) {
       users = await prisma.user.findMany({
         where: {
-          role: "PET_OWNER",
+          role: { in: ["PET_OWNER", "DOCTOR", "NURSE"] },
         },
         select: {
           id: true,
           userId: true,
-          name: true,
+          firstName: true,
+          lastName: true,
           email: true,
           status: true,
           role: true,

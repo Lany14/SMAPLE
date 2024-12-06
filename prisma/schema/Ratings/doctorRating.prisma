@@ -1,13 +1,17 @@
 model DoctorRating {
   id                    String            @id @default(auto()) @map("_id") @db.ObjectId
-  doctorProfile  DoctorProfile @relation(name: "DoctorDoctorRatings", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorProfile  DoctorProfile @relation(name: "DoctorDoctorRatings", fields: [doctorId, doctorFirstName, doctorLastName, doctorEmail], references: [doctorId, doctorFirstName, doctorLastName, doctorEmail], onDelete: Cascade, onUpdate: Cascade)
   doctorId         String      @db.ObjectId
   doctorFirstName String
   doctorLastName String
-  petOwner            PetOwnerProfile @relation(name: "PetOwnerDoctorRatings", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorEmail     String
+
+  petOwner            PetOwnerProfile @relation(name: "PetOwnerDoctorRatings", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], references: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], onDelete: Cascade, onUpdate: Cascade)
   petOwnerId          String      @db.ObjectId
   petOwnerFirstName   String
   petOwnerLastName    String
+  petOwnerEmail       String
+
   rating              Float
   review              String?
 

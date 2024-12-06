@@ -117,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         },
         ...baseMenu,
       ];
-    } else if (session?.user?.role === "VET_DOCTOR") {
+    } else if (session?.user?.role === "DOCTOR") {
       return [
         {
           name: "DASHBOARD",
@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           ],
         },
       ];
-    } else if (session?.user?.role === "VET_NURSE") {
+    } else if (session?.user?.role === "NURSE") {
       return [
         {
           name: "DASHBOARD",
@@ -215,7 +215,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           ],
         },
       ];
-    } else if (session?.user?.role === "VET_RECEPTIONIST") {
+    } else if (session?.user?.role === "RECEPTIONIST") {
       return [
         {
           name: "DASHBOARD",
@@ -390,12 +390,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   className="w-full bg-blue-600 text-white hover:bg-blue-dark"
                   startContent={<Plus />}
                   href={
-                    session?.user?.role === "VET_DOCTOR"
+                    session?.user?.role === "DOCTOR"
                       ? "/dashboard/diagnose-patient"
                       : "/dashboard/add-patient"
                   }
                 >
-                  {session?.user?.role === "VET_DOCTOR"
+                  {session?.user?.role === "DOCTOR"
                     ? "Diagnose Pet"
                     : "Add Pet"}
                 </Button>
@@ -412,7 +412,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </div>
 
             {(session?.user?.role === "ADMIN" ||
-              session?.user?.role === "VET_RECEPTIONIST") && (
+              session?.user?.role === "RECEPTIONIST") && (
               <div>
                 <div className="pb-2">
                   <Button

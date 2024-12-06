@@ -33,22 +33,32 @@ export async function POST(request: Request) {
     }
 
     // Fetch the appointment to ensure it exists
-    const appointment = await db.appointment.findUnique({
+    const appointment = await db.onlineConsultationBooking.findUnique({
       where: { id: appointmentId },
       include: {
+        // include the email fron user model for petOwner and veterinarian
         veterinarian: {
           select: {
-            user: { select: { email: true, name: true } }, // Fix email field
-          },
+            doctorFirstName: true,
+            doctorLastName: true,
+            doctorEmail: true,
+          }, // Fix email field
         },
         petOwner: {
           select: {
-            user: { select: { email: true, name: true } }, // Fix email field
-          },
+            petOwnerFirstName: true,
+            petOwnerLastName: true,
+            petOwnerEmail: true,
+          }, // Fix email field
         },
-        pet: { select: { petName: true } },
+        petPatient: { select: { petName: true } },
       },
     });
+
+    // const email= await db.user.findUnique({
+    //   where: { id: session.user.id },
+    //   select: { email: true },
+    // });
 
     console.log("Fetched appointment:", appointment);
 
@@ -61,11 +71,11 @@ export async function POST(request: Request) {
     }
 
     // Ensure the appointment belongs to the Vet Doctor approving it
-    const vetProfile = await prismaClient.doctorNurseProfile.findUnique({
-      where: { doctorNurseId: session.user.id },
+    const vetProfile = await db.doctorProfile.findUnique({
+      where: { id: session.user.id },
     });
 
-    if (!vetProfile || vetProfile.id !== appointment.veterinarianId) {
+    if (!vetProfile || vetProfile.id !== appointment.doctorId) {
       return NextResponse.json(
         { error: "Unauthorized action on this appointment" },
         { status: 403 },
@@ -73,30 +83,29 @@ export async function POST(request: Request) {
     }
 
     // Update the appointment status to "APPROVED"
-    const updatedAppointment = await prismaClient.appointment.update({
+    const updatedAppointment = await db.onlineConsultationBooking.update({
       where: { id: appointmentId },
       data: { status: "APPROVED" },
     });
 
     const eventStartTime = new Date(appointment.startTime); // Use consistent start time
     const eventEndTime = new Date(eventStartTime.getTime() + 3600 * 1000); // Add 1 hour duration
-
     // Create a single calendar event for both vet doctor and pet owner
     const calendarEvent = await createGoogleCalendarEvent({
-      email: appointment.veterinarian.user.email, // Use the vet's account to create the event
-      title: `Appointment for ${appointment.pet.petName}`,
+      email: appointment.veterinarian?.doctorEmail as string, // Use the vet's account to create the event
+      title: `Appointment for ${appointment.petPatient.petName}`,
       description: `Online cosultation for your pet`,
       start: eventStartTime,
       end: eventEndTime,
       timeZone: "Asia/Manila", // Adjust as needed
       attendees: [
-        appointment.veterinarian.user.email,
-        appointment.petOwner.user.email,
+        appointment.veterinarian?.doctorEmail as string,
+        appointment.petOwner.petOwnerEmail,
       ],
     });
 
     // Save the Google Meet link to the database
-    await prismaClient.appointment.update({
+    await db.onlineConsultationBooking.update({
       where: { id: appointmentId },
       data: {
         googleMeetLink: calendarEvent.hangoutLink,
@@ -112,7 +121,11 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error approving appointment:", error);
     return NextResponse.json(
-      { error: "Failed to approve appointment", details: error.message },
+      {
+        error: "Failed to approve appointment",
+        details:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
       { status: 500 },
     );
   }

@@ -1,9 +1,10 @@
 model AuditLog {
     id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    user       User     @relation(name: "UserAuditLog", fields: [userId, userFirstName, userLastName ], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+    user       User     @relation(name: "UserAuditLog", fields: [userId, userFirstName, userLastName, userEmail ], references: [id, firstName, lastName, email], onDelete: Cascade, onUpdate: Cascade)
     userId     String   @db.ObjectId
     userFirstName String
     userLastName  String
+    userEmail String
 
 
     action     String

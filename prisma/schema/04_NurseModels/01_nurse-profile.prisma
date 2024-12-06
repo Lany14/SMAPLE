@@ -1,10 +1,11 @@
 model NurseProfile {
   id                          String    @id @default(auto()) @map("_id") @db.ObjectId
-  nurseUser             User      @relation(name: "NurseProfile", fields: [nurseId, nurseFirstName, nurseLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  nurseUser             User      @relation(name: "NurseProfile", fields: [nurseId, nurseFirstName, nurseLastName, nurseEmail], references: [id, firstName, lastName, email], onDelete: Cascade, onUpdate: Cascade)
   nurseId               String      @db.ObjectId
   nurseFirstName        String 
   nurseLastName         String
   licenseNumber         String
+  nurseEmail            String
 
   title                       String?
   specializations             String[]
@@ -24,5 +25,5 @@ model NurseProfile {
   medicinesAdministered                        Medicine[]    @relation("NurseMedicinesAdministered")
   medicalHistoriesAdministered                MedicalHistory[]  @relation("NurseMedicalHistoriesAdministered")
 
-  @@unique([nurseId, nurseFirstName, nurseLastName])
+  @@unique([nurseId, nurseFirstName, nurseLastName, nurseEmail])
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prismaClient } from "@/lib/db";
+import { db } from "@/lib/db";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -21,12 +21,14 @@ export async function GET(request: Request) {
     const dayOfWeek = new Date(date).getDay();
     console.log("Computed dayOfWeek:", dayOfWeek);
 
-    const schedule = await prismaClient.doctorSchedule.findFirst({
-      where: {
-        doctorId: doctorId,
-        dayOfWeek: dayOfWeek,
+    const schedule = await db.doctorAvailabilityForOnlineConsultation.findFirst(
+      {
+        where: {
+          doctorId: doctorId,
+          dayOfWeek: dayOfWeek,
+        },
       },
-    });
+    );
     console.log("Fetched schedule:", schedule);
 
     if (!schedule) {
@@ -37,9 +39,9 @@ export async function GET(request: Request) {
       );
     }
 
-    const appointments = await prismaClient.appointment.findMany({
+    const appointments = await db.onlineConsultationBooking.findMany({
       where: {
-        veterinarianId: doctorId,
+        doctorId: doctorId,
         date: new Date(date),
       },
       select: { startTime: true, endTime: true },

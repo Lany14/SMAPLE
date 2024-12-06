@@ -11,7 +11,7 @@ import { Button } from "@nextui-org/react"; // Ensure you have NextUI installed
 export default function AppointmentPage() {
   const { data: session } = useSession();
   const isPetOwner = session?.user?.role === "PET_OWNER";
-  const isVetDoctor = session?.user?.role === "VET_DOCTOR";
+  const isVetDoctor = session?.user?.role === "DOCTOR";
 
   return (
     <>

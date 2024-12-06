@@ -33,12 +33,15 @@ const FormSchema = z
     email: z.string().email("Please enter a valid email address"),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
+      .min(6, "Password must be at least 6 characters ")
       .max(50, "Password must be less than 50 characters"),
-    confirmPassword: z.string(),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters ")
+      .max(50, "Password must be less than 50 characters"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "Password and confirm password doesn't match!",
     path: ["confirmPassword"],
   });
 
@@ -47,7 +50,7 @@ const calculateStrength = (password: string): number => {
   return passwordStrength(password).id;
 };
 
-export default function SignUpForm({
+export default function RegisterForm({
   role = "PET_OWNER",
 }: {
   role?: UserRole;
@@ -58,7 +61,7 @@ export default function SignUpForm({
     register,
     handleSubmit,
     reset,
-    // control,
+    control,
     formState: { errors },
   } = useForm<SignUpInputProps>({
     resolver: zodResolver(FormSchema),
@@ -117,7 +120,6 @@ export default function SignUpForm({
               type="text"
               name="firstName"
               id="firstName"
-              disabled={loading}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
             />
             {errors.firstName?.message && (
@@ -139,7 +141,6 @@ export default function SignUpForm({
               type="text"
               name="lastName"
               id="lastName"
-              disabled={loading}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
             />
             {errors.lastName?.message && (
@@ -208,7 +209,6 @@ export default function SignUpForm({
           )}
           <ShowPassStrength strength={strength as Strength} />
         </div>
-
         <div>
           <label
             htmlFor="confirmPassword"
@@ -217,18 +217,6 @@ export default function SignUpForm({
             Confirm Password
           </label>
           <div className="relative">
-            <span
-              className="absolute right-4.5 top-1/2 -translate-y-1/2 focus:outline-none"
-              role="button"
-              onClick={passwordToggleVisibility}
-              aria-label="toggle password visibility"
-            >
-              {passwordIsVisible ? (
-                <EyeSlashFilledIcon className="pointer-events-none text-2xl text-default-400" />
-              ) : (
-                <EyeFilledIcon className="pointer-events-none text-2xl text-default-400" />
-              )}
-            </span>
             <input
               {...register("confirmPassword")}
               autoComplete="current-password"
@@ -276,22 +264,22 @@ export default function SignUpForm({
             Create Account
           </button>
         )}
-        <div className="flex items-center">
-          <div className="h-[1px] w-full bg-slate-500"></div>
-          <span className="mx-2">or</span>
-          <div className="h-[1px] w-full bg-slate-500"></div>
-        </div>
-        <GoogleSigninButton text="Continue" />
-        <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-          Already have an account?{" "}
-          <Link
-            href="/sign-in"
-            className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-          >
-            Sign in
-          </Link>
-        </p>
       </form>
+      <div className="flex items-center ">
+        <div className="h-[1px] w-full bg-slate-500"></div>
+        <span className="mx-2">or</span>
+        <div className="h-[1px] w-full bg-slate-500"></div>
+      </div>
+      <GoogleSigninButton text="Sign up" />
+      <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+        Already have an account?{" "}
+        <Link
+          href="/sign-in"
+          className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+        >
+          Sign in
+        </Link>
+      </p>
     </>
   );
 }

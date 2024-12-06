@@ -1,10 +1,11 @@
 // -------------------- PET OWNER PROFILE MODELS --------------------
 model PetOwnerProfile {
   id                    String          @id @default(auto()) @map("_id") @db.ObjectId
-  petOwnerUser          User            @relation(name: "PetOwnerProfile", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwnerUser          User            @relation(name: "PetOwnerProfile", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], references: [id, firstName, lastName, email], onDelete: Cascade, onUpdate: Cascade)
   petOwnerId            String      @db.ObjectId
   petOwnerFirstName     String
   petOwnerLastName      String
+  petOwnerEmail         String
 
   petWeightsCreated           PetWeight[]                 @relation("PetWeightsCreated")
   
@@ -19,7 +20,7 @@ model PetOwnerProfile {
 
 // Online Consultation Model
   onlineConsultations   OnlineConsultationBooking[]  @relation("PetOwnerOnlineConsultations")
-  onlineConsultationHistories OnlineConsultationBookingHistory[] @relation("PetOwnerOnlineConsultationBookingHistries")
+  onlineConsultationHistories OnlineConsultationBookingHistory[] @relation("PetOwnerOnlineConsultationBookingHistories")
 
 // Clinic Visits Model
   clinicVisits          ClinicVisitBooking[]         @relation("PetOwnerClinicVisits")      
@@ -39,5 +40,5 @@ model PetOwnerProfile {
     
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  @@unique([petOwnerId, petOwnerFirstName, petOwnerLastName])
+  @@unique([petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail])
 }

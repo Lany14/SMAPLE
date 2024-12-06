@@ -120,6 +120,7 @@ export async function POST(request: Request) {
                 adminUserId: newUser.id,
                 adminFirstName: firstName.trim(),
                 adminLastName: lastName.trim(),
+                adminEmail: email.toLowerCase().trim(),
               },
             });
             break;
@@ -129,6 +130,7 @@ export async function POST(request: Request) {
                 receptionistUserId: newUser.id,
                 receptionistFirstName: firstName.trim(),
                 receptionistLastName: lastName.trim(),
+                receptionistEmail: email.toLowerCase().trim(),
               },
             });
             break;
@@ -139,6 +141,7 @@ export async function POST(request: Request) {
                 doctorFirstName: firstName.trim(),
                 doctorLastName: lastName.trim(),
                 licenseNumber: licenseNumber.trim(),
+                doctorEmail: email.toLowerCase().trim(),
               },
             });
             break;
@@ -149,6 +152,7 @@ export async function POST(request: Request) {
                 nurseFirstName: firstName.trim(),
                 nurseLastName: lastName.trim(),
                 licenseNumber: licenseNumber.trim(),
+                nurseEmail: email.toLowerCase().trim(),
               },
             });
             break;
@@ -158,6 +162,7 @@ export async function POST(request: Request) {
                 petOwnerId: newUser.id,
                 petOwnerFirstName: firstName.trim(),
                 petOwnerLastName: lastName.trim(),
+                petOwnerEmail: email.toLowerCase().trim(),
               },
             });
             break;

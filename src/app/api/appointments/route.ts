@@ -20,12 +20,13 @@ export async function GET() {
       // Fetch the PetOwnerProfile associated with this user
       const petOwnerProfile = await db.petOwnerProfile.findUnique({
         where: {
-          petOwnerId_petOwnerFirstName_petOwnerLastName: {
+          petOwnerId_petOwnerFirstName_petOwnerLastName_petOwnerEmail: {
             petOwnerId: userId,
             petOwnerFirstName: session.user.firstName,
             petOwnerLastName: session.user.lastName,
+            petOwnerEmail: session.user.email,
           },
-        },,
+        },
         select: { id: true },
       });
 
@@ -50,21 +51,21 @@ export async function GET() {
           startTime: true,
           status: true,
           note: true,
-          pet: {
+          petPatient: {
             select: {
               petName: true,
             },
           },
           veterinarian: {
             select: {
-              firstName: true,
-              lastName: true,
+              doctorFirstName: true,
+              doctorLastName: true,
             },
           },
           petOwner: {
             select: {
-              firstName: true,
-              lastName: true,
+              petOwnerFirstName: true,
+              petOwnerLastName: true,
             },
           },
         },
@@ -75,7 +76,14 @@ export async function GET() {
     } else if (userRole === "DOCTOR") {
       // Fetch the DoctorNurseProfile associated with this user
       const doctorProfile = await db.doctorProfile.findUnique({
-        where: { doctorId: userId },
+        where: {
+          doctorId_doctorFirstName_doctorLastName_doctorEmail: {
+            doctorId: userId,
+            doctorFirstName: session.user.firstName,
+            doctorLastName: session.user.lastName,
+            doctorEmail: session.user.email,
+          },
+        },
         select: { id: true },
       });
 
@@ -90,16 +98,16 @@ export async function GET() {
       console.log("Fetched veterinarianId:", veterinarianId);
 
       // Fetch appointments for this veterinarianId
-      appointments = await prismaClient.appointment.findMany({
+      appointments = await db.onlineConsultationBooking.findMany({
         where: {
-          veterinarianId: veterinarianId,
+          doctorId: veterinarianId,
         },
         select: {
           id: true,
           date: true,
           startTime: true,
           status: true,
-          pet: {
+          petPatient: {
             select: {
               petName: true,
               petSpecies: true,
@@ -107,8 +115,8 @@ export async function GET() {
           },
           petOwner: {
             select: {
-              firstName: true,
-              lastName: true,
+              petOwnerFirstName: true,
+              petOwnerLastName: true,
             },
           },
         },
@@ -161,8 +169,15 @@ export async function POST(request: Request) {
     }
 
     // Fetch the petOwnerProfile to get the correct petOwnerId
-    const petOwnerProfile = await prismaClient.petOwnerProfile.findUnique({
-      where: { petOwnerId: session.user.id },
+    const petOwnerProfile = await db.petOwnerProfile.findUnique({
+      where: {
+        petOwnerId_petOwnerFirstName_petOwnerLastName_petOwnerEmail: {
+          petOwnerId: session.user.id,
+          petOwnerFirstName: session.user.firstName,
+          petOwnerLastName: session.user.lastName,
+          petOwnerEmail: session.user.email,
+        },
+      },
       select: { id: true },
     });
 
@@ -176,16 +191,30 @@ export async function POST(request: Request) {
     // Use the PetOwnerProfile id as the petOwnerId for the appointment
     const petOwnerId = petOwnerProfile.id;
 
+    // Fetch pet details
+    const pet = await db.pet.findUnique({
+      where: { id: data.petId },
+      select: { petName: true },
+    });
+
     // Convert dates to DateTime format
     const appointmentDate = new Date(data.appointmentDate);
     const startTime = new Date(data.startTime);
 
-    // Create the appointment with petOwnerId included
-    const appointment = await prismaClient.appointment.create({
+    // Create a unique booking ID
+    const bookingId = `BOOK-${Date.now()}`;
+
+    // Create the appointment with all required fields
+    const appointment = await db.onlineConsultationBooking.create({
       data: {
+        bookingId: bookingId,
         petId: data.petId,
-        veterinarianId: data.doctorId,
-        petOwnerId: petOwnerId, // Use the fetched petOwnerId from PetOwnerProfile
+        doctorId: data.doctorId,
+        petOwnerId: petOwnerId,
+        petName: data.petName,
+        petOwnerFirstName: session.user.firstName,
+        petOwnerLastName: session.user.lastName,
+        petOwnerEmail: session.user.email,
         date: appointmentDate,
         startTime: startTime,
         note: data.note || null,
@@ -199,8 +228,10 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Error creating appointment:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
     return NextResponse.json(
-      { error: "Failed to create appointment", details: error.message },
+      { error: "Failed to create appointment", details: errorMessage },
       { status: 500 },
     );
   }

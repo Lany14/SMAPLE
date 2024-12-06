@@ -42,7 +42,7 @@ model User {
   receptionistProfile     ReceptionistProfile?   @relation("ReceptionistProfile")
 
 
-  @@unique([id, firstName, lastName])
+  @@unique([id, firstName, lastName, email])
   @@unique([id, email, phoneNumber])
   @@unique([id, email])
   // twoFactorSecret String?

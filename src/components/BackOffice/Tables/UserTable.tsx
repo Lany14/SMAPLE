@@ -47,9 +47,9 @@ const INITIAL_VISIBLE_COLUMNS = [
 
 const roleOptions = [
   { name: "ADMIN", uid: "ADMIN" },
-  { name: "VET_DOCTOR", uid: "VET_DOCTOR" },
-  { name: "VET_NURSE", uid: "VET_NURSE" },
-  { name: "VET_RECEPTIONIST", uid: "VET_RECEPTIONIST" },
+  { name: "DOCTOR", uid: "DOCTOR" },
+  { name: "NURSE", uid: "NURSE" },
+  { name: "RECEPTIONIST", uid: "RECEPTIONIST" },
   { name: "PET_OWNER", uid: "PET_OWNER" },
 ];
 

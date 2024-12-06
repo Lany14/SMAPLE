@@ -157,7 +157,7 @@ const PersonalInfoBox = () => {
           session?.petOwnerProfile?.lastName ||
           session?.adminProfile?.lastName ||
           session?.receptionistProfile?.lastName ||
-          session?.doctorNurseProfile?.lastName ||
+          session?.DoctorProfile?.lastName ||
           prev.lastName,
       }));
     }

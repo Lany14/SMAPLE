@@ -18,11 +18,16 @@ declare module "next-auth" {
   interface Session {
     user: User & {
       id: UserId;
-      name: name;
+      firstName: firstName;
+      lastName: lastName;
       email: email;
       phoneNumber: phoneNumber;
       image: image;
       role: UserRole;
+      status: status;
+      accessToken: accessToken;
+      refreshToken: refreshToken;
+      accessTokenExpires: accessTokenExpires;
     };
     adminProfile: AdminProfile & {
       id: UserId;
@@ -42,7 +47,7 @@ declare module "next-auth" {
       birthDate: birthDate;
       age: age;
     };
-    doctorNurseProfile: DoctorNurseProfile & {
+    DoctorProfile: DoctorProfile & {
       id: UserId;
       firstName: firstName;
       lastName: lastName;

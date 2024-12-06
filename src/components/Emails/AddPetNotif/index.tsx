@@ -10,33 +10,46 @@ import * as React from "react";
 
 interface AddPetNotifProps {
   ownerFirstName: string;
-  ownerLastName: string;
+  petName: string;
 }
 
-export const AddPetNotif: React.FC<AddPetNotifProps> = ({ ownerFirstName }) => (
+export const AddPetNotif: React.FC<AddPetNotifProps> = ({
+  ownerFirstName,
+  petName,
+}) => (
   <Html>
     <Head />
     <Body style={main}>
       <Container style={container}>
-        <Text style={heading}>Added a new pet to your profile</Text>
+        <Text style={heading}>Added a New Pet to your Profile</Text>
         <Text style={paragraph}>Dear {ownerFirstName},</Text>
-        <Text style={paragraph}>A new pet has been added to your profile.</Text>
-        {/* <Text style={paragraph}>
-          Email: {email}
-          <br />
-          Password: {password}
-        </Text> */}
         <Text style={paragraph}>
-          Please log in and change your password as soon as possible.
+          We're excited to confirm that your pet has been successfully added to
+          your profile "{petName}" at Abys Agrivet Animal Health Clinic.
         </Text>
-        <Button style={button} href="https://yourdomain.com/login">
-          Log In
+
+        <Text style={paragraph}>
+          You can now access your pet's profile, schedule appointments, and
+          manage their health records through our online portal.
+        </Text>
+
+        <Button style={button} href="https://abysagrivet.online/dashboard">
+          View Pet Profile
         </Button>
+
         <Text style={paragraph}>
-          If you have any questions, please don&apos;t hesitate to contact us.
+          If you have any questions about your pet's profile or need assistance,
+          our team is here to help. Feel free to contact us at:
         </Text>
+
+        <Text style={paragraph}>
+          Phone: (123) 456-7890
+          <br />
+          Email: support@abysagrivet.online
+        </Text>
+
         <Text style={paragraph}>Best regards,</Text>
-        <Text style={paragraph}>The Clinic Management Team</Text>
+        <Text style={paragraph}>Abys Agrivet Animal Health Clinic Team</Text>
       </Container>
     </Body>
   </Html>

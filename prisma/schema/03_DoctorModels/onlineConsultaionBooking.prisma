@@ -6,22 +6,25 @@ model OnlineConsultationBooking {
   petId                    Int                    @unique
   petName                  String 
 
-  petOwner                 PetOwnerProfile        @relation(name: "PetOwnerOnlineConsultations", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwner                 PetOwnerProfile        @relation(name: "PetOwnerOnlineConsultations", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], references: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], onDelete: Cascade, onUpdate: Cascade)
   petOwnerId               String                 @db.ObjectId
   petOwnerFirstName        String
   petOwnerLastName         String
+  petOwnerEmail            String
 
-  veterinarian             DoctorProfile?     @relation(name: "DoctorOnlineConsultations", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  veterinarian             DoctorProfile?     @relation(name: "DoctorOnlineConsultations", fields: [doctorId, doctorFirstName, doctorLastName, doctorEmail], references: [doctorId, doctorFirstName, doctorLastName, doctorEmail], onDelete: Cascade, onUpdate: Cascade)
   doctorId                 String?                 @db.ObjectId
   doctorFirstName          String?
   doctorLastName           String?
+  doctorEmail              String?
 
   googleMeetLink           String?
   googleCalendarEventId    String?
   status                   BookingStatus          @default(PENDING)
   date                     DateTime
   startTime                DateTime
-  endTime                  DateTime
+  endTime                  DateTime?
+  durationTime             String?
   note                     String?
   file                     String?
   

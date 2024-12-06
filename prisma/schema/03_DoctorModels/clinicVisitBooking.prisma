@@ -1,19 +1,23 @@
 model ClinicVisitBooking {
   id                String            @id @default(auto()) @map("_id") @db.ObjectId
   bookingId         String            @unique
-  doctor            DoctorProfile     @relation(name: "DoctorClinicVisits", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctor            DoctorProfile     @relation(name: "DoctorClinicVisits", fields: [doctorId, doctorFirstName, doctorLastName, doctorEmail], references: [doctorId, doctorFirstName, doctorLastName, doctorEmail], onDelete: Cascade, onUpdate: Cascade)
   doctorId          String            @db.ObjectId
   doctorFirstName   String
   doctorLastName    String
+  doctorEmail       String
 
   pet               Pet               @relation(name: "PetsClinicVisits", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
   petId             Int               @unique
   petName           String
 
-  petOwner          PetOwnerProfile   @relation(name: "PetOwnerClinicVisits", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwner          PetOwnerProfile   @relation(name: "PetOwnerClinicVisits", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], references: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], onDelete: Cascade, onUpdate: Cascade)
   petOwnerId        String            @db.ObjectId
   petOwnerFirstName String
   petOwnerLastName  String
+  petOwnerEmail     String
+
+
   status            BookingStatus      @default(PENDING)   // Start with 'PENDING' status
   date              DateTime
   time              String

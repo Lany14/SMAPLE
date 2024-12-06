@@ -1,10 +1,11 @@
 // -------------------- DOCTOR & NURSE PROFILE MODELS --------------------
 model DoctorProfile {
   id                          String    @id @default(auto()) @map("_id") @db.ObjectId
-  doctorUser             User      @relation(name: "DoctorProfile", fields: [doctorId, doctorFirstName, doctorLastName], references: [id, firstName, lastName], onDelete: Cascade, onUpdate: Cascade)
+  doctorUser             User      @relation(name: "DoctorProfile", fields: [doctorId, doctorFirstName, doctorLastName, doctorEmail], references: [id, firstName, lastName, email], onDelete: Cascade, onUpdate: Cascade)
   doctorId               String      @db.ObjectId
   doctorFirstName        String 
   doctorLastName         String
+  doctorEmail            String       
 
   title                       String?
   specializations             String[]
@@ -48,5 +49,5 @@ model DoctorProfile {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   
-  @@unique([doctorId, doctorFirstName, doctorLastName])
+  @@unique([doctorId, doctorFirstName, doctorLastName, doctorEmail])
 }

@@ -9,11 +9,10 @@ export default function UserPage() {
   const { data: session } = useSession();
   return (
     <>
-      {session?.user?.role === "VET_DOCTOR" ||
-      session?.user?.role === "VET_NURSE" ? (
+      {session?.user?.role === "DOCTOR" || session?.user?.role === "NURSE" ? (
         <Breadcrumb pageName="Fur Parents" />
       ) : session?.user?.role === "ADMIN" ||
-        session?.user?.role === "VET_RECEPTIONIST" ? (
+        session?.user?.role === "RECEPTIONIST" ? (
         <Breadcrumb pageName="User Accounts" />
       ) : null}
 

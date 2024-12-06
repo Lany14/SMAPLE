@@ -29,8 +29,8 @@ declare module "next-auth" {
       firstName: string;
     };
   }
-  interface DoctorNurseProfile {
-    doctorNurseProfile?: {
+  interface DoctorProfile {
+    doctorProfile?: {
       firstName: string;
     };
   }
@@ -63,11 +63,11 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
     if (!role) return null;
 
     const profileMap = {
-      PET_OWNER: session?.user?.name,
-      ADMIN: session?.user?.name,
-      VET_RECEPTIONIST: session?.user?.name,
-      VET_DOCTOR: session?.user?.name,
-      VET_NURSE: session?.user?.name,
+      PET_OWNER: session?.user?.firstName,
+      ADMIN: session?.user?.firstName,
+      RECEPTIONIST: session?.user?.firstName,
+      DOCTOR: session?.user?.firstName,
+      NURSE: session?.user?.firstName,
     };
 
     return profileMap[role as keyof typeof profileMap];

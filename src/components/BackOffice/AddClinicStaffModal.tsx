@@ -27,13 +27,15 @@ export const SexProp = [
 
 export const RoleProp = [
   { key: "ADMIN", label: "ADMIN" },
-  { key: "VET_NURSE", label: "VETERINARY NURSE" },
-  { key: "VET_DOCTOR", label: "VETERINARY DOCTOR" },
-  { key: "VET_RECEPTIONIST", label: "VETERINARY RECEPTIONIST" },
+  { key: "NURSE", label: "VETERINARY NURSE" },
+  { key: "DOCTOR", label: "VETERINARY DOCTOR" },
+  { key: "RECEPTIONIST", label: "VETERINARY RECEPTIONIST" },
   { key: "PET_OWNER", label: "PET OWNER" },
 ];
 
-const AddClinicStaffModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+const AddClinicStaffModal: React.FC<{ onClose: () => void }> = ({
+  onClose,
+}) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -124,7 +126,7 @@ const AddClinicStaffModal: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     if (!formData.role) tempErrors.role = "Role is required";
     if (
       formData.role !== "PET_OWNER" &&
-      formData.role !== "VET_RECEPTIONIST" &&
+      formData.role !== "RECEPTIONIST" &&
       formData.role !== "ADMIN" &&
       !formData.licenseNumber
     )
@@ -374,7 +376,7 @@ const AddClinicStaffModal: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                 </div>
 
                 {formData.role !== "PET_OWNER" &&
-                  formData.role !== "VET_RECEPTIONIST" &&
+                  formData.role !== "RECEPTIONIST" &&
                   formData.role !== "ADMIN" && (
                     <>
                       <Divider className="col-span-2" />

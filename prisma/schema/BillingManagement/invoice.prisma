@@ -1,10 +1,12 @@
 // -------------------- INVOICE & PAYMENT MODEL --------------------
 model Invoice {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
-  petOwner           PetOwnerProfile       @relation(name: "PetOwnerInvoices", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  petOwner           PetOwnerProfile       @relation(name: "PetOwnerInvoices", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], references: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], onDelete: Cascade, onUpdate: Cascade)
   petOwnerId     String     @db.ObjectId
   petOwnerFirstName      String
   petOwnerLastName       String
+  petOwnerEmail          String
+
   services       String[]
   totalAmount    Float
   paymentStatus  String @default("pending") //pending, paid, failed

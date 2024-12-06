@@ -9,11 +9,11 @@ interface PageProps {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default async function VerifyAccount(props: PageProps) {
-  // Await the params before destructuring
-  const params = await Promise.resolve(props.params);
-  const id = params.id;
-
+export default async function VerifyAccount({
+  params,
+  searchParams,
+}: PageProps) {
+  const { id } = params;
   const user = await getUserById(id);
   const userToken = user?.emailVerificationToken ?? undefined;
 

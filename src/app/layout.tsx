@@ -1,5 +1,6 @@
 import { Poppins } from "next/font/google";
 import AuthProvider from "@/providers/AuthProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`dark:bg-black ${poppins.className}`}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children} <SpeedInsights />
+        </AuthProvider>
       </body>
     </html>
   );

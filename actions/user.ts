@@ -49,6 +49,7 @@ export default async function signup(formData: SignUpInputProps) {
           petOwnerId: newUser.id,
           petOwnerFirstName: firstName,
           petOwnerLastName: lastName,
+          petOwnerEmail: email,
         },
       });
     }

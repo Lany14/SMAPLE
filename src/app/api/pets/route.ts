@@ -1,7 +1,5 @@
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
-import { prismaClient } from "@/lib/db";
+import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -15,15 +13,17 @@ export async function GET() {
 
     const userRole = session.user.role;
     const userId = session.user.id;
+    const userFirstName = session.user.firstName;
+    const userLastName = session.user.lastName;
 
     let pets;
 
     if (userRole === "PET_OWNER") {
       // Fetch only pets owned by this user
-      pets = await prismaClient.pet.findMany({
+      pets = await db.pet.findMany({
         where: {
-          owner: {
-            user: {
+          petOwner: {
+            petOwnerUser: {
               id: userId,
             },
           },
@@ -38,11 +38,12 @@ export async function GET() {
           petAge: true,
           petWeight: true,
           petAvatar: true,
-          owner: {
+          petOwnerFirstName: true,
+          petOwnerLastName: true,
+          petOwner: {
             select: {
-              user: {
+              petOwnerUser: {
                 select: {
-                  name: true,
                   image: true,
                 },
               },
@@ -51,12 +52,10 @@ export async function GET() {
         },
       });
     } else if (
-      ["ADMIN", "VET_DOCTOR", "VET_NURSE", "VET_RECEPTIONIST"].includes(
-        userRole,
-      )
+      ["ADMIN", "DOCTOR", "NURSE", "RECEPTIONIST"].includes(userRole)
     ) {
       // Fetch all pets for staff roles
-      pets = await prismaClient.pet.findMany({
+      pets = await db.pet.findMany({
         select: {
           id: true,
           petId: true,
@@ -67,11 +66,12 @@ export async function GET() {
           petAge: true,
           petWeight: true,
           petAvatar: true,
-          owner: {
+          petOwnerFirstName: true,
+          petOwnerLastName: true,
+          petOwner: {
             select: {
-              user: {
+              petOwnerUser: {
                 select: {
-                  name: true,
                   image: true,
                 },
               },

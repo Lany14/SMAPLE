@@ -1,9 +1,10 @@
 model DoctorAvailabilityForClinicVisit {
   id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  doctor  DoctorProfile @relation(name: "DoctorClinicVisitSchedules", fields: [doctorId, doctorFirstName, doctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  doctor  DoctorProfile @relation(name: "DoctorClinicVisitSchedules", fields: [doctorId, doctorFirstName, doctorLastName,doctorEmail], references: [doctorId, doctorFirstName, doctorLastName, doctorEmail], onDelete: Cascade, onUpdate: Cascade)
   doctorId         String      @db.ObjectId
   doctorFirstName String
   doctorLastName String
+  doctorEmail     String
 
   dayOfWeek  Int                 // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
   startTime  DateTime            // Start of working hours for this day

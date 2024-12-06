@@ -1,20 +1,23 @@
 // -------------------- LAB RESULT --------------------
 model LabResult {
   id                String         @id @default(auto()) @map("_id") @db.ObjectId
-  createdByDoctor DoctorProfile?  @relation(name: "DoctorLabResultsAdministered", fields: [createdByDoctorId, createdByDoctorFirstName, createdByDoctorLastName], references: [doctorId, doctorFirstName, doctorLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByDoctor DoctorProfile?  @relation(name: "DoctorLabResultsAdministered", fields: [createdByDoctorId, createdByDoctorFirstName, createdByDoctorLastName, createdByDoctorEmail], references: [doctorId, doctorFirstName, doctorLastName, doctorEmail], onDelete: Cascade, onUpdate: Cascade)
   createdByDoctorId         String?      @db.ObjectId
   createdByDoctorFirstName String?
   createdByDoctorLastName String?
+  createdByDoctorEmail    String?
   
-  createdByNurse NurseProfile? @relation(name: "NurseLabResultsAdministered", fields: [createdByNurseId, createdByNurseFirstName, createdByNurseLastName], references: [nurseId, nurseFirstName, nurseLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByNurse NurseProfile? @relation(name: "NurseLabResultsAdministered", fields: [createdByNurseId, createdByNurseFirstName, createdByNurseLastName, createdByNurseEmail], references: [nurseId, nurseFirstName, nurseLastName, nurseEmail], onDelete: Cascade, onUpdate: Cascade)
   createdByNurseId         String?      @db.ObjectId
   createdByNurseFirstName String?
   createdByNurseLastName  String?
+  createdByNurseEmail     String?
 
-  createdByPetOwner PetOwnerProfile?  @relation(name: "PetLabResultCreated", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName], references: [petOwnerId, petOwnerFirstName, petOwnerLastName], onDelete: Cascade, onUpdate: Cascade)
+  createdByPetOwner PetOwnerProfile?  @relation(name: "PetLabResultCreated", fields: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], references: [petOwnerId, petOwnerFirstName, petOwnerLastName, petOwnerEmail], onDelete: Cascade, onUpdate: Cascade)
   petOwnerId      String?            @db.ObjectId
   petOwnerFirstName String?
   petOwnerLastName String?
+  petOwnerEmail    String?
 
   petPatient        Pet          @relation(name: "PetLabResult", fields: [petId, petName], references: [petId, petName], onDelete: Cascade, onUpdate: Cascade)
   petId             Int          @unique

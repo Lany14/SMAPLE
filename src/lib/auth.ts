@@ -219,6 +219,10 @@ export const authOptions: NextAuthOptions = {
       }
       if (user) {
         token.id = user.id;
+        token.firstName = (user as any).firstName;
+        token.lastName = (user as any).lastName;
+        token.email = user.email;
+        token.image = user.image;
         token.role = user.role as UserRole;
       }
 
@@ -239,8 +243,13 @@ export const authOptions: NextAuthOptions = {
 
       if (token && session.user) {
         session.user.id = token.id;
+        session.user.firstName = token.firstName;
+        session.user.lastName = token.lastName;
         session.user.email = token.email;
+        session.user.image = token.image;
         session.user.role = token.role;
+        session.user.accessToken = token.accessToken;
+        session.user.refreshToken = token.refreshToken;
 
         // Retrieve access token and refresh token from the Account table
         const account = await db.account.findFirst({
