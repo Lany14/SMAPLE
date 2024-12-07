@@ -1,7 +1,14 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["localhost", "lh3.googleusercontent.com"],
+    domains: [
+      "localhost",
+      "lh3.googleusercontent.com",
+      "images.unsplash.com",
+      "cdn.sanity.io",
+      "avatars.githubusercontent.com",
+      "pub-b7fd9c30cdbf439183b75041f5f71b92.r2.dev",
+    ],
     remotePatterns: [
       {
         protocol: "https",
@@ -11,6 +18,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
         port: "",
       },
       {

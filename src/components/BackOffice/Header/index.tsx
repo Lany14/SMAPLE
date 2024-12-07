@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { authOptions } from "@/src/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
+import DropdownUser from "./DropdownUser";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -93,20 +94,20 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          <Link className="block flex-shrink-0 lg:hidden" href="/">
+          {/* <Link className="block flex-shrink-0 lg:hidden" href="/">
             <Image
               width={32}
               height={32}
               src={"/images/logo/logo-light.svg"}
               alt="Logo"
             />
-          </Link>
+          </Link> */}
         </div>
 
         <div className="hidden xl:block">
           <div>
             <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              {greeting} {session?.user?.firstName}!
+              {greeting}!
             </h1>
             <p className="font-medium">{session?.user?.role} Dashboard</p>
           </div>
@@ -128,7 +129,7 @@ const Header = (props: {
           </ul>
 
           {/* <!-- User Area --> */}
-          {/* <DropdownUser /> */}
+          <DropdownUser />
           {/* <!-- User Area --> */}
         </div>
       </div>

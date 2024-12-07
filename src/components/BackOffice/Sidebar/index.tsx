@@ -310,7 +310,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       >
         {/* <!-- SIDEBAR HEADER --> */}
         <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5 xl:py-10">
-          <Link href="/">
+          <Link href="/dashboard">
             <Image
               width={106}
               height={21}
@@ -375,50 +375,42 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               </div>
             ))}
 
-            <div className="pb-2">
+            <div className=" space-y-2 pb-2">
               {/* Buttons to open different modals */}
 
-              <div className="pb-2">
+              <Button
+                as={Link}
+                className="w-full bg-blue-600 text-white hover:bg-blue-dark"
+                startContent={<Plus />}
+                href={
+                  session?.user?.role === "DOCTOR"
+                    ? "/dashboard/diagnose-patient"
+                    : "/dashboard/add-patient"
+                }
+              >
+                {session?.user?.role === "DOCTOR" ? "Diagnose Pet" : "Add Pet"}
+              </Button>
+              {(session?.user?.role === "ADMIN" ||
+                session?.user?.role === "RECEPTIONIST") && (
                 <Button
                   as={Link}
-                  className="w-full bg-blue-600 text-white hover:bg-blue-dark"
-                  startContent={<Plus />}
-                  href={
-                    session?.user?.role === "DOCTOR"
-                      ? "/dashboard/diagnose-patient"
-                      : "/dashboard/add-patient"
-                  }
+                  className="w-full bg-primary text-white hover:bg-primaryho"
+                  startContent={<UserRoundPlus />}
+                  href="/dashboard/add-account"
                 >
-                  {session?.user?.role === "DOCTOR"
-                    ? "Diagnose Pet"
-                    : "Add Pet"}
+                  Add User Account
                 </Button>
-              </div>
+              )}
+              {/* <Button
+                color="danger"
+                variant="bordered"
+                className="absolute  inset-x-0 bottom-0 w-full"
+                onClick={() => signOut()}
+                startContent={<LogOut />}
+              >
+                Sign Out
+              </Button> */}
             </div>
-
-            {(session?.user?.role === "ADMIN" ||
-              session?.user?.role === "RECEPTIONIST") && (
-              <div>
-                <div className="pb-2">
-                  <Button
-                    as={Link}
-                    className="w-full bg-primary text-white hover:bg-primaryho"
-                    startContent={<UserRoundPlus />}
-                    href="/dashboard/add-account"
-                  >
-                    Add User Account
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            <Button
-              className="w-full "
-              onClick={() => signOut()}
-              startContent={<LogOut />}
-            >
-              Sign Out
-            </Button>
           </nav>
           {/* <!-- Sidebar Menu --> */}
         </div>

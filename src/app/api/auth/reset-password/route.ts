@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { Resend } from "resend";
-import { securityConfig } from "@/lib/security/config";
-import { logError } from "@/lib/logger";
 import { ResetPasswordSuccessEmail } from "@/components/Emails/ResetPassword";
 import { sendSMS } from "@/utils/semaphore";
 import { hashPassword } from "@/src/utils/password";
@@ -107,7 +105,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Password reset successful" });
   } catch (error) {
     console.error("Reset password error:", error);
-    logError(error as Error, { context: "password-reset" });
     return NextResponse.json(
       { error: "Failed to reset password" },
       { status: 500 },
