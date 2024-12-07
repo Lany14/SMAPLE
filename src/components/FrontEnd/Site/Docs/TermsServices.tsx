@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function TermsOfService() {
@@ -254,35 +253,28 @@ export default function TermsOfService() {
 
   return (
     <div className="container mx-auto px-4 py-8 text-slate-950">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold">
-            Terms of Service for Abyss Agrivet Vet Clinic Portal
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4 text-gray-600">Effective Date: December 1, 2024</p>
-          <p className="mb-6">
-            Welcome to the Abyss Agrivet Vet Clinic Portal ("the Portal"). These
-            Terms of Service ("Terms") govern your use of the Portal operated by
-            Abyss Agrivet Vet Clinic ("we," "us," or "our"). By accessing or
-            using the Portal, you agree to comply with these Terms.
-          </p>
-
-          <ScrollArea className="h-[600px] w-full rounded-md border p-4">
-            <Accordion type="single" collapsible>
-              {termsContent.map((section, index) => (
-                <AccordionItem value={`item-${index}`} key={index}>
-                  <AccordionTrigger>{section.title}</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="prose max-w-none">{section.content}</div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <h1 className="mb-6 text-3xl font-bold">
+        Terms of Service for Abyss Agrivet Vet Clinic Portal
+      </h1>
+      <p className="mb-4">Effective Date: December 1, 2024</p>
+      <p className="mb-6">
+        Welcome to the Abyss Agrivet Vet Clinic Portal ("the Portal"). These
+        Terms of Service ("Terms") govern your use of the Portal operated by
+        Abyss Agrivet Vet Clinic ("we," "us," or "our"). By accessing or using
+        the Portal, you agree to comply with these Terms.
+      </p>
+      <ScrollArea className="h-[600px] w-full rounded-md border p-4">
+        <Accordion type="single" collapsible>
+          {termsContent.map((section, index) => (
+            <AccordionItem value={`item-${index}`} key={index}>
+              <AccordionTrigger>{section.title}</AccordionTrigger>
+              <AccordionContent>
+                <div className="prose max-w-none">{section.content}</div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </ScrollArea>
     </div>
   );
 }
