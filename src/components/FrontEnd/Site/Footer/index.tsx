@@ -144,6 +144,22 @@ const Footer = () => {
                         Login as Vet
                       </a>
                     </li>
+                    <li>
+                      <a
+                        href="/privacy-policy"
+                        className="mb-3 inline-block hover:text-primary"
+                      >
+                        Privacy and Policy
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/terms-service"
+                        className="mb-3 inline-block hover:text-primary"
+                      >
+                        Terms of Service
+                      </a>
+                    </li>
                   </ul>
                 </motion.div>
 
