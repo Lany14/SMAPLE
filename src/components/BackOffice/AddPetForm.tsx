@@ -9,13 +9,13 @@ import {
   Input,
   Select,
   SelectItem,
+  Textarea,
 } from "@nextui-org/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FormError } from "../FrontEnd/Site/Forms/FormError";
 import { FormSuccess } from "../FrontEnd/Site/Forms/FormSuccess";
 import { FormLoading } from "../FrontEnd/Site/Forms/Loading";
-
 const speciesOptions = ["Dog", "Cat", "Bird"];
 const breedOptions = {
   Dog: ["Shih Tzu", "Pomeranian", "Beagle", "Pug", "Golden Retriever"],
@@ -45,6 +45,8 @@ const AddPetForm: React.FC = () => {
     petBreed: "",
     petBirthdate: "",
     petAge: "",
+    petWeight: "",
+    petColorAndMarkings: "",
   });
 
   const validateForm = () => {
@@ -114,7 +116,7 @@ const AddPetForm: React.FC = () => {
     const isFormValid = validateForm();
     console.log("Validation result:", isFormValid);
     console.log("Validation errors:", errors);
-    if (validateForm()) {
+    if (isFormValid) {
       console.log("Form data after passing validation:", formData);
       try {
         setLoading(true);
@@ -152,11 +154,19 @@ const AddPetForm: React.FC = () => {
 
   return (
     <Card className="p-4">
-      {showNotificationError && <FormError message="Failed to add pet." />}
-      {showNotificationSuccess && (
-        <FormSuccess message="Pet added successfully." />
+      {showNotificationError && (
+        <FormError
+          message="Failed to add pet."
+          onClose={() => setShowNotificationError(false)}
+        />
       )}
-      {loading && <FormLoading message="Pet added successfully." />}
+      {showNotificationSuccess && (
+        <FormSuccess
+          message="Pet added successfully."
+          onClose={() => setShowNotificationSuccess(false)}
+        />
+      )}
+      {loading && <FormLoading message="Adding pet profile..." />}
       <form onSubmit={handleSubmit}>
         <CardBody>
           <CardHeader className="flex gap-3">
@@ -215,7 +225,7 @@ const AddPetForm: React.FC = () => {
                 </SelectItem>
               ))}
             </Select>
-            <Select
+            <Input
               isRequired
               label="Breed"
               name="petBreed"
@@ -223,18 +233,7 @@ const AddPetForm: React.FC = () => {
               onChange={handleInputChange}
               isInvalid={!!errors.petBreed}
               errorMessage={errors.petBreed}
-              isDisabled={loading}
-            >
-              {(
-                breedOptions[
-                  formData.petSpecies as keyof typeof breedOptions
-                ] || []
-              ).map((breed) => (
-                <SelectItem key={breed} value={breed}>
-                  {breed}
-                </SelectItem>
-              ))}
-            </Select>
+            />
             <Input
               isRequired
               type="date"
@@ -255,6 +254,25 @@ const AddPetForm: React.FC = () => {
               isInvalid={!!errors.petAge}
               errorMessage={errors.petAge}
               disabled={loading}
+            />
+            <Input
+              isRequired
+              label="Weight (in kg.)"
+              name="petWeight"
+              value={formData.petWeight}
+              onChange={handleInputChange}
+              isInvalid={!!errors.petWeight}
+              errorMessage={errors.petWeight}
+            />
+            <Textarea
+              placeholder="Describe your Pet"
+              className="max-w col-span-2"
+              label="Color and Markings"
+              name="petColorAndMarkings"
+              value={formData.petColorAndMarkings}
+              onChange={handleInputChange}
+              isInvalid={!!errors.petColorAndMarkings}
+              errorMessage={errors.petColorAndMarkings}
             />
           </div>
         </CardBody>

@@ -15,8 +15,8 @@ model Pet {
   petBirthdate            DateTime               // Added: Pet's birth date
   petAge                  String
   petWeight               PetWeight[]              @relation("PetWeight")
-  // petReproductiveStatus   String                 // neutered, not neutered, unknown
-  // petAllergies            String?                 // Added: Pet's allergies
+  petReproductiveStatus   String?                 // neutered, not neutered, unknown
+  petAllergies            String?                 // Added: Pet's allergies
   petColorAndMarkings     String?               // Added: Pet's color
   petAvatar               String?                // Added: Pet's avatar
 
