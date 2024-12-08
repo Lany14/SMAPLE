@@ -67,6 +67,7 @@ const CreateAppointmentForm: React.FC = () => {
       `/api/doctors/schedule?doctorId=${doctorId}&date=${formData.appointmentDate}`,
     );
     const data = await response.json();
+    console.log("Schedule API Response:", data);
     setDoctorAvailability(data.availableSlots || []);
   };
 
