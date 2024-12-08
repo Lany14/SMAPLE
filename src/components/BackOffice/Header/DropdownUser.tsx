@@ -4,8 +4,10 @@ import Image from "next/image";
 import ClickOutside from "@/components/BackOffice/ClickOutside";
 import { signOut, useSession } from "next-auth/react";
 import { Avatar } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 const DropdownUser = () => {
+  const router = useRouter();
   const { data: session } = useSession();
   const [user, setUser] = useState({
     name: "John Smith",
@@ -21,7 +23,7 @@ const DropdownUser = () => {
         className="flex items-center gap-4"
         href="#"
       >
-        <Avatar src={session?.user.image || user.avatar} />
+        <Avatar src={session?.user.image} name={session?.user.firstName} />
 
         <span className="flex items-center gap-2 font-medium text-dark dark:text-dark-6">
           <span className="hidden lg:block">
@@ -97,7 +99,7 @@ const DropdownUser = () => {
 
             <li>
               <Link
-                href="/setting"
+                href="/dashboard/setting"
                 className="flex w-full items-center gap-2.5 rounded-[7px] p-2.5 text-sm font-medium text-dark-4 duration-300 ease-in-out hover:bg-gray-2 hover:text-dark dark:text-dark-6 dark:hover:bg-dark-3 dark:hover:text-white lg:text-base"
               >
                 <svg
