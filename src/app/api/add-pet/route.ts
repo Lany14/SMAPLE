@@ -70,7 +70,7 @@ export async function POST(request: Request) {
         petBreed,
         petAge,
         petColorAndMarkings,
-        petBirthdate: new Date(petBirthdate),
+        petBirthdate: petBirthdate ? new Date(petBirthdate) : null,
         petWeight: {
           create: [
             {
