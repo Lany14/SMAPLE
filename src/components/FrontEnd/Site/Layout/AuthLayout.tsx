@@ -19,7 +19,7 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
     <div className="flex min-h-screen flex-col lg:flex-row">
       {/* Left Panel - Form Section */}
       <div className="flex w-full flex-1 flex-col bg-white dark:bg-gray-900 lg:w-[60%]">
-        <div className="flex min-h-screen flex-col items-center justify-between p-8">
+        <div className="mt-10 flex min-h-screen flex-col items-center justify-between px-4">
           {/* Logo/Header Section */}
 
           {/* Main Content */}

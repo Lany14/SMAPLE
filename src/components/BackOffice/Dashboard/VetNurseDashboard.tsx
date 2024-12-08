@@ -1,30 +1,67 @@
-"use client";
-import React from "react";
-import ChartThree from "../Charts/ChartThree";
-import ChartTwo from "../Charts/ChartTwo";
-import ChatCard from "../Chat/ChatCard";
-import TableOne from "../Tables/TableOne";
+import {
+  Clipboard,
+  Syringe,
+  Package,
+  FlaskRoundIcon as Flask,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import DataStatsOne from "@/components/BackOffice/DataStats/VetNurseDataStatsOne";
-import ChartOne from "@/components/BackOffice/Charts/ChartOne";
+// const menuItems = [
+//   {
+//     label: "Dashboard",
+//     href: "/nurse",
+//     icon: <Clipboard className="mr-2 h-4 w-4" />,
+//   },
+//   {
+//     label: "Patient Prep",
+//     href: "/nurse/prep",
+//     icon: <Syringe className="mr-2 h-4 w-4" />,
+//   },
+//   {
+//     label: "Inventory",
+//     href: "/nurse/inventory",
+//     icon: <Package className="mr-2 h-4 w-4" />,
+//   },
+//   {
+//     label: "Lab Results",
+//     href: "/nurse/lab",
+//     icon: <Flask className="mr-2 h-4 w-4" />,
+//   },
+// ];
 
-const VetNurseDashboard: React.FC = () => {
+export default function NurseDashboard() {
   return (
-    <>
-      Vet Nurse Dashboard
-      {/* <DataStatsOne />
-
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
-        <ChartOne />
-        <ChartTwo />
-        <ChartThree />
-        <div className="col-span-12 xl:col-span-8">
-          <TableOne />
-        </div>
-        <ChatCard />
-      </div> */}
-    </>
+    // <h1 className="mb-4 text-2xl font-bold">Nurse Dashboard</h1>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Upcoming Tasks</CardTitle>
+          <Clipboard className="text-muted-foreground h-4 w-4" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">-</div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Patients in Queue
+          </CardTitle>
+          <Syringe className="text-muted-foreground h-4 w-4" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">-</div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
+          <Package className="text-muted-foreground h-4 w-4" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">-</div>
+        </CardContent>
+      </Card>
+    </div>
   );
-};
-
-export default VetNurseDashboard;
+}
