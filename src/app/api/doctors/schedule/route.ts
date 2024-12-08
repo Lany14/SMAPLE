@@ -42,14 +42,16 @@ export async function GET(request: Request) {
     const appointments = await db.onlineConsultationBooking.findMany({
       where: {
         doctorId: doctorId,
-        date: new Date(date),
+        date: {
+          equals: new Date(date),
+        },
       },
       select: { startTime: true, endTime: true },
     });
     console.log("Fetched appointments for the date:", appointments);
 
-    const startTime = new Date(schedule.startTime);
-    const endTime = new Date(schedule.endTime);
+    const startTime = new Date(`${date}T${schedule.startTime}`);
+    const endTime = new Date(`${date}T${schedule.endTime}`);
     const slotDuration = 30 * 60 * 1000; // 30 minutes
 
     let availableSlots: string[] = [];
@@ -59,10 +61,13 @@ export async function GET(request: Request) {
       time < endTime;
       time = new Date(time.getTime() + slotDuration)
     ) {
-      const isBooked = appointments.some(
-        (appointment) =>
-          new Date(appointment.startTime).getTime() === time.getTime(),
-      );
+      const isBooked = appointments.some((appointment) => {
+        const appointmentStart = new Date(appointment.startTime).getTime();
+        const appointmentEnd = new Date(appointment.endTime).getTime();
+        return (
+          time.getTime() >= appointmentStart && time.getTime() < appointmentEnd
+        );
+      });
 
       if (!isBooked) {
         availableSlots.push(time.toISOString());
