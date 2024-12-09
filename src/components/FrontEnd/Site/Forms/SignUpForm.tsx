@@ -106,7 +106,7 @@ export default function RegisterForm({
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="gap-3 sm:mb-2 md:grid md:grid-cols-2">
           <div>
             <label
               htmlFor="firstName"
