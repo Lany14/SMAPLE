@@ -192,7 +192,7 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("Error creating appointment:", error);
+    console.error("Error creating appointment due:", error);
     return NextResponse.json(
       { error: "Failed to create appointment", details: error.message },
       { status: 500 },
