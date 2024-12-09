@@ -29,7 +29,7 @@ const CalendarPage = () => {
           setEvents(fetchedEvents);
         }
       } catch (error) {
-        console.error("Error fetching calendar events:", error);
+        console.error("Error fetching calendar events KJ:", error);
       } finally {
         setLoading(false);
       }
