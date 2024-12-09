@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       petAge,
       petWeight,
       petColorAndMarkings,
-      birthDate,
+      petBirthdate,
     } = await request.json();
 
     console.log("Received data:", {
