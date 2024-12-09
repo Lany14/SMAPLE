@@ -27,7 +27,6 @@ const CreateAppointmentForm: React.FC = () => {
   });
   const [pets, setPets] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
-  const [doctorAvailability, setDoctorAvailability] = useState<any[]>([]);
   const [errors, setErrors] = useState<any>({});
   const [isDoctorSelectable, setIsDoctorSelectable] = useState(false);
   const router = useRouter();
@@ -35,40 +34,20 @@ const CreateAppointmentForm: React.FC = () => {
   // Fetch pets and doctors data on component load
   useEffect(() => {
     if (session?.user?.role === "PET_OWNER") {
-      // Fetch pets owned by the owner
       fetch("/api/pets")
         .then((res) => res.json())
         .then((data) => setPets(data));
     }
 
-    // Fetch doctors
     fetch("/api/users/vet-docs")
       .then((res) => res.json())
       .then((data) => setDoctors(data));
   }, [session?.user]);
 
-  // Handle changes to appointment date
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setFormData((prevData) => ({ ...prevData, appointmentDate: value }));
     setIsDoctorSelectable(!!value);
-  };
-
-  const handleDoctorChange = async (doctorId: string) => {
-    setFormData((prev) => ({ ...prev, doctorId }));
-    if (!formData.appointmentDate) {
-      return;
-    }
-
-    console.log("Fetching schedule for doctor:", doctorId);
-    console.log("Appointment Date:", formData.appointmentDate);
-
-    const response = await fetch(
-      `/api/doctors/schedule?doctorId=${doctorId}&date=${formData.appointmentDate}`,
-    );
-    const data = await response.json();
-    console.log("Schedule API Response:", data);
-    setDoctorAvailability(data.availableSlots || []);
   };
 
   const handleInputChange = (e: React.ChangeEvent<any>) => {
@@ -86,78 +65,56 @@ const CreateAppointmentForm: React.FC = () => {
       newErrors.appointmentTime = "Time is required.";
 
     setErrors(newErrors);
-    console.log("Validation Errors:", newErrors); // Add this log
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("Submit button clicked");
     e.preventDefault();
     const isValid = validateForm();
-    console.log("Form is valid:", isValid);
     if (!isValid) return;
 
-    // Log formData values to ensure they are set correctly
-    console.log("Form Data - Pet ID:", formData.petId);
-    console.log("Form Data - Doctor ID:", formData.doctorId);
-    console.log("Form Data - Appointment Date:", formData.appointmentDate);
-    console.log(
-      "Form Data - Appointment Time (index):",
-      formData.appointmentTime,
-    );
-    console.log("Form Data - Note:", formData.note);
-
-    // Retrieve the actual time value from doctorAvailability array
-    const selectedTimeValue =
-      doctorAvailability[parseInt(formData.appointmentTime)];
-    console.log("Selected Time Value:", selectedTimeValue);
-
-    // Extract the time part from selectedTimeValue
-    const timeString = new Date(selectedTimeValue).toLocaleTimeString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    // Combine `appointmentDate` and `timeString` into `startTime` ISO string
-    const startTime =
-      formData.appointmentDate && timeString
-        ? new Date(`${formData.appointmentDate}T${timeString}`).toISOString()
-        : null;
-
-    // Log the computed startTime to verify its format
-    console.log("Computed startTime:", startTime);
-
+    const startTime = `${formData.appointmentDate}T${formData.appointmentTime}`;
     const payload = {
       petId: formData.petId,
       doctorId: formData.doctorId,
-      appointmentDate: new Date(formData.appointmentDate).toISOString(), // Only date part
-      startTime: startTime, // Combined date and time
+      startTime: new Date(startTime).toISOString(),
       note: formData.note || "",
     };
 
-    // Log the final payload to see what is being sent to the server
-    console.log("Submitting form with data:", payload);
+    console.log("Validating appointment:", payload);
 
+    // Step 1: Check for overlap
     try {
-      const response = await fetch("/api/appointments", {
+      const checkResponse = await fetch("/api/appointments/check-overlap", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const checkResult = await checkResponse.json();
+
+      if (checkResult.isOverlap) {
+        toast.error(
+          "The selected time slot is already booked. Please choose another time.",
+        );
+        return;
+      }
+
+      // Step 2: Create appointment if no conflict
+      const createResponse = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        toast.success("Appointment created successfully");
-        router.push("/dashboard/appointment");
+      if (createResponse.ok) {
+        toast.success("Appointment created successfully!");
+        router.push("/dashboard/appointments");
       } else {
-        const errorData = await response.json();
-        console.error("Failed to create appointment:", errorData);
-        toast.error("Failed to create appointment");
+        toast.error("Failed to create appointment. Please try again.");
       }
     } catch (error) {
-      console.error("Error creating appointment:", error);
-      toast.error("An unexpected error occurred.");
+      console.error("Error during appointment creation:", error);
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -206,7 +163,7 @@ const CreateAppointmentForm: React.FC = () => {
               label="Select Doctor"
               name="doctorId"
               value={formData.doctorId}
-              onChange={(e) => handleDoctorChange(e.target.value)}
+              onChange={(e) => handleInputChange(e)}
               isDisabled={!isDoctorSelectable}
               isInvalid={!!errors.doctorId}
               errorMessage={errors.doctorId}
@@ -218,35 +175,16 @@ const CreateAppointmentForm: React.FC = () => {
               ))}
             </Select>
 
-            <Select
+            <Input
               isRequired
-              label="Select Time"
+              label="Appointment Time"
               name="appointmentTime"
+              type="time"
               value={formData.appointmentTime}
-              onChange={(e) => {
-                console.log("Selected time:", e.target.value); // Log the selected time
-                setFormData((prevData) => ({
-                  ...prevData,
-                  appointmentTime: e.target.value,
-                }));
-              }}
+              onChange={handleInputChange}
               isInvalid={!!errors.appointmentTime}
               errorMessage={errors.appointmentTime}
-            >
-              {doctorAvailability.map((time, index) => {
-                // Format each available time as HH:MM
-                const formattedTime = new Date(time).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                });
-                return (
-                  <SelectItem key={index} value={formattedTime}>
-                    {formattedTime}
-                  </SelectItem>
-                );
-              })}
-            </Select>
+            />
 
             <Textarea
               label="Additional Notes"
