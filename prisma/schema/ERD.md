@@ -360,6 +360,8 @@ erDiagram
   String petBreed
   DateTime petBirthdate
   String petAge
+  String petReproductiveStatus "nullable"
+  String petAllergies "nullable"
   String petColorAndMarkings "nullable"
   String petAvatar "nullable"
   DateTime createdAt
@@ -1040,6 +1042,8 @@ erDiagram
   - `petBreed`: 
   - `petBirthdate`: 
   - `petAge`: 
+  - `petReproductiveStatus`: 
+  - `petAllergies`: 
   - `petColorAndMarkings`: 
   - `petAvatar`: 
   - `createdAt`: 

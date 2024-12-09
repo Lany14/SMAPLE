@@ -68,7 +68,7 @@ export const authOptions: NextAuthOptions = {
     updateAge: 12 * 60 * 60, // 12 hours
   },
   pages: {
-    signIn: "/sign-in",
+    signIn: "/dashboard",
     error: "/error",
     signOut: "/sign-in",
     newUser: "/dashboard",
@@ -124,9 +124,11 @@ export const authOptions: NextAuthOptions = {
 
           return {
             id: existingUser.id,
+            firstName: existingUser.firstName,
+            lastName: existingUser.lastName,
             email: existingUser.email,
             role: existingUser.role,
-            picture: existingUser.image,
+            image: existingUser.image,
           };
         } catch (error) {
           console.error("Authorization failed:", error);
@@ -212,7 +214,7 @@ export const authOptions: NextAuthOptions = {
               token_type: account.token_type,
               scope: account.scope,
               id_token: account.id_token,
-              session_state: null,
+              session_state: account.session_state,
             },
           });
         }
@@ -230,6 +232,7 @@ export const authOptions: NextAuthOptions = {
       }
       if (user) {
         token.id = user.id;
+        token.name = user.name;
         token.firstName = (user as any).firstName;
         token.lastName = (user as any).lastName;
         token.email = user.email;
@@ -254,6 +257,7 @@ export const authOptions: NextAuthOptions = {
 
       if (token && session.user) {
         session.user.id = token.id;
+        session.user.name = token.name;
         session.user.firstName = token.firstName;
         session.user.lastName = token.lastName;
         session.user.email = token.email;

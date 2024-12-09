@@ -22,6 +22,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { ModalContext } from "./Layouts/DefaultLayout";
 import { useSession } from "next-auth/react";
+import { FormError } from "../FrontEnd/Site/Forms/FormError";
+import { FormSuccess } from "../FrontEnd/Site/Forms/FormSuccess";
+import { FormLoading } from "../FrontEnd/Site/Forms/Loading";
 
 export const SexProp = [
   { key: "Male", label: "Male" },
@@ -50,10 +53,13 @@ const INITIAL_FORM_DATA = {
 };
 
 const AddClinicStaff: React.FC = () => {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const setModalContent = useContext(ModalContext);
+  const [showNotificationError, setShowNotificationError] = useState(false);
+  const [showNotificationSuccess, setShowNotificationSuccess] = useState(false);
+  const [showEmailError, setShowEmailError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showPhoneNumberError, setShowPhoneNumberError] = useState(false);
 
+  const { data: session } = useSession();
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -169,36 +175,59 @@ const AddClinicStaff: React.FC = () => {
     };
 
     try {
-      const loadingToast = toast.loading("Creating user account...");
+      setLoading(true);
       const response = await fetch("/api/admin/create-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        toast.success("User account created successfully");
+        setLoading(false);
+        setShowNotificationSuccess(true);
         setFormData(INITIAL_FORM_DATA);
         setPhoneNumber("");
       } else if (response.status === 409) {
-        toast.error("This email address is already registered in the system.");
+        setLoading(false);
+        setShowEmailError(true);
       } else if (response.status === 410) {
-        toast.error("This phone number is already registered in the system.");
-      } else {
-        console.error("Error response:", data.error);
-        toast.error("Failed to create user account.");
+        setLoading(false);
+        setShowPhoneNumberError(true);
       }
-      toast.dismiss(loadingToast);
     } catch (error) {
+      setLoading(false);
+      setShowNotificationError(true);
       console.error("Error creating user account:", error);
-      toast.error("An unexpected error occurred.");
     }
   };
 
   return (
     <Card className="p-8">
+      {showNotificationError && (
+        <FormError
+          message="Error creating user account."
+          onClose={() => setShowNotificationError(false)}
+        />
+      )}
+      {showEmailError && (
+        <FormError
+          message="Email address is already registered in the system."
+          onClose={() => setShowEmailError(false)}
+        />
+      )}
+      {showPhoneNumberError && (
+        <FormError
+          message="Phone number is already registered in the system."
+          onClose={() => setShowPhoneNumberError(false)}
+        />
+      )}
+      {showNotificationSuccess && (
+        <FormSuccess
+          message="User account created successfully."
+          onClose={() => setShowNotificationSuccess(false)}
+        />
+      )}
+      {loading && <FormLoading message="Creating user account..." />}
       <form onSubmit={handleSubmit}>
         <CardBody>
           <div className="gap-4">
@@ -214,6 +243,7 @@ const AddClinicStaff: React.FC = () => {
                   onChange={handleInputChange}
                   isInvalid={!!errors.firstName}
                   errorMessage={errors.firstName}
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -227,6 +257,7 @@ const AddClinicStaff: React.FC = () => {
                   onChange={handleInputChange}
                   isInvalid={!!errors.lastName}
                   errorMessage={errors.lastName}
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -238,6 +269,7 @@ const AddClinicStaff: React.FC = () => {
                   onChange={(e) => handleSelectChange("sex", e.target.value)}
                   isInvalid={!!errors.sex}
                   errorMessage={errors.sex}
+                  isDisabled={loading}
                 >
                   {SexProp.map((sex) => (
                     <SelectItem value={sex.key} key={sex.key}>
@@ -259,6 +291,7 @@ const AddClinicStaff: React.FC = () => {
                     max={new Date().toISOString().split("T")[0]}
                     isInvalid={!!errors.birthDate}
                     errorMessage={errors.birthDate}
+                    disabled={loading}
                   />
                 </div>
                 <div className="w-full">
@@ -270,6 +303,7 @@ const AddClinicStaff: React.FC = () => {
                     id="age"
                     name="age"
                     value={formData.age}
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -285,6 +319,7 @@ const AddClinicStaff: React.FC = () => {
                   onChange={handleInputChange}
                   isInvalid={!!errors.email}
                   errorMessage={errors.email}
+                  disabled={loading}
                 />
                 <Input
                   isRequired
@@ -313,6 +348,7 @@ const AddClinicStaff: React.FC = () => {
                     input: "pl-1",
                     innerWrapper: "bg-transparent",
                   }}
+                  disabled={loading}
                 />
                 <Select
                   isRequired
@@ -329,6 +365,7 @@ const AddClinicStaff: React.FC = () => {
                   className="col-span-2"
                   isInvalid={!!errors.role}
                   errorMessage={errors.role}
+                  disabled={loading}
                 >
                   {RoleProp.map((role) => (
                     <SelectItem value={role.key} key={role.key}>
@@ -354,6 +391,7 @@ const AddClinicStaff: React.FC = () => {
                       onChange={handleInputChange}
                       isInvalid={!!errors.licenseNumber}
                       errorMessage={errors.licenseNumber}
+                      disabled={loading}
                     />
                     <Textarea
                       className="col-span-2"
@@ -363,6 +401,7 @@ const AddClinicStaff: React.FC = () => {
                       name="specialization"
                       value={formData.specialization}
                       onChange={handleInputChange}
+                      disabled={loading}
                     />
                   </>
                 )}
