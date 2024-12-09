@@ -151,7 +151,7 @@ export async function POST(request: Request) {
       petAge,
       petWeight,
       petColorAndMarkings,
-      birthDate,
+      petBirthdate,
     });
 
     // Create pet with the correct references
