@@ -60,10 +60,14 @@ const CreateAppointmentForm: React.FC = () => {
       return;
     }
 
+    console.log("Fetching schedule for doctor:", doctorId);
+    console.log("Appointment Date:", formData.appointmentDate);
+
     const response = await fetch(
       `/api/doctors/schedule?doctorId=${doctorId}&date=${formData.appointmentDate}`,
     );
     const data = await response.json();
+    console.log("Schedule API Response:", data);
     setDoctorAvailability(data.availableSlots || []);
   };
 
